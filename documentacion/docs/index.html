@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="Documentation">Documentation</h1>
+
+<div class="modification-notice" style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 15px; margin: 15px 0; border-radius: 4px;">
+    <h2 style="margin: 0 0 10px 0; color: #0c5460;">📚 PHP 8.4 Compatible Documentation</h2>
+    <p style="margin: 0 0 10px 0;"><strong>All 64 classes documented below are fully compatible with PHP 8.4</strong> and have been modernized with variadic parameters, boolean constants, and modern database extensions.</p>
+    <p style="margin: 0 0 10px 0;"><strong>New PHP 8.4 Features:</strong> Modern enums for type safety (JsonToken, DatabaseType, MimeType, MongoDbType), asymmetric visibility for better encapsulation, property hooks for cleaner APIs, deprecated method attributes for IDE support, and comprehensive migration guidance.</p>
+    <p style="margin: 0 0 10px 0;"><strong>✨ Modern APIs (FASE 4):</strong> Native PHP 8.4 array functions (array_find, array_any, array_all, array_find_key), BcMath\Number precision arithmetic in fMoney, and enhanced string functions (str_contains, str_starts_with, str_ends_with) for better performance and cleaner code.</p>
+    <p style="margin: 0;"><strong>🚀 NEW PHP 8.4 Classes:</strong> <strong>fRedis</strong> - Modern Redis cache & session storage with pub/sub support. <strong>fHttpClient</strong> - PSR-18 compatible HTTP client with property hooks, middleware, and modern authentication. Both classes include comprehensive test suites and production-ready implementations.</p>
+</div>
+
+<div class="sidebar">
+<h2 id="Downloadable">Downloadable</h2>
+
+<p>
+Grab a <strong><a href="/offline_docs">single HTML file</a></strong> containing all class and API docs, plus applicable general topics
+</p>
+</div>
+
+<p>
+For those just beginning with Flourish, <a href="/docs/GettingStarted.html" class="important">getting started</a> and <a href="/docs/HowDoI.html" class="important">how do I?</a> provide a gentle introduction. The <a href="#ClassDocumentation">class documentation</a> provides in-depth information about each class, along with links to related functionality, the API and source code.
+</p>
+
+<p>
+The <a href="#GeneralDocumentation">general documentation</a> supplements the class documentation and covers topics that touch on multiple parts of the library, or apply to PHP in general.
+</p>
+
+<h2 id="ClassDocumentation">Class Documentation</h2>
+<div class="class_docs first">
+<h3 id="Database">Database</h3>
+
+<ul>
+<li><a href="/docs/fDatabase.html">fDatabase</a>                                <a href="/api/fDatabase.html">API</a>,                <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fDatabase.php">Code</a></li>
+<li><a href="/docs/fQueryBuilder.html">QueryBuilder</a>                           <span style="color: #28a745; font-weight: bold;">NEW</span> <a href="https://github.com/scopweb/flourish-lib/blob/master/querybuilder/fQueryBuilder.php">Code</a></li>
+<li><a href="/docs/fMongoDB.html">fMongoDB</a>                                  <span style="color: #28a745; font-weight: bold;">NEW</span> <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fMongoDB.php">Code</a></li>
+<li><a href="/docs/MongoDbType.html">MongoDbType</a>                            <span style="color: #28a745; font-weight: bold;">NEW</span> <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/MongoDbType.php">Code</a></li>
+<li><a href="/docs/fRedis.html">fRedis</a>                                      <span style="color: #e74c3c; font-weight: bold;">NEW PHP 8.4</span> <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fRedis.php">Code</a></li>
+<li><a href="/docs/fResult.html">fResult</a>                                    <a href="/api/fResult.html">API</a>,                  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fResult.php">Code</a></li>
+<li><a href="/docs/fSQLTranslation.html">fSQLTranslation</a>                    <a href="/api/fSQLTranslation.html">API</a>,          <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fSQLTranslation.php">Code</a></li>
+<li><a href="/docs/fSQLSchemaTranslation.html">fSQLSchemaTranslation</a>        <a href="/api/fSQLSchemaTranslation.html">API</a>,    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fSQLSchemaTranslation.php">Code</a></li>
+<li><a href="/docs/fSchema.html">fSchema</a>                                    <a href="/api/fSchema.html">API</a>,                  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fSchema.php">Code</a></li>
+<li><a href="/docs/fStatement.html">fStatement</a>                              <a href="/api/fStatement.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fStatement.php">Code</a></li>
+<li><a href="/docs/fUnbufferedResult.html">fUnbufferedResult</a>                <a href="/api/fUnbufferedResult.html">API</a>,        <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fUnbufferedResult.php">Code</a></li>
+</ul>
+
+<h3 id="ORM">ORM</h3>
+
+<ul>
+<li><a href="/docs/fActiveRecord.html">fActiveRecord</a>                        <a href="/api/fActiveRecord.html">API</a>,            <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fActiveRecord.php">Code</a></li>
+<li><a href="/docs/fRecordSet.html">fRecordSet</a>                              <a href="/api/fRecordSet.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fRecordSet.php">Code</a></li>
+</ul>
+
+<ul>
+<li><a href="/docs/fORM.html">fORM</a>                                          <a href="/api/fORM.html">API</a>,                     <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORM.php">Code</a></li>
+<li><a href="/docs/fORMColumn.html">fORMColumn</a>                              <a href="/api/fORMColumn.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMColumn.php">Code</a></li>
+<li><a href="/docs/fORMDatabase.html">fORMDatabase</a>                          <a href="/api/fORMDatabase.html">API</a>,             <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMDatabase.php">Code</a></li>
+<li><a href="/docs/fORMDate.html">fORMDate</a>                                  <a href="/api/fORMDate.html">API</a>,                 <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMDate.php">Code</a></li>
+<li><a href="/docs/fORMFile.html">fORMFile</a>                                  <a href="/api/fORMFile.html">API</a>,                 <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMFile.php">Code</a></li>
+<li><a href="/docs/fORMJSON.html">fORMJSON</a>                                  <a href="/api/fORMJSON.html">API</a>,                 <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMJSON.php">Code</a></li>
+<li><a href="/docs/fORMMoney.html">fORMMoney</a>                                <a href="/api/fORMMoney.html">API</a>,                <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMMoney.php">Code</a></li>
+<li><a href="/docs/fORMOrdering.html">fORMOrdering</a>                          <a href="/api/fORMOrdering.html">API</a>,             <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMOrdering.php">Code</a></li>
+<li><a href="/docs/fORMRelated.html">fORMRelated</a>                            <a href="/api/fORMRelated.html">API</a>,              <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMRelated.php">Code</a></li>
+<li><a href="/docs/fORMSchema.html">fORMSchema</a>                              <a href="/api/fORMSchema.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMSchema.php">Code</a></li>
+<li><a href="/docs/fORMValidation.html">fORMValidation</a>                      <a href="/api/fORMValidation.html">API</a>,           <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fORMValidation.php">Code</a></li>
+</ul>
+
+<h3 id="Filesystem">Filesystem</h3>
+
+<ul>
+<li><a href="/docs/fFilesystem.html">fFilesystem</a>                            <a href="/api/fFilesystem.html">API</a>,              <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fFilesystem.php">Code</a></li>
+<li><a href="/docs/fFile.html">fFile</a>                                        <a href="/api/fFile.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fFile.php">Code</a>
+<ul>
+<li><a href="/docs/fImage.html">fImage</a>                                     <a href="/api/fImage.html">API</a>,                   <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fImage.php">Code</a></li>
+</ul>
+</li>
+<li><a href="/docs/fDirectory.html">fDirectory</a>                              <a href="/api/fDirectory.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fDirectory.php">Code</a></li>
+</ul>
+</div>
+<div class="class_docs second">
+<h3 id="Request">Request</h3>
+
+<ul>
+<li><a href="/docs/fCookie.html">fCookie</a>                                    <a href="/api/fCookie.html">API</a>,                  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fCookie.php">Code</a></li>
+<li><a href="/docs/fRequest.html">fRequest</a>                                  <a href="/api/fRequest.html">API</a>,                 <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fRequest.php">Code</a></li>
+<li><a href="/docs/fUpload.html">fUpload</a>                                    <a href="/api/fUpload.html">API</a>,                  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fUpload.php">Code</a></li>
+<li><a href="/docs/fURL.html">fURL</a>                                          <a href="/api/fURL.html">API</a>,                     <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fURL.php">Code</a></li>
+<li><a href="/docs/fValidation.html">fValidation</a>                            <a href="/api/fValidation.html">API</a>,              <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fValidation.php">Code</a></li>
+</ul>
+
+<h3 id="HTTPNetwork">HTTP/Network</h3>
+
+<ul>
+<li><a href="/docs/fHttpClient.html">fHttpClient</a>                              <span style="color: #e74c3c; font-weight: bold;">NEW PHP 8.4</span> <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fHttpClient.php">Code</a></li>
+</ul>
+
+<h3 id="Session">Session</h3>
+
+<ul>
+<li><a href="/docs/fAuthorization.html">fAuthorization</a>                      <a href="/api/fAuthorization.html">API</a>,           <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fAuthorization.php">Code</a></li>
+<li><a href="/docs/fMessaging.html">fMessaging</a>                              <a href="/api/fMessaging.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fMessaging.php">Code</a></li>
+<li><a href="/docs/fSession.html">fSession</a>                                  <a href="/api/fSession.html">API</a>,                 <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fSession.php">Code</a></li>
+</ul>
+
+<h3 id="Response">Response</h3>
+
+<ul>
+<li><a href="/docs/fBuffer.html">fBuffer</a>                                    <a href="/api/fBuffer.html">API</a>,                  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fBuffer.php">Code</a></li>
+<li><a href="/docs/fCRUD.html">fCRUD</a>                                        <a href="/api/fCRUD.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fCRUD.php">Code</a></li>
+<li><a href="/docs/fHTML.html">fHTML</a>                                        <a href="/api/fHTML.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fHTML.php">Code</a></li>
+<li><a href="/docs/fJSON.html">fJSON</a>                                        <a href="/api/fJSON.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fJSON.php">Code</a></li>
+<li><a href="/docs/fTemplating.html">fTemplating</a>                            <a href="/api/fTemplating.html">API</a>,              <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fTemplating.php">Code</a></li>
+</ul>
+
+<h3 id="Utilities">Utilities</h3>
+
+<ul>
+<li><a href="/docs/fCache.html">fCache</a>                                      <a href="/api/fCache.html">API</a>,                   <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fCache.php">Code</a></li>
+<li><a href="/docs/fContainer.html">fContainer</a>                              <span style="color: #e74c3c; font-weight: bold;">NEW PHP 8.4</span> <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fContainer.php">Code</a></li>
+<li><a href="/docs/fCryptography.html">fCryptography</a>                        <a href="/api/fCryptography.html">API</a>,            <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fCryptography.php">Code</a></li>
+<li><a href="/docs/fGrammar.html">fGrammar</a>                                  <a href="/api/fGrammar.html">API</a>,                 <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fGrammar.php">Code</a></li>
+<li><a href="/docs/fLoader.html">fLoader</a>                                    <a href="/api/fLoader.html">API</a>,                  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fLoader.php">Code</a></li>
+<li><a href="/docs/fText.html">fText</a>                                        <a href="/api/fText.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fText.php">Code</a></li>
+<li><a href="/docs/fXML.html">fXML</a>                                          <a href="/api/fXML.html">API</a>,                     <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fXML.php">Code</a></li>
+</ul>
+</div>
+<div class="class_docs third">
+<h3 id="Email">Email</h3>
+
+<ul>
+<li><a href="/docs/fEmail.html">fEmail</a>                                      <a href="/api/fEmail.html">API</a>,                   <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fEmail.php">Code</a></li>
+<li><a href="/docs/fMailbox.html">fMailbox</a>                                  <a href="/api/fMailbox.html">API</a>,                 <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fMailbox.php">Code</a></li>
+<li><a href="/docs/fSMTP.html">fSMTP</a>                                        <a href="/api/fSMTP.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fSMTP.php">Code</a></li>
+</ul>
+
+<h3 id="DateTime">Date/Time</h3>
+
+<ul>
+<li><a href="/docs/fDate.html">fDate</a>                                        <a href="/api/fDate.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fDate.php">Code</a></li>
+<li><a href="/docs/fTime.html">fTime</a>                                        <a href="/api/fTime.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fTime.php">Code</a></li>
+<li><a href="/docs/fTimestamp.html">fTimestamp</a>                              <a href="/api/fTimestamp.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fTimestamp.php">Code</a></li>
+</ul>
+
+<h3 id="NumbersStrings">Numbers/Strings</h3>
+
+<ul>
+<li><a href="/docs/fMoney.html">fMoney</a>                                      <a href="/api/fMoney.html">API</a>,                   <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fMoney.php">Code</a></li>
+<li><a href="/docs/fNumber.html">fNumber</a>                                    <a href="/api/fNumber.html">API</a>,                  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fNumber.php">Code</a></li>
+<li><a href="/docs/fUTF8.html">fUTF8</a>                                        <a href="/api/fUTF8.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fUTF8.php">Code</a></li>
+</ul>
+
+<h3 id="ErrorsExceptions">Errors/Exceptions</h3>
+
+<ul>
+<li><a href="/docs/fCore.html">fCore</a>                                        <a href="/api/fCore.html">API</a>,                    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fCore.php">Code</a></li>
+<li><a href="/docs/fException.html">fException</a>                              <a href="/api/fException.html">API</a>,               <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fException.php">Code</a>
+<ul>
+<li><a href="/docs/fExpectedException.html">fExpectedException</a>             <a href="/api/fExpectedException.html">API</a>,       <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fExpectedException.php">Code</a>
+<ul>
+<li><a href="/docs/fAuthorizationException.html">fAuthorizationException</a>  <a href="/api/fAuthorizationException.html">API</a>,  <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fAuthorizationException.php">Code</a></li>
+<li><a href="/docs/fEmptySetException.html">fEmptySetException</a>            <a href="/api/fEmptySetException.html">API</a>,       <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fEmptySetException.php">Code</a></li>
+<li><a href="/docs/fNoRemainingException.html">fNoRemainingException</a>      <a href="/api/fNoRemainingException.html">API</a>,    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fNoRemainingException.php">Code</a></li>
+<li><a href="/docs/fNoRowsException.html">fNoRowsException</a>                <a href="/api/fNoRowsException.html">API</a>,         <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fNoRowsException.php">Code</a></li>
+<li><a href="/docs/fNotFoundException.html">fNotFoundException</a>            <a href="/api/fNotFoundException.html">API</a>,       <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fNotFoundException.php">Code</a></li>
+<li><a href="/docs/fValidationException.html">fValidationException</a>        <a href="/api/fValidationException.html">API</a>,     <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fValidationException.php">Code</a></li>
+</ul>
+</li>
+<li><a href="/docs/fUnexpectedException.html">fUnexpectedException</a>         <a href="/api/fUnexpectedException.html">API</a>,     <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fUnexpectedException.php">Code</a>
+<ul>
+<li><a href="/docs/fConnectivityException.html">fConnectivityException</a>    <a href="/api/fConnectivityException.html">API</a>,   <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fConnectivityException.php">Code</a></li>
+<li><a href="/docs/fEnvironmentException.html">fEnvironmentException</a>      <a href="/api/fEnvironmentException.html">API</a>,    <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fEnvironmentException.php">Code</a></li>
+<li><a href="/docs/fProgrammerException.html">fProgrammerException</a>        <a href="/api/fProgrammerException.html">API</a>,     <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fProgrammerException.php">Code</a></li>
+<li><a href="/docs/fSQLException.html">fSQLException</a>                      <a href="/api/fSQLException.html">API</a>,            <a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fSQLException.php">Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+
+<h2 id="PHP84Features">🚀 PHP 8.4 Features & Modern APIs</h2>
+
+<div class="modification-notice" style="background: #e8f5e8; border: 1px solid #28a745; padding: 15px; margin: 15px 0; border-radius: 4px;">
+    <h3 style="margin: 0 0 10px 0; color: #155724;">🎉 Complete PHP 8.4 Implementation</h3>
+    <p style="margin: 0 0 10px 0;"><strong>Flourish Framework is now 100% PHP 8.4 compatible</strong> with all modern features implemented and tested.</p>
+    <p style="margin: 0;"><strong>All new classes and features maintain 100% backward compatibility</strong> while providing cutting-edge PHP 8.4 capabilities.</p>
+</div>
+
+<ul class="stackable">
+<li><a href="/docs/PHP84Features.html">🚀 PHP 8.4 Features Overview</a> <span style="color: #e74c3c; font-weight: bold;">NEW</span> - Comprehensive guide to all PHP 8.4 features</li>
+<li><a href="/docs/ModernAPIs.html">✨ Modern APIs (Phase 4)</a> <span style="color: #28a745; font-weight: bold;">ENHANCED</span> - Array functions, string functions, BcMath\Number</li>
+<li><a href="/docs/fContainer.html">🏗️ Dependency Injection</a> <span style="color: #e74c3c; font-weight: bold;">NEW</span> - Modern DI container with PHP 8.4 attributes</li>
+<li><a href="/docs/fRedis.html">🔥 Redis Support</a> <span style="color: #e74c3c; font-weight: bold;">NEW</span> - Modern cache & session storage</li>
+<li><a href="/docs/fHttpClient.html">🌐 HTTP Client PSR-18</a> <span style="color: #e74c3c; font-weight: bold;">NEW</span> - Modern HTTP client with middleware</li>
+<li><a href="/docs/fMongoDB.html">🍃 MongoDB Support</a> <span style="color: #28a745; font-weight: bold;">ENHANCED</span> - NoSQL database integration</li>
+<li><a href="/docs/fQueryBuilder.html">📝 Query Builder</a> <span style="color: #28a745; font-weight: bold;">ENHANCED</span> - Fluent interface for SQL</li>
+</ul>
+
+<h2 id="GeneralDocumentation">General Documentation</h2>
+
+<p>
+This documentation supplements the <a href="#ClassDocumentation">class documentation</a> and covers topics that touch on multiple parts of the library, or apply to PHP in general.
+</p>
+
+<ul class="stackable">
+<li><a href="/docs/CodeStandards.html">Code Standards</a></li>
+<li><a href="/docs/CompilingPHPOnWindows.html">Compiling PHP on Windows</a></li>
+<li><a href="/docs/FlourishCallbackSyntax.html">Flourish Callback Syntax</a></li>
+<li><a href="/docs/FlourishSql.html">Flourish SQL</a></li>
+<li><a href="/docs/GettingStarted.html">Getting Started</a></li>
+<li><a href="/docs/HowDoI.html">How Do I?</a></li>
+</ul>
+
+<ul class="stackable">
+<li><a href="/docs/LicenseAgreement.html">License Agreement</a></li>
+<li><a href="/docs/MethodNaming.html">Method Naming</a></li>
+<li><a href="/docs/ObjectRelationalMapping.html">Object-Relational Mapping</a></li>
+<li><a href="/docs/ObtainingaSecureCertificateKeyPair.html">Obtaining a Secure Certification Key Pair</a></li>
+<li><a href="/docs/OrmConventions.html">ORM Conventions</a></li>
+<li><a href="/docs/PerformanceTips.html">Performance Tips</a></li>
+<li><a href="/docs/PhpVersionDifferences.html">PHP Version Differences</a></li>
+</ul>
+
+<ul class="stackable">
+<li><a href="/docs/ReferenceObjects.html">Reference Objects</a></li>
+<li><a href="/docs/Roadmap.html">Roadmap</a></li>
+<li><a href="/docs/Security.html">Security</a></li>
+<li><a href="/docs/ServerFund.html">Server Fund</a></li>
+<li><a href="/docs/ServerRequirements.html">Server Requirements</a></li>
+<li><a href="/docs/UTF-8.html">UTF-8</a></li>
+<li><a href="/docs/ValueObjects.html">Value Objects</a></li>
+</ul>
+		</section>
+		<footer>
+			<section class="main group">
+				© 2012 Will Bond | Modified for PHP 8.4 compatibility by scopweb (2025)
+			</section>
+		</footer>
+
+
+	</body>
+</html>

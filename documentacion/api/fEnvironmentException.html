@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>fEnvironmentException – API Reference – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main"><script src="/assets/js/api.js"></script><h1>fEnvironmentException</h1>
+<div class="sidebar">
+<div class="resources">
+	<h2>Class Resources</h2>
+	<ul>
+		<li><a href="/docs/fEnvironmentException.html">Class Documentation</a></li>
+		<li><strong><a href="/api/fEnvironmentException.html">API Reference</a></strong></li>
+		<li><a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fEnvironmentException.php">Source Code</a></li>
+	</ul>
+</div>
+<!-- end resources -->
+<div class="uses">
+<h2>Uses</h2>
+<ul>
+		<li><a href="fUnexpectedException.html">fUnexpectedException</a></li>
+	  </ul>
+</div>
+<div class="usedby">
+<h2>Used By</h2>
+<ul>
+		<li><a href="fBuffer.html">fBuffer</a></li>
+		<li><a href="fCache.html">fCache</a></li>
+		<li><a href="fCore.html">fCore</a></li>
+		<li><a href="fCryptography.html">fCryptography</a></li>
+		<li><a href="fDatabase.html">fDatabase</a></li>
+		<li><a href="fDirectory.html">fDirectory</a></li>
+		<li><a href="fEmail.html">fEmail</a></li>
+		<li><a href="fFile.html">fFile</a></li>
+		<li><a href="fImage.html">fImage</a></li>
+		<li><a href="fMailbox.html">fMailbox</a></li>
+		<li><a href="fORMFile.html">fORMFile</a></li>
+		<li><a href="fSMTP.html">fSMTP</a></li>
+		<li><a href="fSession.html">fSession</a></li>
+		<li><a href="fTemplating.html">fTemplating</a></li>
+		<li><a href="fTimestamp.html">fTimestamp</a></li>
+		<li><a href="fUpload.html">fUpload</a></li>
+	  </ul>
+</div>
+</div>
+<div class="meta">
+	<span class="type">class</span>,
+		<span class="version">v1.0.0b</span></div>
+<p class="short_description">An exception caused by an environment error such a file permissions</p>
+<div class="changes"><strong>Changes:</strong> <table cellspacing="0"><tr><th>1.0.0b</th><td>The initial implementation <span class="date">6/14/07</span></td></tr></table></div>
+<div class="genealogy">	
+	<h2>Genealogy</h2>
+		<div class="class_tree">
+		<h3>Class Tree</h3>
+		<pre class="class_tree">Exception
+   |
+   --<a href="fException.html">fException</a>
+      |
+      --<a href="fUnexpectedException.html">fUnexpectedException</a>
+         |
+         --fEnvironmentException</pre>
+	</div>
+		<div class="inherited_variables">
+	<h3>Inherited Variables</h3>
+		<dl>
+		<dt class="protected">$code</dt>
+	<dd class="protected"> </dd>
+		<dt class="protected">$file</dt>
+	<dd class="protected"> </dd>
+		<dt class="protected">$line</dt>
+	<dd class="protected"> </dd>
+		<dt class="protected">$message</dt>
+	<dd class="protected"> </dd>
+		<dt class="private">$previous</dt>
+	<dd class="private"> </dd>
+		<dt class="private">$string</dt>
+	<dd class="private"> </dd>
+		<dt class="private">$trace</dt>
+	<dd class="private"> </dd>
+		</dl>
+		</div>
+		<div class="inherited_methods">
+	<h3>Inherited Methods</h3>
+		<dl>
+	  	  <dt class="public"><a href="fUnexpectedException#printMessage.html"><tt>fUnexpectedException::printMessage()</tt></a></dt>
+	  <dd class="public">Prints out a generic error message inside of a <tt>div</tt> with the class being <tt>'exception {exception_class_name}'</tt></dd>
+	  	</dl>
+		<dl>
+	  	  <dt class="public"><a href="fException#__construct.html"><tt>fException::__construct()</tt></a></dt>
+	  <dd class="public">Sets the message for the exception, allowing for string interpolation and internationalization</dd>
+	  	  <dt class="public"><a href="fException#__get.html"><tt>fException::__get()</tt></a></dt>
+	  <dd class="public">All requests that hit this method should be requests for callbacks</dd>
+	  	  <dt class="protected"><a href="fException#compose.html"><tt>fException::compose()</tt></a></dt>
+	  <dd class="protected">Composes text using <a href="fText.html">fText</a> if loaded</dd>
+	  	  <dt class="protected"><a href="fException#dump.html"><tt>fException::dump()</tt></a></dt>
+	  <dd class="protected">Creates a string representation of any variable using predefined strings for booleans, <tt>NULL</tt> and empty strings</dd>
+	  	  <dt class="public"><a href="fException#formatTrace.html"><tt>fException::formatTrace()</tt></a></dt>
+	  <dd class="public">Gets the backtrace to currently called exception</dd>
+	  	  <dt class="protected"><a href="fException#getCSSClass.html"><tt>fException::getCSSClass()</tt></a></dt>
+	  <dd class="protected">Returns the CSS class name for printing information about the exception</dd>
+	  	  <dt class="protected"><a href="fException#prepare.html"><tt>fException::prepare()</tt></a></dt>
+	  <dd class="protected">Prepares content for output into HTML</dd>
+	  	  <dt class="public"><a href="fException#printMessage.html"><tt>fException::printMessage()</tt></a></dt>
+	  <dd class="public">Prints the message inside of a div with the class being 'exception %THIS_EXCEPTION_CLASS_NAME%'</dd>
+	  	  <dt class="public"><a href="fException#printTrace.html"><tt>fException::printTrace()</tt></a></dt>
+	  <dd class="public">Prints the backtrace to currently called exception inside of a pre tag with the class being 'exception %THIS_EXCEPTION_CLASS_NAME% trace'</dd>
+	  	  <dt class="public"><a href="fException#registerCallback.html"><tt>fException::registerCallback()</tt></a></dt>
+	  <dd class="public">Adds a callback for when certain types of exceptions are created</dd>
+	  	  <dt class="public"><a href="fException#reorderMessage.html"><tt>fException::reorderMessage()</tt></a></dt>
+	  <dd class="public">Reorders list items in the message based on simple string matching</dd>
+	  	  <dt class="public"><a href="fException#setMessage.html"><tt>fException::setMessage()</tt></a></dt>
+	  <dd class="public">Allows the message to be overwriten</dd>
+	  	  <dt class="public"><a href="fException#splitMessage.html"><tt>fException::splitMessage()</tt></a></dt>
+	  <dd class="public">Splits an exception with an HTML list into multiple strings each containing part of the original message</dd>
+	  	</dl>
+		<dl>
+	  	  <dt class="public">constructor __construct ( [$message = ], [$code = ], [$previous = ] )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">__clone (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">__toString (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">getCode (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">getFile (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">getLine (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">getMessage (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">getPrevious (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">getTrace (  )</dt>
+	  <dd class="public"></dd>
+	  	  <dt class="public">getTraceAsString (  )</dt>
+	  <dd class="public"></dd>
+	  	</dl>
+		</div>
+	</div>			</section>
+		<footer>
+			<section class="main group">
+				© 2012 Will Bond | Modified for PHP 8.4 compatibility by scopweb (2025)
+			</section>
+		</footer>
+
+
+	<script src="http://static.getclicky.com/67539.js" type="text/javascript"></script>
+	<noscript><p><img alt="Clicky" width="1" height="1" src="http://static.getclicky.com/67539-db9.gif" /></p></noscript>
+	</body>
+</html>

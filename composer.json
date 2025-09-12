@@ -1,0 +1,30 @@
+{
+    "name": "scopweb/flourish-lib",
+    "description": "A collection of classes for general web development, with a particular focus on compatibility, portability and security. PHP 8.4 modernized version.",
+    "homepage": "https://github.com/scopweb/flourish-lib",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Will Bond and contributors",
+            "role": "Original Developer"
+        },
+        {
+            "name": "scopweb",
+            "role": "Maintainer",
+            "homepage": "https://github.com/scopweb"
+        }
+    ],
+    "autoload": {
+        "classmap": ["lib/"]
+    },
+    "require": {
+        "php": ">=8.1.0"
+	},
+	"version": "1.0.0-beta",
+	"extra": {
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
+	}
+}

@@ -1,0 +1,89 @@
+# Composer
+/vendor/
+composer.lock
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Cache and temporary files
+cache/
+tmp/
+temp/
+
+# Environment and configuration files
+.env
+.env.local
+.env.production
+.env.test
+config/database.php
+config/local.php
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Test configuration files with sensitive data
+tests/*_config.php
+tests/database_credentials.php
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Node.js dependencies (if any)
+node_modules/
+
+# PHP specific
+.phpunit.result.cache
+phpunit.xml
+
+# Documentation build files
+docs/_build/
+
+# Development and debug directories
+debug/
+scripts/
+
+# Sensitive test files with real credentials
+tests/fdatabase_real_test.php
+
+# Any private or local test files
+*_private.php
+*_local.php
+
+# Markdown files that are work in progress
+MODERNIZATION_ROADMAP_2025.md
+ProximasTareas.md
+CLEANUP_SUMMARY.md
+DATABASE_COMPATIBILITY_SUMMARY.md
+DOCUMENTATION_UPDATE_CHECKLIST.md
+FDATABASE_COMPATIBILITY_REPORT.md
+MIGRATION_SUMMARY.md

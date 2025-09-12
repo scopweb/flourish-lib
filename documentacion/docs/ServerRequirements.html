@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>ServerRequirements – General Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="ServerRequirements">Server Requirements</h1>
+
+<div class="modification-notice" style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 15px; margin: 15px 0; border-radius: 4px;">
+    <h2 style="margin: 0 0 10px 0; color: #0c5460;">🚀 Updated for PHP 8.4</h2>
+    <p style="margin: 0;"><strong>This modified version requires PHP 8.4+ and modern database extensions.</strong> Legacy PHP versions (5.x, 7.x) are no longer supported in this modernized fork.</p>
+</div>
+
+<div class="sidebar">
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#PHPVersion">PHP Version Requirements</a></li>
+<li><a href="#DatabaseExtensions">Database Extensions</a></li>
+<li><a href="#ClassSpecificRequirements">Class Specific Requirements</a></li>
+<li><a href="#ExtensionsforPerformance">Extensions for Performance</a></li>
+</ul>
+</div>
+
+<h2 id="PHPVersion">PHP Version Requirements</h2>
+
+<p>
+<strong>This modified version requires PHP 8.4.0 or greater.</strong> All 64 classes have been updated with modern PHP patterns including variadic parameters, updated boolean constants, and enhanced type handling.
+</p>
+
+<p>
+Core extensions required by all Flourish classes:
+</p>
+
+<ul>
+<li><a href="http://php.net/ctype">ctype</a></li>
+<li><a href="http://php.net/iconv">iconv</a></li>
+<li><a href="http://php.net/pcre">pcre</a></li>
+<li><a href="http://php.net/session">session</a></li>
+<li><a href="http://php.net/spl">spl</a></li>
+</ul>
+
+<p>
+It is possible to disable these extensions when compiling PHP, so you will need to ensure each is installed. The simplest way is to look at the output of a script with the following contents:
+</p>
+<pre class="block php"><code>&lt;?php
+phpinfo();</code></pre>
+
+<h2 id="DatabaseExtensions">Database Extensions</h2>
+
+<p>
+<strong>fDatabase and related classes now require modern database extensions:</strong>
+</p>
+
+<table><tbody>
+<tr>
+<td><strong>Database Type</strong></td>
+<td><strong>Required Extension</strong></td>
+<td><strong>Status</strong></td>
+</tr>
+<tr>
+<td>MySQL/MariaDB</td>
+<td><a href="http://php.net/mysqli">mysqli</a> (preferred) or <a href="http://php.net/pdo-mysql">pdo_mysql</a></td>
+<td>✅ Fully tested and compatible</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td><a href="http://php.net/pdo-pgsql">pdo_pgsql</a></td>
+<td>✅ Compatible (not extensively tested)</td>
+</tr>
+<tr>
+<td>SQLite</td>
+<td><a href="http://php.net/pdo-sqlite">pdo_sqlite</a></td>
+<td>✅ Compatible (not extensively tested)</td>
+</tr>
+<tr>
+<td>MSSQL</td>
+<td><a href="http://php.net/pdo-sqlsrv">pdo_sqlsrv</a></td>
+<td>⚠️ Should work (untested)</td>
+</tr>
+<tr>
+<td>Oracle</td>
+<td><a href="http://php.net/pdo-oci">pdo_oci</a></td>
+<td>⚠️ Should work (untested)</td>
+</tr>
+</tbody></table>
+
+<p>
+<strong>⚠️ Important:</strong> The legacy <code>mysql</code> extension (removed in PHP 7.0) is no longer supported. Classes fStatement and fUnbufferedResult have been completely rewritten for modern extensions.
+</p>
+
+<h2 id="ClassSpecificRequirements">Class Specific Requirements</h2>
+
+<p>
+Beyond the core requirements, some classes require additional extensions for specific functionality:
+</p>
+<table><tbody>
+<tr>
+<td><strong>Classes/Methods</strong></td>
+<td><strong>Extensions Required</strong></td>
+</tr>
+<tr>
+<td><a href="/api/fCrytography.html#publicKeyEncrypt">fCrytography::publicKeyEncrypt()</a>, <a href="/api/fCryptography.html#publicKeyDecrypt">fCryptography::publicKeyDecrypt()</a></td>
+<td><a href="http://php.net/openssl">openssl</a></td>
+</tr>
+<tr>
+<td><a href="/api/fCrytography.html#publicKeySign">fCrytography::publicKeySign()</a>, <a href="/api/fCryptography.html#publicKeyVerify">fCryptography::publicKeyVerify()</a></td>
+<td><a href="http://php.net/openssl">openssl</a></td>
+</tr>
+<tr>
+<td><a href="/api/fCryptography.html#symmetricKeyEncrypt">fCryptography::symmetricKeyEncrypt()</a>, <a href="/api/fCryptography.html#symmetricKeyDecrypt">fCryptography::symmetricKeyDecrypt()</a></td>
+<td><a href="http://php.net/openssl">openssl</a> (mcrypt deprecated since PHP 7.1)</td>
+</tr>
+<tr>
+<td><a href="/api/fEmail.html#sign">fEmail::sign()</a>, <a href="/api/fEmail.html#encrypt">fEmail::encrypt()</a></td>
+<td><a href="http://php.net/openssl">openssl</a></td>
+</tr>
+<tr>
+<td><a href="/api/fSMTP.html#__construct">fSMTP::__construct()</a> with the <code>$secure</code> flag</td>
+<td><a href="http://php.net/openssl">openssl</a></td>
+</tr>
+</tbody></table>
+
+<h2 id="ExtensionsforPerformance">Extensions for Performance</h2>
+
+<p>
+A few of the Flourish classes provide pure PHP implementations of functionality that is also available from extensions that are not installed by default. Below is a list of the classes and the extension that will provide better performance.
+</p>
+<table><tbody>
+<tr>
+<td><strong>Class</strong></td>
+<td><strong>Extension</strong></td>
+</tr>
+<tr>
+<td><a href="/docs/fJSON.html">fJSON</a></td>
+<td><a href="http://php.net/json">json</a> (standard since PHP 8.0)</td>
+</tr>
+<tr>
+<td><a href="/docs/fNumber.html">fNumber</a>/<a href="/docs/fMoney.html">fMoney</a></td>
+<td><a href="http://php.net/bc">bcmath</a></td>
+</tr>
+<tr>
+<td><a href="/docs/fUTF8.html">fUTF8</a></td>
+<td><a href="http://php.net/mbstring">mbstring</a></td>
+</tr>
+</tbody></table>
+		</section>
+		<footer>
+			<section class="main group">
+				© 2012 Will Bond | Modified for PHP 8.4 compatibility by scopweb (2025)
+			</section>
+		</footer>
+
+
+	</body>
+</html>

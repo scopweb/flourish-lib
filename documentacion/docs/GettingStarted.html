@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>GettingStarted – General Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="GettingStarted">Getting Started</h1>
+
+<div class="modification-notice" style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 15px; margin: 15px 0; border-radius: 4px;">
+    <h2 style="margin: 0 0 10px 0; color: #0c5460;">🚀 Updated for PHP 8.4</h2>
+    <p style="margin: 0;">This guide has been updated for the PHP 8.4 compatible version of Flourish with modern autoloading and best practices.</p>
+</div>
+
+<div class="sidebar">
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#RequirementsPHP84">PHP 8.4 Requirements</a></li>
+<li><a href="#DownloadingFlourish">Downloading Flourish</a></li>
+<li><a href="#SetUpanInitScript">Set Up an Init Script</a></li>
+<li><a href="#CreateaConfigurationScript">Create a Configuration Script</a></li>
+<li><a href="#StartUsingFlourish">Start Using Flourish</a></li>
+<li><a href="#NextSteps">Next Steps</a></li>
+</ul>
+</div>
+
+<h2 id="RequirementsPHP84">PHP 8.4 Requirements</h2>
+
+<p>
+<strong>This modified version requires PHP 8.4.0 or greater</strong> and modern database extensions (MySQLi/PDO). Legacy PHP versions and the old mysql extension are no longer supported.
+</p>
+
+<p>
+Since Flourish isn't a framework, getting started might seem a little daunting. Let's start with getting the Flourish code and setting up our pages to include it.
+</p>
+
+<h2 id="DownloadingFlourish">Downloading Flourish</h2>
+
+<p>
+As a first step, <a href="https://github.com/scopweb/flourish-lib">download this PHP 8.4 compatible version</a> from GitHub and extract it into a directory on your server. To help ensure that a server misconfiguration won't expose your PHP (possibly including database credentials), it is best to try and place your includes outside of the document root.
+</p>
+<pre><code>{doc_root}/../inc/flourish/</code></pre>
+
+<h2 id="SetUpanInitScript">Set Up an Init Script</h2>
+
+<p>
+At the beginning of every page we arent going to want to include every class file or configuration file, so a logical first step is to create an initialization script to handle that. I prefer to create the script at:
+</p>
+<pre><code>{doc_root}/../inc/init.php</code></pre>
+
+<p>
+ Inside of init.php, put:
+</p>
+<pre class="block php"><code>&lt;?php
+include($_SERVER['DOCUMENT_ROOT'] . '/../inc/config.php');</code></pre>
+
+<h2 id="CreateaConfigurationScript">Create a Configuration Script</h2>
+
+<p>
+For better separation, I prefer to put all configuration code into a separate file from the initialization code. I put all of my configuration code in:
+</p>
+<pre><code>{doc_root}/../inc/config.php</code></pre>
+
+<p>
+ Inside of <code>config.php</code> we will put our modern autoloading using <code>spl_autoload_register()</code> (the old <code>__autoload()</code> function was deprecated in PHP 7.2):
+</p>
+<pre class="block php"><code>&lt;?php
+/**
+ * Modern autoloader for Flourish classes (PHP 8.4 compatible)
+ * 
+ * @param  string $class_name  Name of the class to load
+ * @return bool
+ */
+spl_autoload_register(function($class_name): bool {
+	// Customize this to your root Flourish directory
+	$flourish_root = $_SERVER['DOCUMENT_ROOT'] . '/../inc/flourish/';
+	
+	$file = $flourish_root . $class_name . '.php';
+
+	if (file_exists($file)) {
+		include $file;
+		return true;
+	}
+	
+	return false;
+});
+
+// Optional: Set error reporting for PHP 8.4
+error_reporting(E_ALL);
+ini_set('display_errors', 1);</code></pre>
+
+<p>
+ <strong>Performance tip:</strong> PHP 8.4 includes OPcache by default for excellent performance. For additional optimization with Flourish, check out the section about <a href="/docs/PerformanceTips.html#ClassLoading">class loading</a>.
+</p>
+
+<h2 id="StartUsingFlourish">Start Using Flourish</h2>
+
+<p>
+Now that we have our init script setup, we can start creating pages and using Flourish. Just add this snippet to the top of each of your pages:
+</p>
+<pre class="block php"><code>&lt;?php
+include_once($_SERVER['DOCUMENT_ROOT'] . '/../inc/init.php');</code></pre>
+
+<p>
+ Alternatively if you run Apache and have access to the Apache conf file, you can use PHPs <a href="http://php.net/ini.core#ini.auto-prepend-file">auto_prepend_file</a> setting with the <a href="http://php.net/configuration.changes">Apache PHP settings
+directives</a>.
+</p>
+
+<h2 id="NextSteps">Next Steps</h2>
+
+<p>
+If you havent read it already, the <a href="/docs/HowDoI.html">How Do I  ?</a> page is a good resource for exploring some of the functionality of Flourish. The <a href="/docs">documentation</a> includes links to detailed information about each class, class APIs and general documentation.
+</p>
+
+<p>
+For a simpler more guided introduction to Flourish, try checking out the following classes that are fully PHP 8.4 compatible:
+</p>
+
+<ul>
+<li><strong>fTemplating</strong>: Provides a simple templating system to help reduce duplicated HTML</li>
+<li><strong>fRequest</strong>: Retrieves information submitted by the user, in a secure fashion</li>
+<li><strong>fDatabase</strong>: Modern SQL interaction with MySQL (MySQLi), PostgreSQL, SQLite, MSSQL, Oracle or DB2 databases using PDO/MySQLi</li>
+</ul>
+
+<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 4px;">
+    <strong>⚠️ Database Note:</strong> This PHP 8.4 version uses modern database extensions (MySQLi/PDO). The legacy mysql extension is no longer supported.
+</div>
+
+<p>
+The documentation below includes some topics that most PHP developers should know or learn about:
+</p>
+
+<ul>
+<li><a href="/docs/Security.html">PHP/web security</a></li>
+<li><a href="/docs/UTF-8.html">UTF-8 in PHP</a></li>
+<li><a href="/docs/ObjectRelationalMapping.html">ORM (Object-Relational Mapping)</a></li>
+</ul>
+		</section>
+		<footer>
+			<section class="main group">
+				© 2012 Will Bond | Modified for PHP 8.4 compatibility by scopweb (2025)
+			</section>
+		</footer>
+
+
+	</body>
+</html>

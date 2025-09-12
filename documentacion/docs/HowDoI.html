@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>HowDoI – General Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="HowDoI">How Do I?</h1>
+
+<div class="modification-notice" style="background: #e8f4f8; border: 1px solid #bee5eb; padding: 15px; margin: 15px 0; border-radius: 4px;">
+    <h2 style="margin: 0 0 10px 0; color: #0c5460;">🚀 Updated for PHP 8.4</h2>
+    <p style="margin: 0;">All classes and examples listed below are fully compatible with PHP 8.4 and use modern PHP patterns.</p>
+</div>
+
+<p>
+This page is meant to be sort of a compass to new users of Flourish to help them figure out where to look for solutions to their problems.
+</p>
+<table><tbody>
+<tr>
+<td><strong>Task at Hand</strong></td>
+<td><strong>Where to Look</strong></td>
+</tr>
+<tr>
+<td>Handle exceptions and errors gracefully</td>
+<td><a href="/docs/fCore.html">fCore</a></td>
+</tr>
+<tr>
+<td>Ensure content is properly encoded (HTML entities)</td>
+<td><a href="/docs/fHTML.html">fHTML</a></td>
+</tr>
+<tr>
+<td>Handle UTF-8 content</td>
+<td><a href="/docs/fUTF8.html">fUTF8</a></td>
+</tr>
+<tr>
+<td>Perform simple form validation (contact forms, etc)</td>
+<td><a href="/docs/fValidation.html">fValidation</a></td>
+</tr>
+<tr>
+<td>Simple (non-ORM) interaction with a database</td>
+<td><a href="/docs/fDatabase.html">fDatabase</a> (MySQLi/PDO), <a href="/docs/fResult.html">fResult</a>, <a href="/docs/fUnbufferedResult.html">fUnbufferedResult</a></td>
+</tr>
+<tr>
+<td>Retrieve the structure of the database I am connected to</td>
+<td><a href="/docs/fSchema.html">fSchema</a></td>
+</tr>
+<tr>
+<td>Interact with the database simply by using <a href="/docs/ObjectRelationalMapping.html">object-relational mapping</a> (ORM)</td>
+<td><a href="/docs/fActiveRecord.html">fActiveRecord</a>, <a href="/docs/fRecordSet.html">fRecordSet</a></td>
+</tr>
+<tr>
+<td>Get and sanitize information from the users request, including <code>GET</code>, <code>POST</code>, <code>PUT</code> and <code>DELETE</code> data</td>
+<td><a href="/docs/fRequest.html">fRequest</a></td>
+</tr>
+<tr>
+<td>Pass transient messages around without polluting URLs</td>
+<td><a href="/docs/fMessaging.html">fMessaging</a></td>
+</tr>
+<tr>
+<td>Store and retrieve session information</td>
+<td><a href="/docs/fSession.html">fSession</a></td>
+</tr>
+<tr>
+<td>Handle user permissions and access control</td>
+<td><a href="/docs/fAuthorization.html">fAuthorization</a></td>
+</tr>
+<tr>
+<td>Ensure that data is stored securely (passwords, confidential information, etc)</td>
+<td><a href="/docs/fCryptography.html">fCryptography</a></td>
+</tr>
+<tr>
+<td>Handle dates and times, including timezones</td>
+<td><a href="/docs/fDate.html">fDate</a>, <a href="/docs/fTime.html">fTime</a>, <a href="/docs/fTimestamp.html">fTimestamp</a></td>
+</tr>
+<tr>
+<td>Manipulate images</td>
+<td><a href="/docs/fImage.html">fImage</a></td>
+</tr>
+<tr>
+<td>Manipulate and query files and directories</td>
+<td><a href="/docs/fFile.html">fFile</a>, <a href="/docs/fDirectory.html">fDirectory</a></td>
+</tr>
+<tr>
+<td>Handle file uploads</td>
+<td><a href="/docs/fUpload.html">fUpload</a></td>
+</tr>
+<tr>
+<td>Use templating to reduce code duplication and keep logic and presentation separate</td>
+<td><a href="/docs/fTemplating.html">fTemplating</a></td>
+</tr>
+<tr>
+<td>Conditionally build English language constructs and convert between syntax notations</td>
+<td><a href="/docs/fGrammar.html">fGrammar</a></td>
+</tr>
+<tr>
+<td>Handle translation or modification of messages</td>
+<td><a href="/docs/fText.html">fText</a></td>
+</tr>
+<tr>
+<td>Send emails and validate email addresses</td>
+<td><a href="/docs/fEmail.html">fEmail</a></td>
+</tr>
+<tr>
+<td>Encode and decode JSON data</td>
+<td><a href="/docs/fJSON.html">fJSON</a></td>
+</tr>
+<tr>
+<td>Deal with precise numbers and calculations</td>
+<td><a href="/docs/fNumber.html">fNumber</a></td>
+</tr>
+<tr>
+<td>Represent, manipulate and translate monetary values</td>
+<td><a href="/docs/fMoney.html">fMoney</a></td>
+</tr>
+<tr>
+<td>Handle sticky search values and sortable columns for list pages</td>
+<td><a href="/docs/fCRUD.html">fCRUD</a></td>
+</tr>
+<tr>
+<td>Get and set cookies, including HTTPOnly cookies and default values</td>
+<td><a href="/docs/fCookie.html">fCookie</a></td>
+</tr>
+<tr>
+<td>Encode content for XML files</td>
+<td><a href="/docs/fXML.html">fXML</a></td>
+</tr>
+</tbody></table>
+
+<div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 15px 0; border-radius: 4px;">
+    <strong>⚠️ Database Note:</strong> This PHP 8.4 version uses modern database extensions (MySQLi/PDO). The legacy mysql extension is no longer supported. All database-related classes have been updated accordingly.
+</div>
+
+<h2 id="TopicPages">Topic Pages</h2>
+
+<p>
+The following pages include some more in-depth information about topics, including links to the relevant Flourish classes.
+</p>
+
+<ul>
+<li><a href="/docs/ObjectRelationalMapping.html">ORM (Object-Relational Mapping)</a></li>
+<li><a href="/docs/Security.html">PHP/web security</a></li>
+<li><a href="/docs/UTF-8.html">UTF-8 in PHP</a></li>
+</ul>
+		</section>
+		<footer>
+			<section class="main group">
+				© 2012 Will Bond | Modified for PHP 8.4 compatibility by scopweb (2025)
+			</section>
+		</footer>
+
+
+	</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>fMongoDB – Class Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="fMongoDB">fMongoDB</h1>
+<div class="sidebar">
+<h2 id="ClassResources">Class Resources </h2>
+
+<ul>
+<li><strong><a href="/docs/fMongoDB.html">Class Documentation</a></strong></li>
+<li><a href="/api/fMongoDB.html">API Reference</a></li>
+<li><a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fMongoDB.php">Source Code</a></li>
+</ul>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#Introduction">Introduction</a></li>
+<li><a href="#Requirements">Requirements</a></li>
+<li><a href="#Connecting">Connecting</a>
+<ul>
+<li><a href="#BasicConnection">Basic Connection</a></li>
+<li><a href="#AuthenticatedConnection">Authenticated Connection</a></li>
+<li><a href="#ConnectionOptions">Connection Options</a></li>
+</ul>
+</li>
+<li><a href="#DocumentOperations">Document Operations</a>
+<ul>
+<li><a href="#InsertingDocuments">Inserting Documents</a></li>
+<li><a href="#QueryingDocuments">Querying Documents</a></li>
+<li><a href="#UpdatingDocuments">Updating Documents</a></li>
+<li><a href="#DeletingDocuments">Deleting Documents</a></li>
+</ul>
+</li>
+<li><a href="#AggregationPipelines">Aggregation Pipelines</a></li>
+<li><a href="#IndexManagement">Index Management</a></li>
+<li><a href="#GridFS">GridFS (Large Files)</a></li>
+<li><a href="#TypeSafety">Type Safety with MongoDbType</a></li>
+<li><a href="#ErrorHandling">Error Handling</a></li>
+<li><a href="#BestPractices">Best Practices</a></li>
+</ul>
+
+<h2 id="NoSQLDatabaseClasses">NoSQL Database Classes</h2>
+
+<ul>
+<li><strong>fMongoDB</strong></li>
+<li><a href="/docs/MongoDbType.html">MongoDbType</a></li>
+<li><a href="/docs/fDatabase.html">fDatabase</a> (SQL databases)</li>
+</ul>
+</div>
+
+<p>
+The fMongoDB class provides modern NoSQL database support for <a href="https://mongodb.com">MongoDB</a>, following Flourish patterns while offering MongoDB-specific functionality like document operations, aggregation pipelines, and flexible schema handling.
+</p>
+
+<h2 id="Introduction">Introduction</h2>
+
+<p>
+MongoDB is a popular NoSQL document database that stores data in flexible, JSON-like documents. The fMongoDB class brings MongoDB support to Flourish applications while maintaining the framework's signature simplicity and security focus.
+</p>
+
+<h2 id="Requirements">Requirements</h2>
+
+<p>To use fMongoDB, you need:</p>
+
+<ul>
+<li><strong>PHP 8.4+</strong> with MongoDB extension installed</li>
+<li><strong>MongoDB Server 4.2+</strong></li>
+<li><strong>MongoDB PHP Driver 1.20+</strong></li>
+</ul>
+
+<p>Install the MongoDB PHP extension:</p>
+
+<pre><code>pecl install mongodb
+
+# Add to php.ini
+extension=mongodb</code></pre>
+
+<h2 id="Connecting">Connecting</h2>
+
+<h3 id="BasicConnection">Basic Connection</h3>
+
+<p>Connect to a local MongoDB instance:</p>
+
+<pre><code class="php"><?php
+require_once 'lib/fMongoDB.php';
+
+// Basic connection to local MongoDB
+$mongodb = new fMongoDB('mongodb://localhost:27017', 'myapp');
+
+// Get a collection
+$users = $mongodb->selectCollection('users');
+?></code></pre>
+
+<h3 id="AuthenticatedConnection">Authenticated Connection</h3>
+
+<p>Connect with authentication:</p>
+
+<pre><code class="php"><?php
+// Connection with authentication
+$mongodb = new fMongoDB(
+    'mongodb://username:password@localhost:27017',
+    'myapp',
+    ['authSource' => 'admin']
+);
+
+// Replica set connection
+$mongodb = new fMongoDB(
+    'mongodb://user:pass@host1:27017,host2:27017,host3:27017/?replicaSet=myReplicaSet',
+    'myapp'
+);
+?></code></pre>
+
+<h3 id="ConnectionOptions">Connection Options</h3>
+
+<p>Common connection options:</p>
+
+<pre><code class="php"><?php
+$options = [
+    'connectTimeoutMS' => 5000,     // Connection timeout
+    'socketTimeoutMS' => 10000,     // Socket timeout
+    'maxPoolSize' => 100,           // Connection pool size
+    'retryWrites' => true,          // Retry writes on failure
+    'readPreference' => 'primary'   // Read preference
+];
+
+$mongodb = new fMongoDB('mongodb://localhost:27017', 'myapp', $options);
+?></code></pre>
+
+<h2 id="DocumentOperations">Document Operations</h2>
+
+<h3 id="InsertingDocuments">Inserting Documents</h3>
+
+<p>Insert single or multiple documents:</p>
+
+<pre><code class="php"><?php
+$users = $mongodb->selectCollection('users');
+
+// Insert single document
+$result = $users->insertOne([
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'profile' => [
+        'age' => 30,
+        'department' => 'Engineering'
+    ],
+    'tags' => ['developer', 'php'],
+    'created_at' => new MongoDB\BSON\UTCDateTime()
+]);
+
+echo "Inserted ID: " . $result->getInsertedId();
+
+// Insert multiple documents
+$result = $users->insertMany([
+    ['name' => 'Alice', 'email' => 'alice@example.com'],
+    ['name' => 'Bob', 'email' => 'bob@example.com']
+]);
+
+echo "Inserted " . $result->getInsertedCount() . " documents";
+?></code></pre>
+
+<h3 id="QueryingDocuments">Querying Documents</h3>
+
+<p>Find documents with various query patterns:</p>
+
+<pre><code class="php"><?php
+// Find single document
+$user = $users->findOne(['email' => 'john@example.com']);
+
+// Find multiple documents
+$engineers = $users->find(['profile.department' => 'Engineering']);
+
+foreach ($engineers as $engineer) {
+    echo $engineer['name'] . " - " . $engineer['email'] . "\n";
+}
+
+// Advanced queries
+$activeUsers = $users->find([
+    'status' => 'active',
+    'profile.age' => ['$gte' => 18, '$lte' => 65],
+    'tags' => ['$in' => ['developer', 'designer']]
+]);
+
+// Query with options
+$recentUsers = $users->find(
+    ['created_at' => ['$gte' => new MongoDB\BSON\UTCDateTime(strtotime('-7 days') * 1000)]],
+    [
+        'sort' => ['created_at' => -1],
+        'limit' => 10,
+        'projection' => ['name' => 1, 'email' => 1]
+    ]
+);
+?></code></pre>
+
+<h3 id="UpdatingDocuments">Updating Documents</h3>
+
+<p>Update existing documents:</p>
+
+<pre><code class="php"><?php
+// Update single document
+$result = $users->updateOne(
+    ['email' => 'john@example.com'],
+    [
+        '$set' => [
+            'profile.age' => 31,
+            'updated_at' => new MongoDB\BSON\UTCDateTime()
+        ],
+        '$addToSet' => ['tags' => 'senior']
+    ]
+);
+
+echo "Modified " . $result->getModifiedCount() . " document";
+
+// Update multiple documents
+$result = $users->updateMany(
+    ['profile.department' => 'Engineering'],
+    ['$set' => ['profile.team' => 'Backend']]
+);
+
+// Upsert (insert if not exists)
+$result = $users->updateOne(
+    ['email' => 'new@example.com'],
+    ['$set' => ['name' => 'New User']],
+    ['upsert' => true]
+);
+?></code></pre>
+
+<h3 id="DeletingDocuments">Deleting Documents</h3>
+
+<p>Delete documents:</p>
+
+<pre><code class="php"><?php
+// Delete single document
+$result = $users->deleteOne(['email' => 'old@example.com']);
+echo "Deleted " . $result->getDeletedCount() . " document";
+
+// Delete multiple documents
+$result = $users->deleteMany([
+    'status' => 'inactive',
+    'last_login' => ['$lt' => new MongoDB\BSON\UTCDateTime(strtotime('-1 year') * 1000)]
+]);
+?></code></pre>
+
+<h2 id="AggregationPipelines">Aggregation Pipelines</h2>
+
+<p>Use MongoDB's powerful aggregation framework:</p>
+
+<pre><code class="php"><?php
+// User statistics by department
+$stats = $users->aggregate([
+    ['$match' => ['status' => 'active']],
+    ['$group' => [
+        '_id' => '$profile.department',
+        'count' => ['$sum' => 1],
+        'avgAge' => ['$avg' => '$profile.age']
+    ]],
+    ['$sort' => ['count' => -1]]
+]);
+
+foreach ($stats as $stat) {
+    echo "Department: " . $stat['_id'] . "\n";
+    echo "Count: " . $stat['count'] . "\n";
+    echo "Average Age: " . round($stat['avgAge'], 1) . "\n\n";
+}
+
+// Complex multi-stage pipeline
+$pipeline = [
+    ['$match' => ['status' => 'active']],
+    ['$addFields' => [
+        'fullName' => ['$concat' => ['$firstName', ' ', '$lastName']]
+    ]],
+    ['$group' => [
+        '_id' => '$profile.department',
+        'users' => ['$push' => [
+            'name' => '$fullName',
+            'email' => '$email'
+        ]]
+    ]]
+];
+
+$departmentUsers = $users->aggregate($pipeline);
+?></code></pre>
+
+<h2 id="IndexManagement">Index Management</h2>
+
+<p>Create and manage indexes for better performance:</p>
+
+<pre><code class="php"><?php
+// Create indexes
+$users->createIndex(['email' => 1], ['unique' => true]);
+$users->createIndex(['profile.department' => 1, 'status' => 1]);
+
+// Text search index
+$users->createIndex(['name' => 'text', 'profile.bio' => 'text']);
+
+// TTL index (auto-expire documents)
+$sessions = $mongodb->selectCollection('sessions');
+$sessions->createIndex(['createdAt' => 1], ['expireAfterSeconds' => 3600]);
+
+// List indexes
+$indexes = $users->listIndexes();
+foreach ($indexes as $index) {
+    echo "Index: " . $index['name'] . "\n";
+}
+?></code></pre>
+
+<h2 id="GridFS">GridFS (Large Files)</h2>
+
+<p>Store and retrieve large files using GridFS:</p>
+
+<pre><code class="php"><?php
+// Get GridFS bucket
+$bucket = $mongodb->selectGridFSBucket();
+
+// Upload file
+$stream = fopen('/path/to/largefile.pdf', 'rb');
+$fileId = $bucket->uploadFromStream('document.pdf', $stream, [
+    'metadata' => [
+        'uploaded_by' => 'user123',
+        'content_type' => 'application/pdf',
+        'tags' => ['document', 'important']
+    ]
+]);
+
+// Download file
+$downloadStream = $bucket->openDownloadStream($fileId);
+$contents = stream_get_contents($downloadStream);
+
+// Find files
+$files = $bucket->find(['metadata.tags' => 'document']);
+foreach ($files as $file) {
+    echo "File: " . $file['filename'] . " (" . $file['length'] . " bytes)\n";
+}
+?></code></pre>
+
+<h2 id="TypeSafety">Type Safety with MongoDbType</h2>
+
+<p>Use the MongoDbType enum for type-safe operations:</p>
+
+<pre><code class="php"><?php
+// Type detection
+$value = ['nested' => 'document'];
+$type = MongoDbType::detectFromPhpValue($value);
+
+if ($type === MongoDbType::Object) {
+    echo "This is a MongoDB document";
+}
+
+// Type validation
+if (MongoDbType::String->isScalarType()) {
+    echo "String is a scalar type";
+}
+
+if (MongoDbType::Array->isStructural()) {
+    echo "Array is a structural type";
+}
+
+// Convert between PHP and BSON
+$objectId = MongoDbType::ObjectId->convertFromPhp('507f1f77bcf86cd799439011');
+?></code></pre>
+
+<h2 id="ErrorHandling">Error Handling</h2>
+
+<p>Handle MongoDB exceptions following Flourish patterns:</p>
+
+<pre><code class="php"><?php
+use MongoDB\Exception\Exception as MongoDBException;
+
+try {
+    $mongodb = new fMongoDB('mongodb://localhost:27017', 'myapp');
+    $users = $mongodb->selectCollection('users');
+    $result = $users->insertOne(['name' => 'Test User']);
+} catch (fConnectivityException $e) {
+    echo "Connection failed: " . $e->getMessage();
+} catch (fEnvironmentException $e) {
+    echo "Environment issue: " . $e->getMessage();
+} catch (MongoDBException $e) {
+    echo "MongoDB Error: " . $e->getMessage();
+}
+?></code></pre>
+
+<h2 id="BestPractices">Best Practices</h2>
+
+<h3>Connection Management</h3>
+
+<p>Use connection pooling and reuse connections:</p>
+
+<pre><code class="php"><?php
+class MongoManager {
+    private static ?fMongoDB $instance = null;
+    
+    public static function getInstance(): fMongoDB {
+        if (self::$instance === null) {
+            self::$instance = new fMongoDB(
+                $_ENV['MONGODB_URI'] ?? 'mongodb://localhost:27017',
+                $_ENV['MONGODB_DATABASE'] ?? 'app'
+            );
+        }
+        return self::$instance;
+    }
+}
+?></code></pre>
+
+<h3>Data Validation</h3>
+
+<p>Always validate data before insertion:</p>
+
+<pre><code class="php"><?php
+function validateUser(array $data): array {
+    $errors = [];
+    
+    if (empty($data['name'])) {
+        $errors[] = 'Name is required';
+    }
+    
+    if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Invalid email format';
+    }
+    
+    return $errors;
+}
+
+$userData = ['name' => 'John', 'email' => 'john@example.com'];
+$errors = validateUser($userData);
+
+if (empty($errors)) {
+    $users->insertOne($userData);
+} else {
+    echo "Validation errors: " . implode(', ', $errors);
+}
+?></code></pre>
+
+<h3>Performance Optimization</h3>
+
+<p>Use projections, indexes, and batch operations:</p>
+
+<pre><code class="php"><?php
+// Use projections to limit returned fields
+$users = $users->find(
+    ['status' => 'active'],
+    ['projection' => ['name' => 1, 'email' => 1]]
+);
+
+// Create appropriate indexes
+$users->createIndex(['email' => 1]);
+$users->createIndex(['created_at' => -1]);
+
+// Batch operations for better performance
+$bulk = [];
+for ($i = 0; $i < 1000; $i++) {
+    $bulk[] = ['insertOne' => [['batch_id' => $i]]];
+}
+$users->bulkWrite($bulk);
+?></code></pre>
+
+<p>
+The fMongoDB class brings modern NoSQL capabilities to Flourish applications while maintaining the framework's philosophy of simplicity, security, and consistency.
+</p>
+
+		</section>
+
+		<footer>
+			<section class="main group">
+				<a href="http://github.com/scopweb/flourish-lib">GitHub</a>
+				<a href="/Support.html">Community</a>
+				<a href="http://flourishlib.com/docs/CodeStandards.html">Code Standards</a>
+				<span>&copy; 2025 Flourish Framework</span>
+			</section>
+		</footer>
+	</body>
+</html>

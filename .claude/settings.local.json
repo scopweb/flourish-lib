@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(php:*)",
+      "Bash(sed:*)",
+      "Bash(rg:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"Processing $file\")",
+      "Bash(done)",
+      "Read(//c/MCPs/php/**)",
+      "Bash(do echo \"=== $file.php ===\")",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(grep:*)",
+      "Read(//c/_APLIS/PHP/ext/**)",
+      "Read(//c/_APLIS/PHP/**)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(dir)",
+      "Bash(find:*)",
+      "Bash(powershell:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit:*)",
+      "Bash(dir:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:flourishlib.com)",
+      "Bash(del \"C:\\MCPs\\php\\flourish-classes\\documentacion\\AdvancedDownload.html\")",
+      "Bash(git checkout:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

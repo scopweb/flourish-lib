@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Modern APIs – PHP 8.4 Enhancements – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="ModernAPIs">Modern APIs - PHP 8.4 Enhancements</h1>
+<div class="sidebar">
+<h2 id="Contents">Contents</h2>
+
+<ul>
+<li><a href="#Overview">Overview</a></li>
+<li><a href="#ArrayFunctions">Array Functions PHP 8.4</a></li>
+<li><a href="#BcMathNumber">BcMath\Number Integration</a></li>
+<li><a href="#StringFunctions">String Function Modernization</a></li>
+<li><a href="#PerformanceImprovements">Performance Improvements</a></li>
+<li><a href="#BackwardCompatibility">Backward Compatibility</a></li>
+</ul>
+
+<h2 id="EnhancedClasses">Enhanced Classes</h2>
+
+<ul>
+<li><a href="/docs/fValidation.html">fValidation</a> - Array Functions</li>
+<li><a href="/docs/fCore.html">fCore</a> - Array Functions</li>
+<li><a href="/docs/fDatabase.html">fDatabase</a> - Array Functions</li>
+<li><a href="/docs/fMoney.html">fMoney</a> - BcMath\Number</li>
+<li><a href="/docs/fGrammar.html">fGrammar</a> - String Functions</li>
+<li><a href="/docs/fFile.html">fFile</a> - String Functions</li>
+<li><a href="/docs/fUTF8.html">fUTF8</a> - String Functions</li>
+</ul>
+</div>
+
+<div class="hero-banner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; margin: 20px 0; border-radius: 8px; text-align: center;">
+    <h2 style="margin: 0 0 15px 0; font-size: 2.5em;">🚀 FASE 4: Modern APIs</h2>
+    <p style="margin: 0; font-size: 1.2em; opacity: 0.9;">Complete PHP 8.4 modernization with native functions, enhanced precision, and optimized performance</p>
+</div>
+
+<h2 id="Overview">Overview</h2>
+
+<p>
+The Modern APIs initiative (FASE 4) represents the final phase of Flourish framework's PHP 8.4 modernization, implementing cutting-edge native PHP functions for enhanced performance, precision, and developer experience.
+</p>
+
+<div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+        <h3 style="color: #007bff; margin: 0 0 10px 0;">3/3</h3>
+        <p style="margin: 0;">Implementations Completed</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+        <h3 style="color: #28a745; margin: 0 0 10px 0;">38</h3>
+        <p style="margin: 0;">Tests Passing (100%)</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+        <h3 style="color: #6f42c1; margin: 0 0 10px 0;">12</h3>
+        <p style="margin: 0;">Classes Enhanced</p>
+    </div>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+        <h3 style="color: #fd7e14; margin: 0 0 10px 0;">100%</h3>
+        <p style="margin: 0;">Backward Compatible</p>
+    </div>
+</div>
+
+<h2 id="ArrayFunctions">Array Functions PHP 8.4</h2>
+
+<p>
+Native PHP 8.4 array functions provide superior performance and cleaner code for array processing operations throughout the framework.
+</p>
+
+<h3>New Functions Implemented</h3>
+
+<pre class="block php"><code>// Find first element matching predicate
+$result = array_find($numbers, fn($n) => $n > 10);
+
+// Find first key where predicate matches  
+$key = array_find_key($assoc, fn($value, $key) => $value > 100);
+
+// Check if any element matches predicate
+$hasValid = array_any($values, fn($v) => !empty($v));
+
+// Check if all elements match predicate
+$allValid = array_all($numbers, fn($n) => $n > 0);</code></pre>
+
+<h3>Enhanced Classes</h3>
+
+<ul>
+<li><strong>fValidation</strong> - <code>hasValue()</code> and rule checking methods optimized with <code>array_any()</code></li>
+<li><strong>fCore</strong> - New extension detection methods using array functions</li>
+<li><strong>fDatabase</strong> - Database type validation with <code>array_any()</code></li>
+</ul>
+
+<h2 id="BcMathNumber">BcMath\Number Integration</h2>
+
+<p>
+Enhanced monetary calculations with arbitrary precision arithmetic using PHP 8.4's native <code>BcMath\Number</code> class.
+</p>
+
+<h3>fMoney Enhancements</h3>
+
+<pre class="block php"><code>// Native BcMath\Number support
+$precise = new BcMath\Number('123.456789');
+$money = new fMoney($precise, 'USD');
+
+// Enhanced arithmetic with automatic precision
+$sum = $money1->add($money2);     // Uses BcMath\Number precision
+$diff = $money1->sub($money2);    // Precise subtraction
+$product = $money->mul('2.5');    // Automatic type conversion
+
+// Precise currency conversion
+$euros = $usd->convert('EUR');    // BcMath\Number precision</code></pre>
+
+<h3>Key Benefits</h3>
+
+<ul>
+<li><strong>Arbitrary Precision:</strong> No floating-point precision issues</li>
+<li><strong>Automatic Optimization:</strong> Uses BcMath\Number when available, fallback to fNumber</li>
+<li><strong>Type Safety:</strong> Runtime validation and conversion</li>
+<li><strong>100% Compatible:</strong> Existing code works unchanged</li>
+</ul>
+
+<h2 id="StringFunctions">String Function Modernization</h2>
+
+<p>
+Native PHP 8.4 string functions replace legacy patterns for better performance and readability across 20+ operations.
+</p>
+
+<h3>Function Replacements</h3>
+
+<div class="comparison-table" style="overflow-x: auto;">
+<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+    <thead>
+        <tr style="background: #f8f9fa;">
+            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Legacy Pattern</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Modern PHP 8.4</th>
+            <th style="padding: 12px; text-align: left; border: 1px solid #dee2e6;">Usage</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #dee2e6;"><code>strpos($str, $needle) !== false</code></td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;"><code>str_contains($str, $needle)</code></td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">Content detection</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+            <td style="padding: 12px; border: 1px solid #dee2e6;"><code>strpos($str, $prefix) === 0</code></td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;"><code>str_starts_with($str, $prefix)</code></td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">Prefix validation</td>
+        </tr>
+        <tr>
+            <td style="padding: 12px; border: 1px solid #dee2e6;"><code>substr($str, -strlen($suffix)) === $suffix</code></td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;"><code>str_ends_with($str, $suffix)</code></td>
+            <td style="padding: 12px; border: 1px solid #dee2e6;">Suffix validation</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+
+<h3>Enhanced Classes</h3>
+
+<ul>
+<li><strong>fGrammar:</strong> 6 operations modernized - space detection, callback parsing</li>
+<li><strong>fFile:</strong> 4 operations modernized - MIME type detection, content analysis</li>
+<li><strong>fException:</strong> 3 operations modernized - error message matching</li>
+<li><strong>fUTF8:</strong> Unicode prefix handling optimization</li>
+<li><strong>fDirectory:</strong> Path validation improvements</li>
+<li><strong>fImage:</strong> Path hierarchy validation</li>
+</ul>
+
+<h2 id="PerformanceImprovements">Performance Improvements</h2>
+
+<p>
+All Modern APIs implementations leverage native PHP 8.4 optimizations for enhanced performance:
+</p>
+
+<ul>
+<li><strong>Native Functions:</strong> Direct engine implementation, no userland overhead</li>
+<li><strong>Reduced Complexity:</strong> Cleaner code with fewer function calls</li>
+<li><strong>Memory Efficiency:</strong> Optimized memory usage patterns</li>
+<li><strong>CPU Optimization:</strong> Engine-level optimizations in PHP 8.4</li>
+</ul>
+
+<h2 id="BackwardCompatibility">Backward Compatibility</h2>
+
+<p>
+All Modern APIs implementations maintain 100% backward compatibility:
+</p>
+
+<div class="compatibility-notice" style="background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; margin: 20px 0; border-radius: 4px;">
+    <h3 style="margin: 0 0 10px 0; color: #155724;">✅ Complete Compatibility Guarantee</h3>
+    <ul style="margin: 0;">
+        <li><strong>Existing Code:</strong> No changes required to existing applications</li>
+        <li><strong>API Consistency:</strong> All public methods maintain identical signatures</li>
+        <li><strong>Fallback Support:</strong> Automatic fallback for older PHP versions</li>
+        <li><strong>Type Safety:</strong> Enhanced validation without breaking changes</li>
+    </ul>
+</div>
+
+<h2>Testing & Validation</h2>
+
+<p>
+Comprehensive test coverage ensures reliability and correctness:
+</p>
+
+<pre class="block bash"><code># Run all Modern APIs tests
+php test/array_functions_test.php     # 14 tests - Array Functions
+php test/bcmath_number_test.php       # 9 tests - BcMath\Number  
+php test/multibyte_string_test.php    # 15 tests - String Functions
+
+# All tests: 38/38 passing (100% success rate)</code></pre>
+
+		</section>
+		<footer>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="copyright">Copyright &copy; 2012 Will Bond | Modified for PHP 8.4 compatibility by scopweb (2025)</span>
+			</section>
+		</footer>
+	</body>
+</html>

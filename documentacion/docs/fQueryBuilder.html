@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>fQueryBuilder – Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="fQueryBuilder">fQueryBuilder Fluent Interface</h1>
+<div class="sidebar">
+<h2 id="ClassResources">Class Resources </h2>
+
+<ul>
+<li><strong><a href="/docs/fQueryBuilder.html">Query Builder Guide</a></strong></li>
+<li><a href="/api/fQueryBuilder.html">fQueryBuilder API</a></li>
+<li><a href="/api/fDB.html">fDB API</a></li>
+<li><a href="https://github.com/scopweb/flourish-lib/blob/master/querybuilder/fQueryBuilder.php">fQueryBuilder Source</a></li>
+<li><a href="https://github.com/scopweb/flourish-lib/blob/master/querybuilder/fDB.php">fDB Source</a></li>
+</ul>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#Introduction">Introduction</a></li>
+<li><a href="#QuickStart">Quick Start</a></li>
+<li><a href="#BasicQueries">Basic Queries</a>
+<ul>
+<li><a href="#SelectQueries">SELECT Queries</a></li>
+<li><a href="#InsertQueries">INSERT Queries</a></li>
+<li><a href="#UpdateQueries">UPDATE Queries</a></li>
+<li><a href="#DeleteQueries">DELETE Queries</a></li>
+</ul>
+</li>
+<li><a href="#AdvancedWhere">Advanced WHERE Clauses</a></li>
+<li><a href="#JoinOperations">JOIN Operations</a></li>
+<li><a href="#RawExpressions">Raw SQL Expressions</a></li>
+<li><a href="#Pagination">Pagination</a></li>
+<li><a href="#Transactions">Transactions</a></li>
+<li><a href="#StaticFacade">Static Facade (fDB)</a></li>
+<li><a href="#Security">Security & SQL Injection Protection</a></li>
+<li><a href="#BackwardCompatibility">Backward Compatibility</a></li>
+</ul>
+
+<h2 id="QueryBuilderClasses">Query Builder Classes</h2>
+
+<ul>
+<li><a href="/docs/fQueryBuilder.html">fQueryBuilder</a></li>
+<li><a href="/docs/fDB.html">fDB</a> (Static Facade)</li>
+<li><a href="/docs/fRawExpression.html">fRawExpression</a></li>
+<li><a href="/docs/fDatabase.html">fDatabase</a></li>
+</ul>
+</div>
+
+<p>
+The Query Builder provides a modern, fluent interface for building database queries while maintaining full backward compatibility with existing Flourish applications. It offers better developer experience, automatic SQL injection protection, and database-agnostic query generation.
+</p>
+
+<h2 id="Introduction">Introduction</h2>
+
+<p>
+Flourish's Query Builder brings Laravel/Eloquent-style fluent interfaces to database operations while preserving Flourish's security-first approach and compatibility with multiple database systems.
+</p>
+
+<p><strong>Key Benefits:</strong></p>
+<ul>
+<li><strong>Better DX:</strong> Method chaining and intuitive API</li>
+<li><strong>SQL Injection Protection:</strong> Automatic parameter binding</li>
+<li><strong>Database Agnostic:</strong> Works with MySQL, PostgreSQL, SQLite</li>
+<li><strong>100% Backward Compatible:</strong> Existing code continues to work</li>
+</ul>
+
+<h2 id="QuickStart">Quick Start</h2>
+
+<h3>Basic Setup</h3>
+
+<pre><code class="php"><?php
+// Option 1: Using existing fDatabase instance
+$db = new fDatabase('mysql', 'database_name', 'username', 'password', 'host');
+
+// Option 2: Using static facade (recommended for new projects)
+require_once 'querybuilder/fDB.php';
+fDB::setDatabase($db);
+
+// Now you can use either approach:
+$users = $db->table('users')->where('active', '=', 1)->get();
+// OR
+$users = fDB::table('users')->where('active', '=', 1)->get();
+?></code></pre>
+
+<h2 id="BasicQueries">Basic Queries</h2>
+
+<h3 id="SelectQueries">SELECT Queries</h3>
+
+<pre><code class="php"><?php
+// Basic SELECT
+$users = $db->table('users')->get();
+
+// SELECT specific columns
+$users = $db->table('users')
+            ->select(['id', 'name', 'email'])
+            ->get();
+
+// SELECT with WHERE clause
+$activeUsers = $db->table('users')
+                  ->where('active', '=', 1)
+                  ->get();
+
+// Multiple WHERE conditions
+$users = $db->table('users')
+            ->where('active', '=', 1)
+            ->where('age', '>', 18)
+            ->get();
+
+// WHERE with OR
+$users = $db->table('users')
+            ->where('active', '=', 1)
+            ->orWhere('admin', '=', 1)
+            ->get();
+
+// Get first result only
+$user = $db->table('users')
+           ->where('email', '=', 'john@example.com')
+           ->first();
+?></code></pre>
+
+<h3 id="InsertQueries">INSERT Queries</h3>
+
+<pre><code class="php"><?php
+// Basic INSERT
+$db->table('users')->insert([
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'age' => 30
+]);
+
+// Using static facade
+fDB::insertInto('users', [
+    'name' => 'Jane Smith',
+    'email' => 'jane@example.com',
+    'age' => 25
+]);
+?></code></pre>
+
+<h3 id="UpdateQueries">UPDATE Queries</h3>
+
+<pre><code class="php"><?php
+// Basic UPDATE
+$db->table('users')
+   ->where('id', '=', 1)
+   ->update([
+       'name' => 'John Smith',
+       'email' => 'johnsmith@example.com'
+   ]);
+
+// Using static facade
+fDB::updateTable('users', ['active' => 0])
+   ->where('last_login', '<', '2023-01-01')
+   ->execute();
+?></code></pre>
+
+<h3 id="DeleteQueries">DELETE Queries</h3>
+
+<pre><code class="php"><?php
+// Basic DELETE
+$db->table('users')
+   ->where('active', '=', 0)
+   ->delete();
+
+// Using static facade
+fDB::deleteFrom('users')
+   ->where('created_at', '<', '2020-01-01')
+   ->execute();
+?></code></pre>
+
+<h2 id="AdvancedWhere">Advanced WHERE Clauses</h2>
+
+<h3>whereIn / whereNotIn</h3>
+
+<pre><code class="php"><?php
+$users = $db->table('users')
+            ->whereIn('id', [1, 2, 3, 4, 5])
+            ->get();
+
+$users = $db->table('users')
+            ->whereNotIn('status', ['banned', 'suspended'])
+            ->get();
+?></code></pre>
+
+<h3>whereNull / whereNotNull</h3>
+
+<pre><code class="php"><?php
+$users = $db->table('users')
+            ->whereNull('deleted_at')
+            ->get();
+
+$profiles = $db->table('profiles')
+               ->whereNotNull('bio')
+               ->get();
+?></code></pre>
+
+<h3>whereBetween</h3>
+
+<pre><code class="php"><?php
+$products = $db->table('products')
+               ->whereBetween('price', 10, 100)
+               ->get();
+?></code></pre>
+
+<h3>whereLike</h3>
+
+<pre><code class="php"><?php
+$users = $db->table('users')
+            ->whereLike('name', '%John%')
+            ->get();
+?></code></pre>
+
+<h3>whereExists / whereNotExists</h3>
+
+<pre><code class="php"><?php
+// Users who have orders
+$users = $db->table('users')
+            ->whereExists(function($query) {
+                $query->table('orders')
+                      ->whereRaw('orders.user_id = users.id');
+            })
+            ->get();
+
+// Users who have no orders
+$users = $db->table('users')
+            ->whereNotExists(function($query) {
+                $query->table('orders')
+                      ->whereRaw('orders.user_id = users.id');
+            })
+            ->get();
+?></code></pre>
+
+<h3>Raw WHERE clauses</h3>
+
+<pre><code class="php"><?php
+$users = $db->table('users')
+            ->whereRaw('YEAR(created_at) = YEAR(NOW())')
+            ->get();
+?></code></pre>
+
+<h2 id="JoinOperations">JOIN Operations</h2>
+
+<h3>Basic JOINs</h3>
+
+<pre><code class="php"><?php
+// INNER JOIN
+$users = $db->table('users')
+            ->join('profiles', 'users.id', '=', 'profiles.user_id')
+            ->select(['users.name', 'profiles.bio'])
+            ->get();
+
+// LEFT JOIN
+$users = $db->table('users')
+            ->leftJoin('orders', 'users.id', '=', 'orders.user_id')
+            ->select(['users.name', 'COUNT(orders.id) as order_count'])
+            ->groupBy('users.id')
+            ->get();
+
+// RIGHT JOIN
+$orders = $db->table('orders')
+             ->rightJoin('users', 'orders.user_id', '=', 'users.id')
+             ->get();
+
+// CROSS JOIN
+$combinations = $db->table('colors')
+                   ->crossJoin('sizes')
+                   ->get();
+?></code></pre>
+
+<h3>Multiple JOINs</h3>
+
+<pre><code class="php"><?php
+$data = $db->table('users')
+           ->join('profiles', 'users.id', '=', 'profiles.user_id')
+           ->leftJoin('orders', 'users.id', '=', 'orders.user_id')
+           ->leftJoin('order_items', 'orders.id', '=', 'order_items.order_id')
+           ->select([
+               'users.name',
+               'profiles.bio',
+               'COUNT(DISTINCT orders.id) as order_count',
+               'COUNT(order_items.id) as item_count'
+           ])
+           ->groupBy('users.id')
+           ->get();
+?></code></pre>
+
+<h2 id="RawExpressions">Raw SQL Expressions</h2>
+
+<h3>Using Raw Expressions</h3>
+
+<pre><code class="php"><?php
+// Raw expressions in SELECT
+$stats = $db->table('users')
+            ->select([
+                $db->raw('COUNT(*) as total_users'),
+                $db->raw('AVG(age) as average_age'),
+                $db->raw('MAX(created_at) as latest_registration')
+            ])
+            ->first();
+
+// Using static facade
+$stats = fDB::table('orders')
+            ->select([
+                fDB::raw('DATE(created_at) as order_date'),
+                fDB::raw('COUNT(*) as daily_orders'),
+                fDB::raw('SUM(total) as daily_revenue')
+            ])
+            ->groupBy(fDB::raw('DATE(created_at)'))
+            ->get();
+?></code></pre>
+
+<h2 id="Pagination">Pagination</h2>
+
+<h3>Built-in Pagination</h3>
+
+<pre><code class="php"><?php
+$result = $db->table('users')
+             ->where('active', '=', 1)
+             ->paginate(1, 15); // Page 1, 15 items per page
+
+// Result structure:
+// [
+//     'data' => [...], // Array of records
+//     'total' => 150,  // Total record count
+//     'current_page' => 1,
+//     'per_page' => 15,
+//     'last_page' => 10,
+//     'from' => 1,
+//     'to' => 15
+// ]
+
+echo "Showing {$result['from']}-{$result['to']} of {$result['total']} users";
+foreach ($result['data'] as $user) {
+    echo $user['name'] . "\n";
+}
+?></code></pre>
+
+<h2 id="Transactions">Transactions</h2>
+
+<h3>Using Transactions</h3>
+
+<pre><code class="php"><?php
+// Method 1: Manual transaction control
+fDB::beginTransaction();
+try {
+    fDB::insertInto('users', ['name' => 'John', 'email' => 'john@example.com']);
+    fDB::insertInto('profiles', ['user_id' => fDB::lastInsertId(), 'bio' => 'Developer']);
+    fDB::commit();
+} catch (Exception $e) {
+    fDB::rollback();
+    throw $e;
+}
+
+// Method 2: Automatic transaction (recommended)
+$result = fDB::transaction(function($db) {
+    $db->table('users')->insert(['name' => 'Jane', 'email' => 'jane@example.com']);
+    $db->table('profiles')->insert(['user_id' => 123, 'bio' => 'Designer']);
+    return 'Transaction completed';
+});
+?></code></pre>
+
+<h2 id="StaticFacade">Static Facade (fDB)</h2>
+
+<h3>Convenience Methods</h3>
+
+<pre><code class="php"><?php
+// Set up database connection
+fDB::setDatabase($database);
+
+// Convenience static methods
+$userCount = fDB::count('users');
+$activeUsers = fDB::count('users')->where('active', '=', 1);
+
+// Other aggregates
+$maxPrice = fDB::max('products', 'price');
+$minPrice = fDB::min('products', 'price');
+$avgAge = fDB::avg('users', 'age');
+$totalRevenue = fDB::sum('orders', 'total');
+
+// Quick operations
+fDB::insertInto('users', ['name' => 'Quick User']);
+fDB::updateTable('users', ['updated_at' => date('Y-m-d H:i:s')])
+   ->where('active', '=', 1)
+   ->execute();
+?></code></pre>
+
+<h2 id="Security">Security & SQL Injection Protection</h2>
+
+<p>The Query Builder automatically protects against SQL injection by using parameter binding:</p>
+
+<pre><code class="php"><?php
+// Safe - parameters are automatically bound
+$users = $db->table('users')
+            ->where('email', '=', $_POST['email'])  // Automatically escaped
+            ->get();
+
+// The malicious input is safely handled:
+$maliciousInput = "'; DROP TABLE users; --";
+$users = $db->table('users')
+            ->where('name', '=', $maliciousInput)  // Becomes parameter binding
+            ->get();
+// Generated SQL: SELECT * FROM users WHERE name = %s
+// Binding: ["'; DROP TABLE users; --"]
+
+// For raw SQL, use fRawExpression when you need unescaped SQL
+$users = $db->table('users')
+            ->whereRaw('created_at > NOW() - INTERVAL 1 DAY')
+            ->get();
+?></code></pre>
+
+<h2 id="BackwardCompatibility">Backward Compatibility</h2>
+
+<p>The Query Builder maintains 100% backward compatibility with existing Flourish code:</p>
+
+<pre><code class="php"><?php
+// Old way (still works)
+$result = $db->query("SELECT * FROM users WHERE active = %i", 1);
+
+// New way (enhanced DX)
+$result = $db->table('users')->where('active', '=', 1)->get();
+
+// Both approaches can be mixed in the same application
+$oldStyleResult = $db->query("SELECT COUNT(*) as count FROM users");
+$newStyleUsers = $db->table('users')
+                    ->where('created_at', '>', '2024-01-01')
+                    ->orderBy('name')
+                    ->get();
+?></code></pre>
+
+<h3>Migration Example</h3>
+
+<pre><code class="php"><?php
+// Before: Raw SQL with parameter binding
+$sql = "SELECT u.name, p.bio FROM users u 
+        JOIN profiles p ON u.id = p.user_id 
+        WHERE u.active = %i 
+        ORDER BY u.name ASC";
+$result = $db->query($sql, 1);
+
+// After: Query Builder fluent interface
+$result = $db->table('users')
+             ->join('profiles', 'users.id', '=', 'profiles.user_id')
+             ->select(['users.name', 'profiles.bio'])
+             ->where('users.active', '=', 1)
+             ->orderBy('users.name', 'ASC')
+             ->get();
+?></code></pre>
+
+<h3>Debugging Queries</h3>
+
+<pre><code class="php"><?php
+// View the SQL that would be generated
+$sql = $db->table('users')
+          ->where('active', '=', 1)
+          ->where('age', '>', 18)
+          ->toSql();
+
+echo $sql; // SELECT * FROM users WHERE active = %i AND age > %i
+
+// View parameter bindings
+$query = $db->table('users')->where('name', '=', 'John');
+$bindings = $query->getBindings();
+print_r($bindings); // ['John']
+?></code></pre>
+
+<p>
+The Query Builder provides a modern, secure, and maintainable way to interact with your database while preserving all the power and flexibility of the original Flourish framework.
+</p>
+
+		</section>
+
+		<footer>
+			<section class="main group">
+				<a href="http://github.com/scopweb/flourish-lib">GitHub</a>
+				<a href="/Support.html">Community</a>
+				<a href="http://flourishlib.com/docs/CodeStandards.html">Code Standards</a>
+				<span>&copy; 2025 Flourish Framework</span>
+			</section>
+		</footer>
+	</body>
+</html>

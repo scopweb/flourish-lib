@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>fFile – Class Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="fFile">fFile</h1>
+<div class="sidebar">
+<h2 id="ClassResources">Class Resources </h2>
+
+<ul>
+<li><strong><a href="/docs/fFile.html">Class Documentation</a></strong></li>
+<li><a href="/api/fFile.html">API Reference</a></li>
+<li><a href="https://github.com/scopweb/flourish-lib/blob/master/lib/fFile.php">Source Code</a></li>
+</ul>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#Instantiation">Instantiation</a></li>
+<li><a href="#GettingInformation">Getting Information</a></li>
+<li><a href="#Manipulation">Manipulation</a></li>
+<li><a href="#Outputting">Outputting</a>
+<ul>
+<li><a href="#PerformanceIssues">Performance Issues</a></li>
+</ul>
+</li>
+<li><a href="#Cloning">Cloning</a></li>
+<li><a href="#Iteration">Iteration</a></li>
+<li><a href="#MimeTypeEnum">MimeType Enum (PHP 8.4+)</a></li>
+<li><a href="#PropertyHooksFile">Property Hooks (PHP 8.4+)</a></li>
+</ul>
+
+<h2 id="FilesystemClasses">Filesystem Classes </h2>
+
+<ul>
+<li><a href="/docs/fFilesystem.html">fFilesystem</a></li>
+<li><strong>fFile</strong>
+<ul>
+<li><a href="/docs/fImage.html">fImage</a></li>
+</ul>
+</li>
+<li><a href="/docs/fDirectory.html">fDirectory</a></li>
+<li><a href="/docs/fUpload.html">fUpload</a></li>
+</ul>
+</div>
+
+<p>
+The fFile class is a simple object representation of a file on the filesystem. It provides an object-based interface to common file functions and allows actions to be grouped into transactions via the <a href="/docs/fFilesystem.html">fFilesystem</a> class.
+</p>
+
+<h2 id="Instantiation">Instantiation</h2>
+
+<p>
+The fFile constructor normally takes a single argument, the filesystem path to a file.
+</p>
+<pre class="block php"><code>$file1 = new fFile('/var/www/vhosts/examples.com/httpdocs/images/example.gif');
+$file2 = new fFile('./output.txt');
+$file3 = new fFile('../uploads/documents/example.doc');</code></pre>
+
+<p>
+ A second argument can be passed to the constructor allowing for an exception object to be set for the file, however this is primarily for use by the <a href="/docs/fUpload.html">fUpload</a> class.
+</p>
+
+<p>
+It is also possible to create an fFile object by calling the static <a href="/api/fFile.html#create"><code>create()</code></a> method. Not only does it create an instance of fFile, but also allows creates a new file on the filesystem. This method requires two parameters, the <code>$file_path</code> and the <code>$contents</code> to write. 
+</p>
+<pre class="block php"><code>$new_file = fFile::create('./output.log', 'This is the string to be stored in the new file.');</code></pre>
+
+<h2 id="GettingInformation">Getting Information</h2>
+
+<p>
+The fFile class includes a few methods to grab some basic information about a file. These include:
+</p>
+<table><tbody>
+<tr>
+<td><strong>Method</strong></td>
+<td><strong>Description</strong></td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#getName"><code>getName()</code></a></td>
+<td>Returns the filename of the file as a string</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#getExtension"><code>getExtension()</code></a></td>
+<td>Returns the extension of the file</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#getParent"><code>getParent()</code></a></td>
+<td>Returns the <a href="/docs/fDirectory.html">fDirectory</a> object for the directory containing this file</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#getPath"><code>getPath()</code></a></td>
+<td>Returns a string with the full path to the file</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#getSize"><code>getSize()</code></a></td>
+<td>Returns the size in bytes as an integer, or optionally formatted for easy human readability</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#getMimeType"><code>getMimeType()</code></a></td>
+<td>Returns the mime type of the file, see the <a href="/api/fFile.html#getMimeType">API docs</a> for a list of all supported file types</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#getMTime"><code>getMTime()</code></a></td>
+<td>Returns an <a href="/docs/fTimestamp.html">fTimestamp</a> object representing the date and time the file was last modified</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#isWritable"><code>isWritable()</code></a></td>
+<td>Indicates if the file can be written to by the current user</td>
+</tr>
+</tbody></table>
+
+<p>
+If you want more specific information about a file, you can pass the output of <code>getPath()</code> into the various <a href="http://php.net/filesystem">PHP filesystem functions</a>. 
+</p>
+
+<h2 id="Manipulation">Manipulation</h2>
+
+<p>
+In most situations, manipulation of a file is going to be a requirement. The following methods provide a straight-forward interface for standard manipulation. Also note that these manipulations can be wrapped in a <a href="/docs/fFilesystem.html#Transactions">filesystem transactions</a> to allow for rolling back changes in the event of a later error.
+</p>
+<table><tbody>
+<tr>
+<td><strong>Method</strong></td>
+<td><strong>Description</strong></td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#read"><code>read()</code></a></td>
+<td>Returns the contents of the file as a string</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#write"><code>write()</code></a></td>
+<td>Accepts a string to overwrite the file contents with</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#append"><code>append()</code></a></td>
+<td>Appends content to the file</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#rename"><code>rename()</code></a></td>
+<td>Renames the file to a new filename/path - if no directory <code>/</code> is found in the new path, the file is renamed in the current directory</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#move"><code>move()</code></a></td>
+<td>Moves the file to a new directory, keeping the existing filename</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#duplicate"><code>duplicate()</code></a></td>
+<td>Will create a copy of the file, optionally in a different directory. If in a different directory, you can specify if you want an existing file with the same name to be overwritten.</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#delete"><code>delete()</code></a></td>
+<td>Removes the file from the filesystem. Please note that if inside of a filesystem transaction, this event will be deferred until commit is called, but instances of fFile will act as if the file no longer exists.</td>
+</tr>
+<tr>
+<td><a href="/api/fFile.html#output"><code>output()</code></a></td>
+<td>Will echo the contents of the file to the user, optionally including the appropriate HTTP headers</td>
+</tr>
+</tbody></table>
+
+<h2 id="Outputting">Outputting</h2>
+
+<p>
+When it is necessary to use PHP to control access to files, a file can be sent to a user via the <a href="/api/fFile.html#output"><code>output()</code></a> method. The first parameters, <code>$headers</code>, is required and controls whether or not mime-type and filesize headers are included with the file contents. If this is set to <code>FALSE</code>, the headers should be manually sent before calling the method.
+</p>
+<pre class="block php"><code>// Output the file with relevant headers
+$file-&gt;output(TRUE);</code></pre>
+
+<p>
+ If included, the second parameter, <code>$filename</code>, will send the file as an attachment to the current page instead of using the filename from the current URL.
+</p>
+<pre class="block php"><code>// If on index.php, this file will be sent to the user as index.php
+$file-&gt;output(TRUE);
+
+// This file will be sent as document.doc
+$file-&gt;output(TRUE, 'document.doc');</code></pre>
+
+<h3 id="PerformanceIssues">Performance Issues</h3>
+
+<p>
+When outputting a file, please be certain to turn off any output buffering, whether it be controller by <a href="http://php.net/ob_start"><code>ob_start()</code></a>, <a href="/docs/fTemplating.html">fTemplating</a> or <a href="/docs/fBuffer.html">fBuffer</a>. If output buffering is turned on, the whole contents of the file will be stored in web server memory before being sent to the user. This can obviously cause issues with large files.
+</p>
+
+<p>
+Due to the way that PHP prevents overwriting session values, only one page can access the session at a time. If the session was opened on the page before calling <code>output()</code> and is not explicitly closed via <a href="/api/fSession.html#close">fSession::close()</a>, the user will not be able to visit any other pages on the site until the download completes. This is obviously more of an issue with large files or slow connections.
+</p>
+
+<h2 id="Cloning">Cloning</h2>
+
+<p>
+When an fFile object is cloned, a duplicate of the file is created on the filesystem in the files current directory. Essentially <code>clone</code> is the same as calling <a href="/api/fFile.html#duplicate"><code>duplicate()</code></a> with no parameters.
+</p>
+<pre class="block php"><code>$file  = new fFile('/path/to/file.txt');
+// $file2 will be a new file with the path /path/to/file_copy1.txt
+$file2 = clone $file;</code></pre>
+
+<h2 id="Iteration">Iteration</h2>
+
+<p>
+fFile implements the Iterator interface, meaning that ever fFile object can be used in a foreach loop, with each iteration returning a line from the line. Each line <strong>will</strong> include the original line break.
+</p>
+<pre class="block php"><code>$file = new fFile('report.csv');
+foreach ($file as $line) {
+    $fields = str_getcsv($line);
+    // 
+}</code></pre>
+
+<h2 id="MimeTypeEnum">MimeType Enum (PHP 8.4+)</h2>
+
+<p>
+The <code>MimeType</code> enum provides type-safe MIME type constants for file handling operations. This enum categorizes common MIME types and provides utility methods for type checking and validation.
+</p>
+
+<h3>MIME Type Categories</h3>
+
+<p>
+The MimeType enum organizes types into logical categories:
+</p>
+
+<ul>
+<li><strong>Image Types</strong>: ImageJpeg, ImagePng, ImageGif, ImageSvg, ImageBmp, ImageTiff, ImageIcon</li>
+<li><strong>Video Types</strong>: VideoMp4, VideoQuicktime, VideoAvi, VideoWmv, VideoFlv, VideoOgg</li>
+<li><strong>Audio Types</strong>: AudioMp4, AudioMpeg, AudioWav, AudioFlac, AudioVorbis, AudioWma</li>
+<li><strong>Document Types</strong>: ApplicationPdf, ApplicationMsword, ApplicationExcel, ApplicationPowerpoint</li>
+<li><strong>Text Types</strong>: TextPlain, TextHtml, TextCss, TextCsv, ApplicationJson, ApplicationXml</li>
+<li><strong>Archive Types</strong>: ApplicationZip, ApplicationGzip, ApplicationTar</li>
+</ul>
+
+<h3>Usage Examples</h3>
+
+<pre><code class="php"><?php
+// ✅ Type-safe MIME type handling
+$file = new fFile('document.pdf');
+$mimeType = MimeType::ApplicationPdf;
+
+// Check MIME type categories
+if ($mimeType-&gt;isImage()) {
+    echo "This is an image file";
+}
+
+if ($mimeType-&gt;isDocument()) {
+    echo "This is a document file";
+}
+
+// Get category information
+$category = $mimeType-&gt;getCategory();  // Returns 'document'
+
+// Convert between string and enum
+$enumType = MimeType::from('application/pdf');      // From MIME string
+$stringType = MimeType::ApplicationPdf-&gt;value;      // To MIME string
+?&gt;</code></pre>
+
+<h3>File Upload Integration</h3>
+
+<pre><code class="php"><?php
+// Integration with fUpload for type-safe uploads
+$upload = new fUpload();
+
+// Set allowed MIME types using enum
+$upload-&gt;setMIMETypes([
+    MimeType::ImageJpeg,
+    MimeType::ImagePng,
+    MimeType::ImageGif
+], 'Please upload a valid image file');
+
+// Check uploaded file type
+$uploadedFile = $upload-&gt;move('/uploads/', 'image');
+$detectedType = MimeType::detectFromFile($uploadedFile);
+
+if ($detectedType-&gt;isImage() && $detectedType-&gt;supportsTransparency()) {
+    echo "Uploaded image supports transparency";
+}
+?&gt;</code></pre>
+
+<h3>Enum Methods</h3>
+
+<ul>
+<li><code>isImage(): bool</code> - Check if MIME type is an image</li>
+<li><code>isVideo(): bool</code> - Check if MIME type is a video</li>
+<li><code>isAudio(): bool</code> - Check if MIME type is audio</li>
+<li><code>isDocument(): bool</code> - Check if MIME type is a document</li>
+<li><code>isText(): bool</code> - Check if MIME type is text-based</li>
+<li><code>getCategory(): string</code> - Get the general category name</li>
+<li><code>supportsTransparency(): bool</code> - Check if image format supports transparency</li>
+<li><code>detectFromFile(fFile): MimeType</code> - Detect MIME type from file</li>
+</ul>
+
+<p>
+The MimeType enum provides better type safety for file handling operations while maintaining compatibility with existing string-based MIME type usage throughout Flourish.
+</p>
+
+<h2 id="PropertyHooksFile">Property Hooks (PHP 8.4+)</h2>
+
+<p>
+The fFile class extensively uses PHP 8.4's Property Hooks to provide a modern, clean API for file information access. These computed properties replace traditional getter methods with intuitive property access.
+</p>
+
+<h3>File Information Properties</h3>
+
+<h4>Basic File Properties</h4>
+<pre><code class="php"><?php
+$file = new fFile('/path/to/document.pdf');
+
+// ✅ Clean property access instead of method calls
+echo $file-&gt;name;        // "document.pdf" (replaces getName())
+echo $file-&gt;extension;   // "pdf" (replaces getExtension())
+echo $file-&gt;path;        // "/path/to/document.pdf" (replaces getPath())
+echo $file-&gt;size;        // File size in bytes (replaces getSize())
+echo $file-&gt;mimeType;    // "application/pdf" (replaces getMimeType())
+?&gt;</code></pre>
+
+<h4>Status Properties</h4>
+<pre><code class="php"><?php
+$file = new fFile('/path/to/document.txt');
+
+// ✅ Dynamic boolean checks
+if ($file-&gt;exists) {
+    echo "File exists";
+}
+
+if ($file-&gt;isReadable) {
+    $content = $file-&gt;read();
+}
+
+if ($file-&gt;isWritable) {
+    $file-&gt;write("New content");
+}
+
+// ✅ Content-based properties
+echo "File has " . $file-&gt;lineCount . " lines";
+?&gt;</code></pre>
+
+<h4>Relationship Properties</h4>
+<pre><code class="php"><?php
+$file = new fFile('/documents/reports/annual.pdf');
+
+// ✅ Related objects as properties
+$parentDir = $file-&gt;parent;      // Returns fDirectory object
+$modTime = $file-&gt;mTime;         // Returns fTimestamp object
+
+// Use related objects
+echo "File is in: " . $parentDir-&gt;getPath();
+echo "Last modified: " . $modTime-&gt;format('Y-m-d H:i:s');
+?&gt;</code></pre>
+
+<h3>Performance Benefits</h3>
+
+<p>
+Property hooks provide lazy evaluation - expensive operations like file system checks are only performed when the property is accessed:
+</p>
+
+<pre><code class="php"><?php
+$file = new fFile('/large/file.txt');
+
+// ✅ No filesystem access during object creation
+// Only accesses filesystem when properties are used
+
+if ($someCondition) {
+    // Only checks existence if condition is true
+    return $file-&gt;exists ? $file-&gt;lineCount : 0;
+}
+
+// If condition is false, no filesystem operations occur
+?&gt;</code></pre>
+
+<h3>API Comparison</h3>
+
+<pre><code class="php"><?php
+$file = new fFile('/path/to/file.txt');
+
+// ❌ Old verbose method-based API (still works)
+if ($file-&gt;getName() !== '') {
+    if ($file-&gt;getSize() &gt; 0) {
+        echo $file-&gt;getMimeType();
+    }
+}
+
+// ✅ Clean property-based API
+if ($file-&gt;name !== '') {
+    if ($file-&gt;size &gt; 0) {
+        echo $file-&gt;mimeType;
+    }
+}
+?&gt;</code></pre>
+
+<h3>Available Properties</h3>
+
+<ul>
+<li><code>name</code> - File name with extension</li>
+<li><code>extension</code> - File extension (without dot)</li>
+<li><code>path</code> - Full file path</li>
+<li><code>size</code> - File size in bytes</li>
+<li><code>mimeType</code> - MIME type string</li>
+<li><code>mTime</code> - Modification time as fTimestamp</li>
+<li><code>parent</code> - Parent directory as fDirectory</li>
+<li><code>exists</code> - Boolean indicating if file exists</li>
+<li><code>isReadable</code> - Boolean indicating read permission</li>
+<li><code>isWritable</code> - Boolean indicating write permission</li>
+<li><code>lineCount</code> - Number of lines in file</li>
+</ul>
+
+<p>
+These property hooks maintain full backward compatibility while providing a modern, intuitive API for file operations.
+</p>
+
+<p>
+ 		</section>
+		<footer>
+			<section class="main group">
+				© 2012 Will Bond | Modified for PHP 8.4 compatibility by scopweb (2025)
+			</section>
+		</footer>
+
+
+	</body>
+</html>
+
+</p>

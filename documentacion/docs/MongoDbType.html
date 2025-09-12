@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>MongoDbType – Class Documentation – Flourish</title>
+		<link href='http://fonts.googleapis.com/css?family=Arimo:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="all">
+		<link rel="stylesheet" href="/js/codemirror.css" type="text/css">
+		<script src="/assets/js/jquery-1.7.2.min.js"></script>
+		<script src="/assets/js/codemirror.js"></script>
+		<script src="/assets/js/util/runmode.js"></script>
+		<script src="/assets/js/mode/xml/xml.js"></script>
+		<script src="/assets/js/mode/clike/clike.js"></script>
+		<script src="/assets/js/mode/javascript/javascript.js"></script>
+		<script src="/assets/js/mode/css/css.js"></script>
+		<script src="/assets/js/mode/php/php.js"></script>
+		<script src="/assets/js/mode/mysql/mysql.js"></script>
+		<script src="/assets/js/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="/assets/js/highlight.js"></script>
+		<script src="/assets/js/site.js"></script>
+	</head>
+	<body>
+		<header>
+			<section class="main group">
+				<a href="/"><img src="/assets/img/logo.png" alt="Flourish" /></a>
+				<span class="tagline">PHP Unframework</span>
+				<nav class="group">
+					<a href="/docs">Documentation</a>
+					<a href="/Download.html">Download</a>
+					<a href="https://github.com/scopweb/flourish-lib">Code</a>
+					<a href="https://github.com/scopweb/flourish-lib/issues">Issues</a>
+					<a href="/Tests.html">Tests</a>
+					
+				</nav>
+			</section>
+		</header>
+		<section class="main">
+<h1 id="MongoDbType">MongoDbType</h1>
+<div class="sidebar">
+<h2 id="ClassResources">Class Resources </h2>
+
+<ul>
+<li><strong><a href="/docs/MongoDbType.html">Class Documentation</a></strong></li>
+<li><a href="/api/MongoDbType.html">API Reference</a></li>
+<li><a href="https://github.com/scopweb/flourish-lib/blob/master/MongoDbType.php">Source Code</a></li>
+</ul>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="#Introduction">Introduction</a></li>
+<li><a href="#BSONTypes">BSON Types</a></li>
+<li><a href="#TypeDetection">Type Detection</a></li>
+<li><a href="#TypeValidation">Type Validation</a></li>
+<li><a href="#TypeConversion">Type Conversion</a></li>
+<li><a href="#UtilityMethods">Utility Methods</a></li>
+<li><a href="#Examples">Examples</a></li>
+</ul>
+
+<h2 id="NoSQLDatabaseClasses">NoSQL Database Classes</h2>
+
+<ul>
+<li><a href="/docs/fMongoDB.html">fMongoDB</a></li>
+<li><strong>MongoDbType</strong></li>
+<li><a href="/docs/fDatabase.html">fDatabase</a> (SQL databases)</li>
+</ul>
+</div>
+
+<p>
+The MongoDbType enum provides type safety for MongoDB BSON (Binary JSON) data types, offering validation, conversion, and utility methods for working with MongoDB documents in a type-safe manner.
+</p>
+
+<h2 id="Introduction">Introduction</h2>
+
+<p>
+MongoDB stores data in BSON format, which supports more data types than JSON. The MongoDbType enum brings PHP 8.4's type safety features to MongoDB operations, making it easier to work with different BSON data types correctly.
+</p>
+
+<h2 id="BSONTypes">BSON Types</h2>
+
+<p>The enum supports all major BSON data types:</p>
+
+<h3>Scalar Types</h3>
+<ul>
+<li><strong>Double</strong> - 64-bit floating point numbers</li>
+<li><strong>String</strong> - UTF-8 strings</li>
+<li><strong>Boolean</strong> - true/false values</li>
+<li><strong>Int32</strong> - 32-bit integers</li>
+<li><strong>Int64</strong> - 64-bit integers</li>
+</ul>
+
+<h3>Special Types</h3>
+<ul>
+<li><strong>ObjectId</strong> - 12-byte unique identifiers</li>
+<li><strong>Date</strong> - UTC datetime (milliseconds since epoch)</li>
+<li><strong>Timestamp</strong> - MongoDB internal timestamp</li>
+<li><strong>Null</strong> - Null values</li>
+</ul>
+
+<h3>Structural Types</h3>
+<ul>
+<li><strong>Object</strong> - Embedded documents</li>
+<li><strong>Array</strong> - Ordered lists</li>
+<li><strong>Binary</strong> - Binary data</li>
+</ul>
+
+<h3>Advanced Types</h3>
+<ul>
+<li><strong>Regex</strong> - Regular expressions</li>
+<li><strong>JavaScript</strong> - JavaScript code</li>
+<li><strong>Decimal128</strong> - High-precision decimals</li>
+</ul>
+
+<h2 id="TypeDetection">Type Detection</h2>
+
+<p>Automatically detect BSON types from PHP values:</p>
+
+<pre><code class="php"><?php
+// Detect types from PHP values
+$stringType = MongoDbType::detectFromPhpValue('Hello World');
+// Returns: MongoDbType::String
+
+$arrayType = MongoDbType::detectFromPhpValue(['item1', 'item2']);
+// Returns: MongoDbType::Array
+
+$objectType = MongoDbType::detectFromPhpValue(['key' => 'value']);
+// Returns: MongoDbType::Object
+
+$dateType = MongoDbType::detectFromPhpValue(new MongoDB\BSON\UTCDateTime());
+// Returns: MongoDbType::Date
+
+$objectIdType = MongoDbType::detectFromPhpValue(new MongoDB\BSON\ObjectId());
+// Returns: MongoDbType::ObjectId
+?></code></pre>
+
+<h2 id="TypeValidation">Type Validation</h2>
+
+<p>Validate and categorize types:</p>
+
+<pre><code class="php"><?php
+// Check if type is scalar
+if (MongoDbType::String->isScalarType()) {
+    echo "String is a scalar type";
+}
+
+if (MongoDbType::Double->isScalarType()) {
+    echo "Double is a scalar type";
+}
+
+// Check if type is structural
+if (MongoDbType::Array->isStructural()) {
+    echo "Array is a structural type";
+}
+
+if (MongoDbType::Object->isStructural()) {
+    echo "Object is a structural type";
+}
+
+// Check if type supports indexing
+if (MongoDbType::String->isIndexable()) {
+    echo "String fields can be indexed";
+}
+
+// Check if type is numeric
+if (MongoDbType::Int32->isNumeric()) {
+    echo "Int32 is a numeric type";
+}
+?></code></pre>
+
+<h2 id="TypeConversion">Type Conversion</h2>
+
+<p>Convert between PHP values and BSON objects:</p>
+
+<pre><code class="php"><?php
+// Convert PHP values to BSON objects
+$objectId = MongoDbType::ObjectId->convertFromPhp('507f1f77bcf86cd799439011');
+// Returns: MongoDB\BSON\ObjectId instance
+
+$date = MongoDbType::Date->convertFromPhp(time());
+// Returns: MongoDB\BSON\UTCDateTime instance
+
+$decimal = MongoDbType::Decimal128->convertFromPhp('123.456');
+// Returns: MongoDB\BSON\Decimal128 instance
+
+// Convert BSON objects to PHP values
+$phpValue = MongoDbType::String->convertToPhp(new MongoDB\BSON\ObjectId());
+// Returns: string representation of ObjectId
+
+// Validate before conversion
+if (MongoDbType::Date->canConvertFromPhp($timestamp)) {
+    $bsonDate = MongoDbType::Date->convertFromPhp($timestamp);
+}
+?></code></pre>
+
+<h2 id="UtilityMethods">Utility Methods</h2>
+
+<p>Additional utility methods for working with types:</p>
+
+<pre><code class="php"><?php
+// Get all scalar types
+$scalarTypes = MongoDbType::getAllScalarTypes();
+foreach ($scalarTypes as $type) {
+    echo $type->value . " is scalar\n";
+}
+
+// Get all structural types
+$structuralTypes = MongoDbType::getAllStructuralTypes();
+
+// Get type information
+$info = MongoDbType::String->getTypeInfo();
+echo "Type: " . $info['name'];
+echo "Category: " . $info['category'];
+echo "Description: " . $info['description'];
+
+// Check type compatibility
+if (MongoDbType::Int32->isCompatibleWith(MongoDbType::Int64)) {
+    echo "Int32 and Int64 are compatible";
+}
+?></code></pre>
+
+<h2 id="Examples">Examples</h2>
+
+<h3>Document Validation</h3>
+
+<pre><code class="php"><?php
+function validateDocument(array $document): array {
+    $errors = [];
+    
+    foreach ($document as $field => $value) {
+        $type = MongoDbType::detectFromPhpValue($value);
+        
+        // Validate required fields
+        if ($field === '_id' && $type !== MongoDbType::ObjectId) {
+            $errors[] = "Field '_id' must be ObjectId";
+        }
+        
+        if ($field === 'created_at' && $type !== MongoDbType::Date) {
+            $errors[] = "Field 'created_at' must be Date";
+        }
+        
+        if ($field === 'email' && $type !== MongoDbType::String) {
+            $errors[] = "Field 'email' must be String";
+        }
+    }
+    
+    return $errors;
+}
+
+$document = [
+    '_id' => new MongoDB\BSON\ObjectId(),
+    'name' => 'John Doe',
+    'email' => 'john@example.com',
+    'age' => 30,
+    'created_at' => new MongoDB\BSON\UTCDateTime()
+];
+
+$errors = validateDocument($document);
+if (empty($errors)) {
+    echo "Document is valid";
+} else {
+    echo "Validation errors: " . implode(', ', $errors);
+}
+?></code></pre>
+
+<h3>Schema Definition</h3>
+
+<pre><code class="php"><?php
+class UserSchema {
+    public static function getFieldTypes(): array {
+        return [
+            '_id' => MongoDbType::ObjectId,
+            'name' => MongoDbType::String,
+            'email' => MongoDbType::String,
+            'age' => MongoDbType::Int32,
+            'profile' => MongoDbType::Object,
+            'tags' => MongoDbType::Array,
+            'created_at' => MongoDbType::Date,
+            'is_active' => MongoDbType::Boolean
+        ];
+    }
+    
+    public static function validateField(string $field, mixed $value): bool {
+        $expectedType = self::getFieldTypes()[$field] ?? null;
+        if (!$expectedType) {
+            return false;
+        }
+        
+        $actualType = MongoDbType::detectFromPhpValue($value);
+        return $actualType === $expectedType;
+    }
+}
+
+// Usage
+if (UserSchema::validateField('age', 30)) {
+    echo "Age field is valid";
+}
+?></code></pre>
+
+<h3>Type-Safe Query Building</h3>
+
+<pre><code class="php"><?php
+class TypeSafeQuery {
+    private array $filters = [];
+    
+    public function whereEquals(string $field, mixed $value): self {
+        $type = MongoDbType::detectFromPhpValue($value);
+        
+        $this->filters[] = [
+            'field' => $field,
+            'operator' => '$eq',
+            'value' => $value,
+            'type' => $type
+        ];
+        
+        return $this;
+    }
+    
+    public function whereIn(string $field, array $values): self {
+        // Validate all values have the same type
+        $types = array_map([MongoDbType::class, 'detectFromPhpValue'], $values);
+        $uniqueTypes = array_unique($types);
+        
+        if (count($uniqueTypes) > 1) {
+            throw new InvalidArgumentException("All values in whereIn must have the same type");
+        }
+        
+        $this->filters[] = [
+            'field' => $field,
+            'operator' => '$in',
+            'value' => $values,
+            'type' => $types[0]
+        ];
+        
+        return $this;
+    }
+    
+    public function build(): array {
+        $query = [];
+        
+        foreach ($this->filters as $filter) {
+            $query[$filter['field']] = [
+                $filter['operator'] => $filter['value']
+            ];
+        }
+        
+        return $query;
+    }
+}
+
+// Usage
+$query = (new TypeSafeQuery())
+    ->whereEquals('status', 'active')
+    ->whereIn('department', ['Engineering', 'Design'])
+    ->build();
+?></code></pre>
+
+<p>
+The MongoDbType enum provides comprehensive type safety for MongoDB operations, helping prevent type-related errors and making MongoDB integration more reliable and maintainable.
+</p>
+
+		</section>
+
+		<footer>
+			<section class="main group">
+				<a href="http://github.com/scopweb/flourish-lib">GitHub</a>
+				<a href="/Support.html">Community</a>
+				<a href="http://flourishlib.com/docs/CodeStandards.html">Code Standards</a>
+				<span>&copy; 2025 Flourish Framework</span>
+			</section>
+		</footer>
+	</body>
+</html>

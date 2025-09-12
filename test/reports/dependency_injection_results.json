@@ -1,0 +1,126 @@
+{
+    "summary": {
+        "total_tests": 23,
+        "passed_tests": 19,
+        "failed_tests": 4,
+        "success_rate": 82.6,
+        "timestamp": "2025-09-12 09:16:48"
+    },
+    "tests": [
+        {
+            "test": "Container implements PSR-11 ContainerInterface",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container has() method works correctly",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container get() method retrieves services",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container bind() method works with closures",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container bind() method works with class names",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container singleton() creates single instances",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container instance() stores existing instances",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container make() creates new instances each time",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container alias() creates service aliases",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container auto-wires constructor dependencies",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container throws NotFoundException for missing services",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Container throws ContainerException for build errors",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Service providers can be registered",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Service providers boot correctly",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Application bootstraps correctly",
+            "status": "FAIL",
+            "error": "Test returned false"
+        },
+        {
+            "test": "Application provides service access",
+            "status": "FAIL",
+            "error": "Test returned false"
+        },
+        {
+            "test": "Application sets up error handling",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "fEmail implements EmailServiceInterface",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Application config implements ConfigInterface",
+            "status": "FAIL",
+            "error": "Test returned false"
+        },
+        {
+            "test": "Application cache implements CacheInterface",
+            "status": "FAIL",
+            "error": "Test returned false"
+        },
+        {
+            "test": "fEmail supports constructor injection",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "fEmail maintains backward compatibility",
+            "status": "PASS",
+            "error": null
+        },
+        {
+            "test": "Static method access still works",
+            "status": "PASS",
+            "error": null
+        }
+    ]
+}
