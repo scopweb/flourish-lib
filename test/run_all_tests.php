@@ -31,13 +31,14 @@ class FlourishTestRunner
     {
         $testFiles = [
             'php84_compatibility_test.php',
-            'modernization_test.php', 
+            'modernization_test.php',
             'deprecated_classes_test.php',
             'working_examples_test.php',
             'fdatabase_compatibility_test.php',
             'fdatabase_real_test.php',
             'fquerybuilder_test.php',
-            'mongodb_integration_test.php'
+            'mongodb_integration_test.php',
+            'fschema_backticks_test.php'
         ];
         
         foreach ($testFiles as $testFile) {

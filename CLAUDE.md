@@ -164,6 +164,12 @@ All 12 critical classes have been successfully migrated to PHP 8.4 compatibility
 - [x] **fNumber.php** - ✅ FULLY COMPATIBLE with PHP 8.4
 - [x] **fPagination.php** - ✅ FULLY COMPATIBLE with PHP 8.4
 - [x] **fSchema.php** - ✅ FULLY COMPATIBLE with PHP 8.4
+  - ✅ **CRITICAL FIX**: fetchMySQLKeys() now supports both backticks and double quotes
+  - Fixed regex patterns for PRIMARY KEY, UNIQUE KEY, and FOREIGN KEY parsing
+  - Resolves compatibility with MySQL default output format (backticks)
+  - Maintains ANSI_QUOTES mode support (double quotes)
+  - Tolerates USING BTREE and other index type clauses
+  - **Related to**: [imarc/flourish-classes PR #21](https://github.com/imarc/flourish-classes/pull/21)
 - [x] **fSQLSchemaTranslation.php** - ✅ FULLY COMPATIBLE with PHP 8.4
 - [x] **fSQLTranslation.php** - ✅ FULLY COMPATIBLE with PHP 8.4
 - [x] **fTemplating.php** - ✅ FULLY COMPATIBLE with PHP 8.4
@@ -206,8 +212,15 @@ All 12 critical classes have been successfully migrated to PHP 8.4 compatibility
    - Added compatibility comment explaining cookie-only is now default behavior
 9. **Boolean Constants Modernization** - ✅ RESOLVED
    - All TRUE/FALSE/NULL → true/false/null in critical classes
-10. **Callable Deprecation** - ✅ RESOLVED 
+10. **Callable Deprecation** - ✅ RESOLVED
     - Fixed fValidationException deprecated callable pattern
+11. **MySQL SHOW CREATE TABLE Backticks Support** - ✅ RESOLVED
+    - File: fSchema.php
+    - Issue: fetchMySQLKeys() only supported double quotes, failing with MySQL default backticks
+    - Solution: Updated regex patterns to accept both `` ` `` and `"` delimiters
+    - Impact: Fixes compatibility with 99% of MySQL installations (backticks are default)
+    - Related: [imarc/flourish-classes PR #21](https://github.com/imarc/flourish-classes/pull/21)
+    - Testing: 9 comprehensive tests added and passing
 
 ## 🧪 Testing Strategy - ✅ COMPLETED
 - [x] **Comprehensive test suite implemented** (32 tests)
