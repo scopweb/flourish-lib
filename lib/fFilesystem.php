@@ -613,7 +613,7 @@ class fFilesystem
 
 		self::$rollback_operations = array_reverse(self::$rollback_operations);
 
-		$clear_cache = FALSE;
+		$clear_cache = false;
 		foreach (self::$rollback_operations as $operation) {
 			switch($operation['action']) {
 
@@ -622,7 +622,7 @@ class fFilesystem
 					$handle         = fopen($operation['filename'], 'r+');
 					ftruncate($handle, $current_length - $operation['length']);
 					fclose($handle);
-					$clear_cache = TRUE;
+					$clear_cache = true;
 					break;
 
 				case 'delete':
@@ -631,12 +631,12 @@ class fFilesystem
 						debug_backtrace()
 					);
 					unlink($operation['filename']);
-					fFilesystem::updateFilenameMap($operation['filename'], '*DELETED at ' . time() . ' with token ' . uniqid('', TRUE) . '* ' . $operation['filename']);
+					fFilesystem::updateFilenameMap($operation['filename'], '*DELETED at ' . time() . ' with token ' . uniqid('', true) . '* ' . $operation['filename']);
 					break;
 
 				case 'write':
 					file_put_contents($operation['filename'], $operation['old_data']);
-					$clear_cache = TRUE;
+					$clear_cache = true;
 					break;
 
 				case 'rename':

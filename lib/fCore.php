@@ -297,10 +297,10 @@ class fCore
 	 * {{{
 	 * #!php
 	 * // Passing multiple parameters in a normal fashion
-	 * fCore::call('Class::method', TRUE, 0, 'test');
+	 * fCore::call('Class::method', true, 0, 'test');
 	 *
 	 * // Passing multiple parameters in a parameters array
-	 * fCore::call('Class::method', array(TRUE, 0, 'test'));
+	 * fCore::call('Class::method', array(true, 0, 'test'));
 	 * }}}
 	 *
 	 * To pass parameters by reference they must be assigned to an
@@ -321,7 +321,7 @@ class fCore
 	static public function call($callback, ...$parameters)
 	{
 		// Fix PHP 5.0 and 5.1 static callback syntax
-		if (is_string($callback) && strpos($callback, '::') !== FALSE) {
+		if (is_string($callback) && strpos($callback, '::') !== false) {
 			$callback = explode('::', $callback);
 		}
 
@@ -342,7 +342,7 @@ class fCore
 	 */
 	static public function callback($callback)
 	{
-		if (is_string($callback) && strpos($callback, '::') !== FALSE) {
+		if (is_string($callback) && strpos($callback, '::') !== false) {
 			return explode('::', $callback);
 		}
 
@@ -354,7 +354,7 @@ class fCore
 	 * Checks an error/exception destination to make sure it is valid
 	 *
 	 * @param  string $destination  The destination for the exception. An email, file or the string `'html'`.
-	 * @return string|boolean  `'email'`, `'file'`, `'html'` or `FALSE`
+	 * @return string|boolean  `'email'`, `'file'`, `'html'` or `false`
 	 */
 	static private function checkDestination($destination)
 	{
@@ -383,12 +383,12 @@ class fCore
 
 		$path_info     = pathinfo($destination);
 		$dir_exists    = file_exists($path_info['dirname']);
-		$dir_writable  = ($dir_exists) ? is_writable($path_info['dirname']) : FALSE;
+		$dir_writable  = ($dir_exists) ? is_writable($path_info['dirname']) : false;
 		$file_exists   = file_exists($destination);
-		$file_writable = ($file_exists) ? is_writable($destination) : FALSE;
+		$file_writable = ($file_exists) ? is_writable($destination) : false;
 
 		if (!$dir_exists || ($dir_exists && ((!$file_exists && !$dir_writable) || ($file_exists && !$file_writable)))) {
-			return FALSE;
+			return false;
 		}
 
 		return 'file';
@@ -427,28 +427,28 @@ class fCore
 
 		$uname = php_uname('s');
 
-		if (stripos($uname, 'linux') !== FALSE) {
+		if (stripos($uname, 'linux') !== false) {
 			return in_array('linux', $oses);
 
-		} elseif (stripos($uname, 'aix') !== FALSE) {
+		} elseif (stripos($uname, 'aix') !== false) {
 			return in_array('aix', $oses);
 
-		} elseif (stripos($uname, 'netbsd') !== FALSE) {
+		} elseif (stripos($uname, 'netbsd') !== false) {
 			return in_array('netbsd', $oses) || in_array('bsd', $oses);
 
-		} elseif (stripos($uname, 'openbsd') !== FALSE) {
+		} elseif (stripos($uname, 'openbsd') !== false) {
 			return in_array('openbsd', $oses) || in_array('bsd', $oses);
 
-		} elseif (stripos($uname, 'freebsd') !== FALSE) {
+		} elseif (stripos($uname, 'freebsd') !== false) {
 			return in_array('freebsd', $oses) || in_array('bsd', $oses);
 
-		} elseif (stripos($uname, 'solaris') !== FALSE || stripos($uname, 'sunos') !== FALSE) {
+		} elseif (stripos($uname, 'solaris') !== false || stripos($uname, 'sunos') !== false) {
 			return in_array('solaris', $oses);
 
-		} elseif (stripos($uname, 'windows') !== FALSE) {
+		} elseif (stripos($uname, 'windows') !== false) {
 			return in_array('windows', $oses);
 
-		} elseif (stripos($uname, 'darwin') !== FALSE) {
+		} elseif (stripos($uname, 'darwin') !== false) {
 			return in_array('osx', $oses);
 		}
 
@@ -486,7 +486,7 @@ class fCore
 	 */
 	static public function compose($message, ...$args)
 	{
-		if (class_exists('fText', FALSE)) {
+		if (class_exists('fText', false)) {
 			return fText::compose($message, $args);
 		} else {
 			return vsprintf($message, $args);
@@ -527,7 +527,7 @@ class fCore
 	 * @param  boolean $force    If debugging should be forced even when global debugging is off
 	 * @return void
 	 */
-	static public function debug($message, $force=FALSE)
+	static public function debug($message, $force=false)
 	{
 		if ($force || self::$debug) {
 			if (self::$debug_callback) {
@@ -546,8 +546,8 @@ class fCore
 	 * [http://php.net/print_r print_r()] except that the following values
 	 * are represented as special strings:
 	 *
-	 *  - `TRUE`: `'{true}'`
-	 *  - `FALSE`: `'{false}'`
+	 *  - `true`: `'{true}'`
+	 *  - `false`: `'{false}'`
 	 *  - `null`: `'{null}'`
 	 *  - `''`: `'{empty_string}'`
 	 *
@@ -697,7 +697,7 @@ class fCore
 	 *
 	 * @return void
 	 */
-	static public function enableErrorHandling($destination, $handle_fatal_errors=FALSE)
+	static public function enableErrorHandling($destination, $handle_fatal_errors=false)
 	{
 		if (!self::checkDestination($destination)) {
 			return;
@@ -814,7 +814,7 @@ class fCore
 	 * @param  boolean $force  If debugging is forced
 	 * @return boolean  If debugging is enabled
 	 */
-	static public function getDebug($force=FALSE)
+	static public function getDebug($force=false)
 	{
 		return self::$debug || $force;
 	}
@@ -930,7 +930,7 @@ class fCore
 			// so we pass the error on to the original handler to do its thing
 			if (self::$captured_errors_previous_handler[self::$captured_error_level] != array('fCore', 'handleError')) {
 				if (self::$captured_errors_previous_handler[self::$captured_error_level] === null) {
-					return FALSE;
+					return false;
 				}
 				return call_user_func(self::$captured_errors_previous_handler[self::$captured_error_level], $error_number, $error_string, $error_file, $error_line, $error_context);
 
@@ -1088,7 +1088,7 @@ class fCore
 			$messages[self::$exception_destination] .= self::$exception_message;
 		}
 
-		$hash = md5(join('', self::$significant_error_lines), TRUE);
+		$hash = md5(join('', self::$significant_error_lines), true);
 		$hash = strtr(base64_encode($hash), '/', '-');
 		$hash = substr(rtrim($hash, '='), 0, 8);
 
@@ -1214,10 +1214,10 @@ class fCore
 
 		self::$captured_error_level--;
 
-		self::$captured_error_regex             = array_slice(self::$captured_error_regex,             0, self::$captured_error_level, TRUE);
-		self::$captured_error_types             = array_slice(self::$captured_error_types,             0, self::$captured_error_level, TRUE);
-		self::$captured_errors                  = array_slice(self::$captured_errors,                  0, self::$captured_error_level, TRUE);
-		self::$captured_errors_previous_handler = array_slice(self::$captured_errors_previous_handler, 0, self::$captured_error_level, TRUE);
+		self::$captured_error_regex             = array_slice(self::$captured_error_regex,             0, self::$captured_error_level, true);
+		self::$captured_error_types             = array_slice(self::$captured_error_types,             0, self::$captured_error_level, true);
+		self::$captured_errors                  = array_slice(self::$captured_errors,                  0, self::$captured_error_level, true);
+		self::$captured_errors_previous_handler = array_slice(self::$captured_errors_previous_handler, 0, self::$captured_error_level, true);
 
 		restore_error_handler();
 

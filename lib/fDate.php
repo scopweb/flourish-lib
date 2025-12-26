@@ -26,7 +26,7 @@ class fDate
 	 */
 	static protected function compose($message, ...$args)
 	{
-		if (class_exists('fText', FALSE)) {
+		if (class_exists('fText', false)) {
 			return fText::compose($message, $args);
 		} else {
 			return vsprintf($message, $args);
@@ -71,7 +71,7 @@ class fDate
 		}
 
 		$is_51    = fCore::checkVersion('5.1');
-		$is_valid = ($is_51 && $timestamp !== FALSE) || (!$is_51 && $timestamp !== -1);
+		$is_valid = ($is_51 && $timestamp !== false) || (!$is_51 && $timestamp !== -1);
 
 		if (!$is_valid) {
 			throw new fValidationException(
@@ -121,7 +121,7 @@ class fDate
 	{
 		$timestamp = strtotime($adjustment, $this->date);
 
-		if ($timestamp === FALSE || $timestamp === -1) {
+		if ($timestamp === false || $timestamp === -1) {
 			throw new fValidationException(
 				'The adjustment specified, %s, does not appear to be a valid relative date measurement',
 				$adjustment
@@ -201,7 +201,7 @@ class fDate
 	 *  - `29 days` would be represented as `1 month`, but `21 days` would be shown as `3 weeks`
 	 *
 	 * @param  fDate|object|string|integer $other_date  The date to create the difference with, `NULL` is interpreted as today
-	 * @param  boolean                     $simple      When `TRUE`, the returned value will only include the difference in the two dates, but not `from now`, `ago`, `after` or `before`
+	 * @param  boolean                     $simple      When `true`, the returned value will only include the difference in the two dates, but not `from now`, `ago`, `after` or `before`
 	 * @param  boolean                     |$simple
 	 * @return string  The fuzzy difference in time between the this date and the one provided
 	 */
@@ -212,9 +212,9 @@ class fDate
 			$other_date = null;
 		}
 
-		$relative_to_now = FALSE;
+		$relative_to_now = false;
 		if ($other_date === null) {
-			$relative_to_now = TRUE;
+			$relative_to_now = true;
 		}
 		$other_date = new fDate($other_date);
 

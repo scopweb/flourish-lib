@@ -50,8 +50,8 @@ abstract class fException extends Exception
 	 * [http://php.net/print_r print_r()] except that the following values
 	 * are represented as special strings:
 	 *
-	 *  - `TRUE`: `'{true}'`
-	 *  - `FALSE`: `'{false}'`
+	 *  - `true`: `'{true}'`
+	 *  - `false`: `'{false}'`
 	 *  - `null`: `'{null}'`
 	 *  - `''`: `'{empty_string}'`
 	 *

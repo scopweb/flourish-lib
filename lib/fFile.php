@@ -1035,7 +1035,7 @@ class fFile implements Iterator, Countable
 	 * @throws fValidationException  When the directory passed is not a directory or is not readable
 	 *
 	 * @param  fDirectory|string $new_directory  The directory to move this file into
-	 * @param  boolean           $overwrite      If the current filename already exists in the new directory, `TRUE` will cause the file to be overwritten, `FALSE` will cause the new filename to change
+	 * @param  boolean           $overwrite      If the current filename already exists in the new directory, `true` will cause the file to be overwritten, `false` will cause the new filename to change
 	 * @return fFile  The file object, to allow for method chaining
 	 */
 	public function move($new_directory, $overwrite)
@@ -1085,7 +1085,7 @@ class fFile implements Iterator, Countable
 	 * Any open output buffers are automatically closed and discarded.
 	 *
 	 * @param  boolean $headers   If HTTP headers for the file should be included
-	 * @param  mixed   $filename  Present the file as an attachment instead of just outputting type headers - if a string is passed, that will be used for the filename, if `TRUE` is passed, the current filename will be used
+	 * @param  mixed   $filename  Present the file as an attachment instead of just outputting type headers - if a string is passed, that will be used for the filename, if `true` is passed, the current filename will be used
 	 * @return fFile  The file object, to allow for method chaining
 	 */
 	public function output($headers, $filename=null)
@@ -1143,7 +1143,7 @@ class fFile implements Iterator, Countable
 	 * progress and is later rolled back.
 	 *
 	 * @param  string  $new_filename  The new full path to the file or a new filename in the current directory
-	 * @param  boolean $overwrite     If the new filename already exists, `TRUE` will cause the file to be overwritten, `FALSE` will cause the new filename to change
+	 * @param  boolean $overwrite     If the new filename already exists, `true` will cause the file to be overwritten, `false` will cause the new filename to change
 	 * @return fFile  The file object, to allow for method chaining
 	 */
 	public function rename($new_filename, $overwrite)
@@ -1266,10 +1266,10 @@ class fFile implements Iterator, Countable
 		$this->tossIfDeleted();
 
 		if ($this->file_handle === null) {
-			return TRUE;
+			return true;
 		}
 
-		return $this->current_line !== FALSE;
+		return $this->current_line !== false;
 	}
 
 

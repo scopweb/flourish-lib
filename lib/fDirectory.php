@@ -110,7 +110,7 @@ class fDirectory
 	 * @param  boolean $skip_checks  If file checks should be skipped, which improves performance, but may cause undefined behavior - only skip these if they are duplicated elsewhere
 	 * @return fDirectory
 	 */
-	public function __construct($directory, $skip_checks=FALSE)
+	public function __construct($directory, $skip_checks=false)
 	{
 		if (!$skip_checks) {
 			if (empty($directory)) {
@@ -223,7 +223,7 @@ class fDirectory
 		rmdir($this->directory);
 
 		fFilesystem::updateDeletedMap($this->directory, debug_backtrace());
-		fFilesystem::updateFilenameMapForDirectory($this->directory, '*DELETED at ' . time() . ' with token ' . uniqid('', TRUE) . '* ' . $this->directory);
+		fFilesystem::updateFilenameMapForDirectory($this->directory, '*DELETED at ' . time() . ' with token ' . uniqid('', true) . '* ' . $this->directory);
 	}
 
 
@@ -268,7 +268,7 @@ class fDirectory
 	 * @param  boolean $translate_to_web_path  If the path should be the web path
 	 * @return string  The path for the directory
 	 */
-	public function getPath($translate_to_web_path=FALSE)
+	public function getPath($translate_to_web_path=false)
 	{
 		$this->tossIfDeleted();
 
@@ -289,7 +289,7 @@ class fDirectory
 	 * @param  integer $decimal_places  The number of decimal places to format to (if enabled)
 	 * @return integer|string  If formatted, a string with filesize in b/kb/mb/gb/tb, otherwise an integer
 	 */
-	public function getSize($format=FALSE, $decimal_places=1)
+	public function getSize($format=false, $decimal_places=1)
 	{
 		$this->tossIfDeleted();
 
@@ -337,7 +337,7 @@ class fDirectory
 	 * @throws fValidationException  When the new parent directory passed is not a directory, is not readable or is a sub-directory of this directory
 	 *
 	 * @param  fDirectory|string $new_parent_directory  The directory to move this directory into
-	 * @param  boolean           $overwrite             If the current filename already exists in the new directory, `TRUE` will cause the file to be overwritten, `FALSE` will cause the new filename to change
+	 * @param  boolean           $overwrite             If the current filename already exists in the new directory, `true` will cause the file to be overwritten, `false` will cause the new filename to change
 	 * @return fDirectory  The directory object, to allow for method chaining
 	 */
 	public function move($new_parent_directory, $overwrite)
@@ -363,7 +363,7 @@ class fDirectory
 	 * files/dirs) as existing with the old paths until that point.
 	 *
 	 * @param  string  $new_dirname  The new full path to the directory or a new name in the current parent directory
-	 * @param  boolean $overwrite    If the new dirname already exists, TRUE will cause the file to be overwritten, FALSE will cause the new filename to change
+	 * @param  boolean $overwrite    If the new dirname already exists, true will cause the file to be overwritten, false will cause the new filename to change
 	 * @return void
 	 */
 	public function rename($new_dirname, $overwrite)

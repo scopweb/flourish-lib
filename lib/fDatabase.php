@@ -73,7 +73,7 @@ class fDatabase
 	 */
 	static protected function compose($message, ...$args)
 	{
-		if (class_exists('fText', FALSE)) {
+		if (class_exists('fText', false)) {
 			return fText::compose($message, $args);
 		} else {
 			return vsprintf($message, $args);
@@ -357,7 +357,7 @@ class fDatabase
 			// PDO objects close their own connections when destroyed
 		}
 
-		$this->connection = FALSE;
+		$this->connection = false;
 	}
 
 
@@ -385,7 +385,7 @@ class fDatabase
 	 */
 	private function checkForError($result, $extra_info=NULL, $sql=NULL)
 	{
-		if ($result === FALSE || $result->getResult() === FALSE) {
+		if ($result === false || $result->getResult() === false) {
 
 			if ($this->extension == 'ibm_db2') {
 				if (is_resource($extra_info)) {
@@ -497,9 +497,9 @@ class fDatabase
 		// Don't try to reconnect if we are already connected
 		if ($this->connection) { return; }
 
-		$connection_error     = FALSE;
-		$authentication_error = FALSE;
-		$database_error       = FALSE;
+		$connection_error     = false;
+		$authentication_error = false;
+		$database_error       = false;
 
 		$errors = NULL;
 
@@ -537,7 +537,7 @@ class fDatabase
 					fCore::startErrorCapture();
 					$resource = fsockopen($this->host, $this->port ? $this->port : 1433, $errno, $errstr, $this->timeout);
 					$errors = fCore::stopErrorCapture();
-					if ($resource !== FALSE) {
+					if ($resource !== false) {
 						fclose($resource);
 					}
 				}
@@ -559,7 +559,7 @@ class fDatabase
 					fCore::startErrorCapture();
 					$resource = fsockopen($this->host, $this->port ? $this->port : 1521, $errno, $errstr, $this->timeout);
 					$errors = fCore::stopErrorCapture();
-					if ($resource !== FALSE) {
+					if ($resource !== false) {
 						fclose($resource);
 					}
 				}
@@ -580,7 +580,7 @@ class fDatabase
 
 			try {
 				if ($errors) {
-					$this->connection = FALSE;
+					$this->connection = false;
 				} else {
 					$this->connection = new PDO($dsn, $username, $password, $options);
 					if ($this->type == 'mysql') {
@@ -589,7 +589,7 @@ class fDatabase
 				}
 
 			} catch (PDOException $e) {
-				$this->connection = FALSE;
+				$this->connection = false;
 
 				$errors = $e->getMessage();
 			}
@@ -619,7 +619,7 @@ class fDatabase
 				'DB2_ATTR_CASE' => DB2_CASE_LOWER
 			);
 			$this->connection = db2_connect($connection_string, $username, $password, $options);
-			if ($this->connection === FALSE) {
+			if ($this->connection === false) {
 				$errors = db2_conn_errormsg();
 			}
 		}
@@ -635,13 +635,13 @@ class fDatabase
 			$separator        = (fCore::checkOS('windows')) ? ',' : ':';
 
 			if (!$this->persistent) {
-				$this->connection = mssql_connect(($this->port) ? $this->host . $separator . $this->port : $this->host, $this->username, $this->password, TRUE);
+				$this->connection = mssql_connect(($this->port) ? $this->host . $separator . $this->port : $this->host, $this->username, $this->password, true);
 			} else {
 				$this->connection = mssql_pconnect(($this->port) ? $this->host . $separator . $this->port : $this->host, $this->username, $this->password);
 			}
 
-			if ($this->connection !== FALSE && mssql_select_db($this->database, $this->connection) === FALSE) {
-				$this->connection = FALSE;
+			if ($this->connection !== false && mssql_select_db($this->database, $this->connection) === false) {
+				$this->connection = false;
 			}
 
 			$errors = fCore::stopErrorCapture();
@@ -667,13 +667,13 @@ class fDatabase
 
 			fCore::startErrorCapture();
 
-			$this->connection = mysql_connect($host, $this->username, $this->password, TRUE);
+			$this->connection = mysql_connect($host, $this->username, $this->password, true);
 
 			$errors = fCore::stopErrorCapture();
 
-			if ($this->connection !== FALSE && mysql_select_db($this->database, $this->connection) === FALSE) {
+			if ($this->connection !== false && mysql_select_db($this->database, $this->connection) === false) {
 				$errors = 'Unknown database';
-				$this->connection = FALSE;
+				$this->connection = false;
 			}
 
 			if ($this->connection && function_exists('mysql_set_charset') && !mysql_set_charset('utf8', $this->connection)) {
@@ -703,7 +703,7 @@ class fDatabase
 				$result = mysqli_real_connect($this->connection, $this->host, $this->username, $this->password, $this->database);
 			}
 			if (!$result) {
-				$this->connection = FALSE;
+				$this->connection = false;
 			}
 
 			$errors = fCore::stopErrorCapture();
@@ -718,16 +718,16 @@ class fDatabase
 		if ($this->extension == 'oci8') {
 
 			fCore::startErrorCapture();
-			$resource = TRUE;
+			$resource = true;
 
 			// This driver does not support timeouts so we fake it here
 			if ($this->timeout !== NULL) {
 				$resource = fsockopen($this->host, $this->port ? $this->port : 1521, $errno, $errstr, $this->timeout);
-				if ($resource !== FALSE) {
+				if ($resource !== false) {
 					fclose($resource);
-					$resource = TRUE;
+					$resource = true;
 				} else {
-					$this->connection = FALSE;
+					$this->connection = false;
 				}
 			}
 
@@ -787,7 +787,7 @@ class fDatabase
 				$this->connection = sqlsrv_connect($this->host , $options);
 			}	
 
-			if ($this->connection === FALSE) {
+			if ($this->connection === false) {
 				$errors = sqlsrv_errors();
 			}
 
@@ -795,7 +795,7 @@ class fDatabase
 		}
 
 		// Ensure the connection was established
-		if ($this->connection === FALSE) {
+		if ($this->connection === false) {
 			$this->handleConnectionErrors($errors);
 		}
 
@@ -865,7 +865,7 @@ class fDatabase
 				if (extension_loaded('ibm_db2')) {
 					$this->extension = 'ibm_db2';
 
-				} elseif (class_exists('PDO', FALSE) && in_array('ibm', PDO::getAvailableDrivers())) {
+				} elseif (class_exists('PDO', false) && in_array('ibm', PDO::getAvailableDrivers())) {
 					$this->extension = 'pdo';
 
 				} else {
@@ -882,7 +882,7 @@ class fDatabase
 				} elseif (extension_loaded('mssql')) {
 					$this->extension = 'mssql';
 
-				} elseif (class_exists('PDO', FALSE) && (in_array('dblib', PDO::getAvailableDrivers()) || in_array('mssql', PDO::getAvailableDrivers()))) {
+				} elseif (class_exists('PDO', false) && (in_array('dblib', PDO::getAvailableDrivers()) || in_array('mssql', PDO::getAvailableDrivers()))) {
 					$this->extension = 'pdo';
 
 				} else {
@@ -897,7 +897,7 @@ class fDatabase
 				if (extension_loaded('mysqli')) {
 					$this->extension = 'mysqli';
 
-				} elseif (class_exists('PDO', FALSE) && in_array('mysql', PDO::getAvailableDrivers())) {
+				} elseif (class_exists('PDO', false) && in_array('mysql', PDO::getAvailableDrivers())) {
 					$this->extension = 'pdo';
 
 				} elseif (extension_loaded('mysql')) {
@@ -915,7 +915,7 @@ class fDatabase
 				if (extension_loaded('oci8')) {
 					$this->extension = 'oci8';
 
-				} elseif (class_exists('PDO', FALSE) && in_array('oci', PDO::getAvailableDrivers())) {
+				} elseif (class_exists('PDO', false) && in_array('oci', PDO::getAvailableDrivers())) {
 					$this->extension = 'pdo';
 
 				} else {
@@ -930,7 +930,7 @@ class fDatabase
 				if (extension_loaded('pgsql')) {
 					$this->extension = 'pgsql';
 
-				} elseif (class_exists('PDO', FALSE) && in_array('pgsql', PDO::getAvailableDrivers())) {
+				} elseif (class_exists('PDO', false) && in_array('pgsql', PDO::getAvailableDrivers())) {
 					$this->extension = 'pdo';
 
 				} else {
@@ -950,9 +950,9 @@ class fDatabase
 					$database_version = fread($database_handle, 64);
 					fclose($database_handle);
 
-					if (strpos($database_version, 'SQLite format 3') !== FALSE) {
+					if (strpos($database_version, 'SQLite format 3') !== false) {
 						$sqlite_version = 3;
-					} elseif (strpos($database_version, '** This file contains an SQLite 2.1 database **') !== FALSE) {
+					} elseif (strpos($database_version, '** This file contains an SQLite 2.1 database **') !== false) {
 						$sqlite_version = 2;
 					} else {
 						throw new fConnectivityException(
@@ -963,10 +963,10 @@ class fDatabase
 					}
 				}
 
-				if ((!$sqlite_version || $sqlite_version == 3) && class_exists('PDO', FALSE) && in_array('sqlite', PDO::getAvailableDrivers())) {
+				if ((!$sqlite_version || $sqlite_version == 3) && class_exists('PDO', false) && in_array('sqlite', PDO::getAvailableDrivers())) {
 					$this->extension = 'pdo';
 
-				} elseif ($sqlite_version == 3 && (!class_exists('PDO', FALSE) || !in_array('sqlite', PDO::getAvailableDrivers()))) {
+				} elseif ($sqlite_version == 3 && (!class_exists('PDO', false) || !in_array('sqlite', PDO::getAvailableDrivers()))) {
 					throw new fEnvironmentException(
 						'The database specified is an %1$s database and the %2$s extension is not installed',
 						'SQLite v3',
@@ -1186,7 +1186,7 @@ class fDatabase
 
 		array_unshift($values, $value);
 		$sql = $this->extractStrings($parts, $values);
-		return $this->escapeSQL($sql, $values, FALSE);
+		return $this->escapeSQL($sql, $values, false);
 	}
 
 
@@ -1249,7 +1249,7 @@ class fDatabase
 		}
 
 		if (in_array($this->type, array('postgresql', 'mysql'))) {
-			return ($value) ? 'TRUE' : 'FALSE';
+			return ($value) ? 'true' : 'false';
 		} elseif (in_array($this->type, array('mssql', 'sqlite', 'db2'))) {
 			return ($value) ? "'1'" : "'0'";
 		} elseif ($this->type == 'oracle') {
@@ -1609,7 +1609,7 @@ class fDatabase
 			return $this->run($statement, NULL, $params);
 		}
 
-		$queries = $this->preprocess($statement, $params, FALSE);
+		$queries = $this->preprocess($statement, $params, false);
 
 		$output = array();
 		foreach ($queries as $query) {
@@ -2117,7 +2117,7 @@ class fDatabase
 	 *
 	 * @param  string|fStatement &$statement    The SQL to check for a transaction query
 	 * @param  string            $result_class  The type of result object to create
-	 * @return mixed  `FALSE` if normal processing should continue, otherwise an object of the type $result_class
+	 * @return mixed  `false` if normal processing should continue, otherwise an object of the type $result_class
 	 */
 	private function handleTransactionQueries(&$statement, $result_class)
 	{
@@ -2139,37 +2139,37 @@ class fDatabase
 			}
 		}
 
-		$begin    = FALSE;
-		$commit   = FALSE;
-		$rollback = FALSE;
+		$begin    = false;
+		$commit   = false;
+		$rollback = false;
 
 		// Track transactions since most databases don't support nesting
 		if (preg_match('#^\s*(BEGIN|START)(\s+(TRAN|TRANSACTION|WORK))?\s*$#iD', $sql)) {
 			if ($this->inside_transaction) {
 				throw new fProgrammerException('A transaction is already in progress');
 			}
-			$this->inside_transaction = TRUE;
-			$begin = TRUE;
+			$this->inside_transaction = true;
+			$begin = true;
 
 		} elseif (preg_match('#^\s*COMMIT(\s+(TRAN|TRANSACTION|WORK))?\s*$#iD', $sql)) {
 			if (!$this->inside_transaction) {
 				throw new fProgrammerException('There is no transaction in progress');
 			}
-			$this->inside_transaction = FALSE;
-			$commit = TRUE;
+			$this->inside_transaction = false;
+			$commit = true;
 
 		} elseif (preg_match('#^\s*ROLLBACK(\s+(TRAN|TRANSACTION|WORK))?\s*$#iD', $sql)) {
 			if (!$this->inside_transaction) {
 				throw new fProgrammerException('There is no transaction in progress');
 			}
-			$this->inside_transaction = FALSE;
-			$rollback = TRUE;
+			$this->inside_transaction = false;
+			$rollback = true;
 
 		// MySQL needs to use this construct for starting transactions when using LOCK tables
 		} elseif ($this->type == 'mysql' && preg_match('#^\s*SET\s+autocommit\s*=\s*(0|1)#i', $sql, $match)) {
-			$this->inside_transaction = TRUE;
+			$this->inside_transaction = true;
 			if ($match[1] == '0') {
-				$this->schema_info['mysql_autocommit'] = TRUE;
+				$this->schema_info['mysql_autocommit'] = true;
 			} else {
 				unset($this->schema_info['mysql_autocommit']);
 			}
@@ -2177,26 +2177,26 @@ class fDatabase
 		// We have to track LOCK TABLES for MySQL because UNLOCK TABLES only implicitly commits if LOCK TABLES was used
 		} elseif ($this->type == 'mysql' && preg_match('#^\s*LOCK\s+TABLES#i', $sql)) {
 			// This command always implicitly commits
-			$this->inside_transaction = FALSE;
-			$this->schema_info['mysql_lock_tables'] = TRUE;
+			$this->inside_transaction = false;
+			$this->schema_info['mysql_lock_tables'] = true;
 
 		// MySQL has complex handling of UNLOCK TABLES
 		} elseif ($this->type == 'mysql' && preg_match('#^\s*UNLOCK\s+TABLES#i', $sql)) {
 			// This command only implicitly commits if LOCK TABLES was used
 			if (isset($this->schema_info['mysql_lock_tables'])) {
-				$this->inside_transaction = FALSE;
+				$this->inside_transaction = false;
 			}
 			unset($this->schema_info['mysql_lock_tables']);
 
 		// These databases issue implicit commit commands when the following statements are run
 		} elseif ($this->type == 'mysql' && preg_match('#^\s*(ALTER|CREATE(?!\s+TEMPORARY)|DROP|RENAME|TRUNCATE|LOAD|UNLOCK|GRANT|REVOKE|SET\s+PASSWORD|CACHE|ANALYSE|CHECK|OPTIMIZE|REPAIR|FLUSH|RESET)\b#i', $sql)) {
-			$this->inside_transaction = FALSE;
+			$this->inside_transaction = false;
 
 		} elseif ($this->type == 'oracle' && preg_match('#^\s*(CREATE|ALTER|DROP|TRUNCATE|GRANT|REVOKE|REPLACE|ANALYZE|AUDIT|COMMENT)\b#i', $sql)) {
-			$this->inside_transaction = FALSE;
+			$this->inside_transaction = false;
 
 		} elseif ($this->type == 'db2' && preg_match('#^\s*CALL\s+SYSPROC\.ADMIN_CMD\(\'REORG\s+TABLE\b#i', $sql)) {
-			$this->inside_transaction = FALSE;
+			$this->inside_transaction = false;
 			// It appears PDO tracks the transactions, but doesn't know about implicit commits
 			if ($this->extension == 'pdo') {
 				$this->connection->commit();
@@ -2205,11 +2205,11 @@ class fDatabase
 
 		// If MySQL autocommit it set to 0 a new transaction is automatically started
 		if (!empty($this->schema_info['mysql_autocommit'])) {
-			$this->inside_transaction = TRUE;
+			$this->inside_transaction = true;
 		}
 
 		if (!$begin && !$commit && !$rollback) {
-			return FALSE;
+			return false;
 		}
 
 		// The PDO, OCI8 and SQLSRV extensions require special handling through methods and functions
@@ -2219,7 +2219,7 @@ class fDatabase
 		$is_ibm_db2 = $this->extension == 'ibm_db2';
 
 		if (!$is_pdo && !$is_oci && !$is_sqlsrv && !$is_ibm_db2) {
-			return FALSE;
+			return false;
 		}
 
 		$this->statement = $statement;
@@ -2234,7 +2234,7 @@ class fDatabase
 					if ($is_mssql) {
 						$this->connection->exec('BEGIN TRANSACTION');
 					} elseif ($is_oracle) {
-						$this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, FALSE);
+						$this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
 					} else {
 						$this->connection->beginTransaction();
 					}
@@ -2244,7 +2244,7 @@ class fDatabase
 						$this->connection->exec('COMMIT');
 					} elseif ($is_oracle) {
 						$this->connection->exec('COMMIT');
-						$this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, TRUE);
+						$this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, true);
 					} else  {
 						$this->connection->commit();
 					}
@@ -2254,7 +2254,7 @@ class fDatabase
 						$this->connection->exec('ROLLBACK');
 					} elseif ($is_oracle) {
 						$this->connection->exec('ROLLBACK');
-						$this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, TRUE);
+						$this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, true);
 					} else {
 						$this->connection->rollBack();
 					}
@@ -2297,24 +2297,24 @@ class fDatabase
 
 		} elseif ($is_ibm_db2) {
 			if ($begin) {
-				db2_autocommit($this->connection, FALSE);
+				db2_autocommit($this->connection, false);
 			} elseif ($commit) {
 				db2_commit($this->connection);
-				db2_autocommit($this->connection, TRUE);
+				db2_autocommit($this->connection, true);
 			} elseif ($rollback) {
 				db2_rollback($this->connection);
-				db2_autocommit($this->connection, TRUE);
+				db2_autocommit($this->connection, true);
 			}
 		}
 
 		if ($result_class) {
 			$result = new $result_class($this);
 			$result->setSQL($sql);
-			$result->setResult(TRUE);
+			$result->setResult(true);
 			return $result;
 		}
 
-		return TRUE;
+		return true;
 	}
 
 
@@ -2409,11 +2409,11 @@ class fDatabase
 				if ($result instanceof PDOStatement) {
 					$result->closeCursor();
 					$extra = $result;
-					$result = TRUE;
+					$result = true;
 					if (preg_match('#^\s*EXEC(UTE)?\s+#i', $statement)) {
 						$error_info = $extra->errorInfo();
 						if (strpos($error_info[2], '(null) [0] (severity 0)') !== 0) {
-							$result = FALSE;
+							$result = false;
 						}
 					}
 				}
@@ -2425,16 +2425,16 @@ class fDatabase
 
 		$this->handleErrors(fCore::stopErrorCapture());
 
-		// The mssql extension will sometimes not return FALSE even if there are errors
+		// The mssql extension will sometimes not return false even if there are errors
 		if ($this->error !== null && strlen($this->error)) {
-			$result = FALSE;
+			$result = false;
 		}
 
 		if ($this->extension == 'mssql' && $result) {
 			$this->error = '';
 		}
 
-		if ($result === FALSE) {
+		if ($result === false) {
 			$this->checkForError($result, $extra, is_object($statement) ? $statement->getSQL() : $statement);
 
 		} elseif (!is_bool($result) && $result !== NULL) {
@@ -2502,7 +2502,7 @@ class fDatabase
 				$result->setResult($rows);
 				unset($rows);
 			} else {
-				$result->setResult(FALSE);
+				$result->setResult(false);
 			}
 
 		} elseif ($this->extension == 'pgsql') {
@@ -2527,7 +2527,7 @@ class fDatabase
 		} elseif ($this->extension == 'pdo') {
 			if (preg_match('#^\s*CREATE(\s+OR\s+REPLACE)?\s+TRIGGER#i', $result->getSQL())) {
 				$this->connection->exec($result->getSQL());
-				$extra = FALSE;
+				$extra = false;
 				$returned_rows = array();
 			} else {
 				$extra = $this->connection->query($result->getSQL());
@@ -2535,7 +2535,7 @@ class fDatabase
 					// This fixes a segfault issue with blobs and fetchAll() for pdo_ibm
 					if ($this->type == 'db2') {
 						$returned_rows = array();
-						while (($row = $extra->fetch(PDO::FETCH_ASSOC)) !== FALSE) {
+						while (($row = $extra->fetch(PDO::FETCH_ASSOC)) !== false) {
 							foreach ($row as $key => $value) {
 								if (is_resource($value)) {
 									$row[$key] = stream_get_contents($value);
@@ -2550,7 +2550,7 @@ class fDatabase
 					} elseif ($this->type == 'mssql' && !fCore::checkOS('windows') && preg_match('#^\s*EXEC(UTE)?\s+#i', $result->getSQL())) {
 						$error_info = $extra->errorInfo();
 						if ($error_info && strpos($error_info[2], '(null) [0] (severity 0)') !== 0) {
-							$returned_rows = FALSE;
+							$returned_rows = false;
 						}
 
 					} else {
@@ -2572,9 +2572,9 @@ class fDatabase
 
 		$this->handleErrors(fCore::stopErrorCapture());
 
-		// The mssql extension will sometimes not return FALSE even if there are errors
+		// The mssql extension will sometimes not return false even if there are errors
 		if (strlen($this->error) && strpos($this->error, 'WARNING!') !== 0) {
-			$result->setResult(FALSE);
+			$result->setResult(false);
 		}
 
 		$this->checkForError($result, $extra);
@@ -2645,7 +2645,7 @@ class fDatabase
 			if (oci_execute($extra, $this->inside_transaction ? OCI_DEFAULT : OCI_COMMIT_ON_SUCCESS)) {
 				$result->setResult($extra);
 			} else {
-				$result->setResult(FALSE);
+				$result->setResult(false);
 			}
 		} elseif ($this->extension == 'pgsql') {
 			$result->setResult(pg_query($this->connection, $result->getSQL()));
@@ -2691,7 +2691,7 @@ class fDatabase
 	 * @param  boolean $translate  If the SQL should be translated using fSQLTranslation
 	 * @return fStatement  A prepare statement object that can be passed to ::query(), ::unbufferedQuery() or ::execute()
 	 */
-	private function prepareStatement($sql, $translate=FALSE)
+	private function prepareStatement($sql, $translate=false)
 	{
 		// Ensure an SQL statement was passed
 		if (empty($sql)) {
@@ -2770,7 +2770,7 @@ class fDatabase
 		// Unescape literal semicolons in the queries
 		$query = preg_replace('#(?<!\\\\)\\\\;#', ';', $query);
 
-		$query = $this->escapeSQL($query, $values, TRUE);
+		$query = $this->escapeSQL($query, $values, true);
 
 		return new fStatement($this, $query, $placeholders, $untranslated_sql);
 	}
@@ -2909,7 +2909,7 @@ class fDatabase
 						$query_values = $new_values;
 					}
 					$query = preg_replace('#(?<!%)%\d+\$([lbdfristp])\b#', '%\1', $query);
-					$query = $this->escapeSQL($query, $query_values, TRUE);
+					$query = $this->escapeSQL($query, $query_values, true);
 				}
 
 				if (!is_numeric($key)) {
@@ -2943,7 +2943,7 @@ class fDatabase
 			return $this->run($statement, 'fResult', $params);
 		}
 
-		$queries = $this->preprocess($statement, $params, FALSE);
+		$queries = $this->preprocess($statement, $params, false);
 
 		$output = array();
 		foreach ($queries as $query) {
@@ -2984,7 +2984,7 @@ class fDatabase
 	 *  - **`$database`**:    The fDatabase instance
 	 *  - **`$query`**:       The (string) SQL or `array(0 => {fStatement object}, 1 => {values array})`
 	 *  - **`$query_time`**:  The (float) number of seconds the query took
-	 *  - **`$result`**       The fResult or fUnbufferedResult object, or `FALSE` if no result
+	 *  - **`$result`**       The fResult or fUnbufferedResult object, or `false` if no result
 	 *
 	 * @param  string   $hook      The hook to register for
 	 * @param  callback $callback  The callback to register - see the method description for details about the method signature
@@ -3024,7 +3024,7 @@ class fDatabase
 			$this->unbuffered_result = NULL;
 		}
 
-		$start_time = microtime(TRUE);
+		$start_time = microtime(true);
 
 		$result = $this->handleTransactionQueries($statement, $result_type);
 
@@ -3055,7 +3055,7 @@ class fDatabase
 		}
 
 		// Write some debugging info
-		$query_time = microtime(TRUE) - $start_time;
+		$query_time = microtime(true) - $start_time;
 		$this->query_time += $query_time;
 		if (fCore::getDebug($this->debug)) {
 			fCore::debug(
@@ -3220,17 +3220,17 @@ class fDatabase
 	private function splitSQL($sql, &$placeholders=NULL)
 	{
 		// Fix \' in MySQL and PostgreSQL
-		if(($this->type == 'mysql' || $this->type == 'postgresql') && strpos($sql, '\\') !== FALSE) {
+		if(($this->type == 'mysql' || $this->type == 'postgresql') && strpos($sql, '\\') !== false) {
 			$sql = preg_replace("#(?<!\\\\)((\\\\{2})*)\\\\'#", "\\1''", $sql);
 		}
 
 		$parts         = array();
 		$temp_sql      = $sql;
 		$start_pos     = 0;
-		$inside_string = FALSE;
+		$inside_string = false;
 		do {
 			$pos = strpos($temp_sql, "'", $start_pos);
-			if ($pos !== FALSE) {
+			if ($pos !== false) {
 				if (!$inside_string) {
 					$part          = substr($temp_sql, 0, $pos);
 					$placeholders += preg_match_all('#(?<!%)%[lbdfristp]\b#', $part, $trash);
@@ -3238,12 +3238,12 @@ class fDatabase
 					$parts[]       = $part;
 					$temp_sql      = substr($temp_sql, $pos);
 					$start_pos     = 1;
-					$inside_string = TRUE;
+					$inside_string = true;
 
 				} elseif ($pos == strlen($temp_sql)) {
 					$parts[]  = $temp_sql;
 					$temp_sql = '';
-					$pos = FALSE;
+					$pos = false;
 
 				// Skip single-quote-escaped single quotes
 				} elseif (strlen($temp_sql) > $pos+1 && $temp_sql[$pos+1] == "'") {
@@ -3253,10 +3253,10 @@ class fDatabase
 					$parts[]   = substr($temp_sql, 0, $pos+1);
 					$temp_sql  = substr($temp_sql, $pos+1);
 					$start_pos = 0;
-					$inside_string = FALSE;
+					$inside_string = false;
 				}
 			}
-		} while ($pos !== FALSE);
+		} while ($pos !== false);
 		if ($temp_sql) {
 			$placeholders += preg_match_all('#(?<!%)%[lbdfristp]\b#', $temp_sql, $trash);
 			unset($trash);
@@ -3281,7 +3281,7 @@ class fDatabase
 		$queries = $this->preprocess(
 			$sql,
 			array_slice($args, 1),
-			TRUE,
+			true,
 			$rollback_statements
 		);
 
@@ -3311,7 +3311,7 @@ class fDatabase
 	 */
 	public function translatedPrepare($sql)
 	{
-		return $this->prepareStatement($sql, TRUE);
+		return $this->prepareStatement($sql, true);
 	}
 
 
@@ -3329,7 +3329,7 @@ class fDatabase
 		$queries = $this->preprocess(
 			$sql,
 			array_slice($args, 1),
-			TRUE,
+			true,
 			$rollback_statements
 		);
 
@@ -3376,7 +3376,7 @@ class fDatabase
 			$result = $this->run($statement, 'fUnbufferedResult', $params);
 
 		} else {
-			$queries = $this->preprocess($statement, $params, FALSE);
+			$queries = $this->preprocess($statement, $params, false);
 
 			if (sizeof($queries) > 1) {
 				throw new fProgrammerException(
@@ -3421,7 +3421,7 @@ class fDatabase
 		$queries = $this->preprocess(
 			$sql,
 			array_slice($args, 1),
-			TRUE
+			true
 		);
 
 		if (sizeof($queries) > 1) {
@@ -3560,7 +3560,7 @@ class fDatabase
 	 */
 	private function unescapeBoolean($value)
 	{
-		return ($value === 'f' || !$value) ? FALSE : TRUE;
+		return ($value === 'f' || !$value) ? false : true;
 	}
 
 

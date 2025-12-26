@@ -85,28 +85,28 @@ class fAuthorization
 	static public function checkACL($resource, $permission)
 	{
 		if (self::getUserACLs() === null) {
-			return FALSE;
+			return false;
 		}
 
 		$acls = self::getUserACLs();
 
 		if (!isset($acls[$resource]) && !isset($acls['*'])) {
-			return FALSE;
+			return false;
 		}
 
 		if (isset($acls[$resource])) {
 			if (in_array($permission, $acls[$resource]) || in_array('*', $acls[$resource])) {
-				return TRUE;
+				return true;
 			}
 		}
 
 		if (isset($acls['*'])) {
 			if (in_array($permission, $acls['*']) || in_array('*', $acls['*'])) {
-				return TRUE;
+				return true;
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 
@@ -127,11 +127,11 @@ class fAuthorization
 			$required_number = self::$levels[$level];
 
 			if ($user_number >= $required_number) {
-				return TRUE;
+				return true;
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 
@@ -162,7 +162,7 @@ class fAuthorization
 		}
 
 		if (!isset($_SERVER['REMOTE_ADDR'])) {
-			return FALSE;
+			return false;
 		}
 
 		// Get the remote IP and remove any IPv6 to IPv4 mapping
@@ -173,7 +173,7 @@ class fAuthorization
 
 		foreach ($ip_ranges as $ip_range) {
 
-			if (strpos($ip_range, '/') === FALSE) {
+			if (strpos($ip_range, '/') === false) {
 				$ip_range .= '/32';
 			}
 
@@ -198,11 +198,11 @@ class fAuthorization
 			}
 
 			if (($user_ip_long & $mask_long) == $range_ip_long) {
-				return TRUE;
+				return true;
 			}
 		}
 
-		return FALSE;
+		return false;
 	}
 
 
@@ -216,9 +216,9 @@ class fAuthorization
 		if (fSession::get(__CLASS__ . '::user_auth_level', null) !== null ||
 			fSession::get(__CLASS__ . '::user_acls', null) !== null ||
 			fSession::get(__CLASS__ . '::user_token', null) !== null) {
-			return TRUE;
+			return true;
 		}
-		return FALSE;
+		return false;
 	}
 
 

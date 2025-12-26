@@ -145,7 +145,7 @@ class fEmail
 	 */
 	static protected function compose($message, ...$args)
 	{
-		if (class_exists('fText', FALSE)) {
+		if (class_exists('fText', false)) {
 			return fText::compose($message, $args);
 		} else {
 			return vsprintf($message, $args);
@@ -252,14 +252,14 @@ class fEmail
 		if (isset($_ENV['HOST'])) {
 			self::$fqdn = $_ENV['HOST'];
 		}
-		if (strpos(self::$fqdn, '.') === FALSE && isset($_ENV['HOSTNAME'])) {
+		if (strpos(self::$fqdn, '.') === false && isset($_ENV['HOSTNAME'])) {
 			self::$fqdn = $_ENV['HOSTNAME'];
 		}
-		if (strpos(self::$fqdn, '.') === FALSE) {
+		if (strpos(self::$fqdn, '.') === false) {
 			self::$fqdn = php_uname('n');
 		}
 
-		if (strpos(self::$fqdn, '.') === FALSE) {
+		if (strpos(self::$fqdn, '.') === false) {
 
 			$can_exec = !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions')))) && !ini_get('safe_mode');
 			if (fCore::checkOS('linux') && $can_exec) {
@@ -405,7 +405,7 @@ class fEmail
 
 
 	/**
-	 * Returns `TRUE` for non-empty strings, numbers, objects, empty numbers and string-like numbers (such as `0`, `0.0`, `'0'`)
+	 * Returns `true` for non-empty strings, numbers, objects, empty numbers and string-like numbers (such as `0`, `0.0`, `'0'`)
 	 *
 	 * @param  mixed $value  The value to check
 	 * @return boolean  If the value is string-like
@@ -413,10 +413,10 @@ class fEmail
 	static protected function stringlike($value)
 	{
 		if ((!is_string($value) && !is_object($value) && !is_numeric($value)) || !strlen(trim($value))) {
-			return FALSE;
+			return false;
 		}
 
-		return TRUE;
+		return true;
 	}
 
 
@@ -996,7 +996,7 @@ class fEmail
 				$this->senders_smime_pk_password
 			);
 
-			if ($senders_private_key === FALSE) {
+			if ($senders_private_key === false) {
 				throw new fValidationException(
 					"The sender's S/MIME private key password specified does not appear to be valid for the private key"
 				);
@@ -1462,10 +1462,10 @@ class fEmail
 	 * http://flourishlib.com/docs/UTF-8 for more information.
 	 *
 	 * @param  string  $plaintext                  The plaintext version of the email body
-	 * @param  boolean $unindent_expand_constants  If this is `TRUE`, the body will be unindented as much as possible and {CONSTANT_NAME} will be replaced with the value of the constant
+	 * @param  boolean $unindent_expand_constants  If this is `true`, the body will be unindented as much as possible and {CONSTANT_NAME} will be replaced with the value of the constant
 	 * @return fEmail  The email object, to allow for method chaining
 	 */
-	public function setBody($plaintext, $unindent_expand_constants=FALSE)
+	public function setBody($plaintext, $unindent_expand_constants=false)
 	{
 		if ($unindent_expand_constants) {
 			$plaintext = self::unindentExpand($plaintext);
@@ -1713,7 +1713,7 @@ class fEmail
 			);
 		}
 
-		if (strpos($this->subject, "\n") !== FALSE) {
+		if (strpos($this->subject, "\n") !== false) {
 			$validation_messages[] = self::compose(
 				"The subject contains one or more newline characters"
 			);

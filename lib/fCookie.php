@@ -44,7 +44,7 @@ class fCookie
 	 *
 	 * @var boolean
 	 */
-	static private $default_httponly = FALSE;
+	static private $default_httponly = false;
 
 	/**
 	 * The default path to set for cookies
@@ -58,7 +58,7 @@ class fCookie
 	 *
 	 * @var boolean
 	 */
-	static private $default_secure = FALSE;
+	static private $default_secure = false;
 
 
 	/**
@@ -107,9 +107,9 @@ class fCookie
 	{
 		self::$default_domain   = null;
 		self::$default_expires  = null;
-		self::$default_httponly = FALSE;
+		self::$default_httponly = false;
 		self::$default_path     = null;
-		self::$default_secure   = FALSE;
+		self::$default_secure   = false;
 	}
 
 
@@ -175,12 +175,12 @@ class fCookie
 				$header_string .= '; secure';
 			}
 			$header_string .= '; httponly';
-			header('Set-Cookie: ' . $header_string, FALSE);
+			header('Set-Cookie: ' . $header_string, false);
 			return;
 
 		// Only pases the httponly parameter if we are on 5.2 since it causes error notices otherwise
 		} elseif (strlen($value) && $httponly) {
-			setcookie($name, $value, $expires, $path, $domain, $secure, TRUE);
+			setcookie($name, $value, $expires, $path, $domain, $secure, true);
 			return;
 		}
 
