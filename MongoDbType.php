@@ -116,6 +116,18 @@ enum MongoDbType: string
     }
 
     /**
+     * Check if the type is a container type (alias for isComplexType)
+     *
+     * Container types: Array, Object, EmbeddedDocument
+     *
+     * @return boolean  True if type is container
+     */
+    public function isContainer(): bool
+    {
+        return $this->isComplexType();
+    }
+
+    /**
      * Check if the type is a binary type
      *
      * Binary types: Binary, BinaryOld, ObjectId
@@ -274,6 +286,16 @@ enum MongoDbType: string
     }
 
     /**
+     * Alias for Int32 - get Int type
+     *
+     * @return self  The Int32 case
+     */
+    public static function Int(): self
+    {
+        return self::Int32;
+    }
+
+    /**
      * Get all scalar types
      *
      * @return array  Array of scalar MongoDbType cases
@@ -307,6 +329,28 @@ enum MongoDbType: string
             self::Object,
             self::EmbeddedDocument,
         ];
+    }
+
+    /**
+     * Validate a PHP value against this BSON type
+     *
+     * @param mixed $value  The value to validate
+     * @return boolean      True if value matches type
+     */
+    public function validatePhpValue(mixed $value): bool
+    {
+        return match ($this) {
+            self::String => is_string($value),
+            self::Double => is_float($value),
+            self::Int32, self::Int64 => is_int($value),
+            self::Boolean => is_bool($value),
+            self::Null => $value === null,
+            self::Array => is_array($value),
+            self::Object, self::EmbeddedDocument => is_object($value) || is_array($value),
+            self::Decimal128 => is_numeric($value),
+            self::Date => $value instanceof DateTime || is_int($value),
+            default => true, // Accept any value for other types
+        };
     }
 }
 

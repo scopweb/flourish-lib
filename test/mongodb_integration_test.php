@@ -82,7 +82,7 @@ class MongoDBIntegrationTest
         
         // Test type checking methods
         $this->assert(MongoDbType::Double->isNumeric(), "Double is numeric type");
-        $this->assert(MongoDbType::Int->isNumeric(), "Int is numeric type");
+        $this->assert(MongoDbType::Int32->isNumeric(), "Int32 is numeric type");
         $this->assert(!MongoDbType::String->isNumeric(), "String is not numeric type");
         
         // Test indexable types
@@ -97,7 +97,7 @@ class MongoDBIntegrationTest
         
         // Test PHP value validation
         $this->assert(MongoDbType::String->validatePhpValue("test"), "String validates PHP string");
-        $this->assert(MongoDbType::Int->validatePhpValue(42), "Int validates PHP int");
+        $this->assert(MongoDbType::Int32->validatePhpValue(42), "Int32 validates PHP int");
         $this->assert(MongoDbType::Bool->validatePhpValue(true), "Bool validates PHP bool");
         $this->assert(!MongoDbType::String->validatePhpValue(123), "String rejects PHP int");
         
