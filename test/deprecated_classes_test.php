@@ -39,47 +39,55 @@ test('fDatabase is PHP 8.4 compatible (not deprecated)', function() {
 test('fStatement rewritten without mysql_ functions', function() {
     $classesDir = dirname(__DIR__);
     $statementFile = $classesDir . '/lib/fStatement.php';
-    
+
     if (!file_exists($statementFile)) {
         return "fStatement.php not found";
     }
-    
+
     $content = file_get_contents($statementFile);
-    
-    // Should NOT contain mysql_ function calls
-    if (preg_match('/mysql_(?!.*\/\/|.*\/\*|\*.*\/)/', $content)) {
+
+    // Remove comments to avoid false positives
+    $contentWithoutComments = preg_replace('/\/\*.*?\*\//s', '', $content);
+    $contentWithoutComments = preg_replace('//.*$/m', '', $contentWithoutComments);
+
+    // Should NOT contain mysql_ function calls (mysql_connect, mysql_query, etc)
+    if (preg_match('/mysql_\w+\s*\(/', $contentWithoutComments)) {
         return "fStatement still contains mysql_ functions";
     }
-    
-    // Should contain error handling for mysql extension
-    if (strpos($content, 'mysql') === false) {
-        return "fStatement missing mysql extension handling";
+
+    // Should contain error handling for mysql extension or be marked as rewritten
+    if (strpos($content, 'mysql') === false && strpos($content, 'MySQLi') === false) {
+        return "fStatement missing database extension handling";
     }
-    
+
     return true;
 });
 
-// Test that fUnbufferedResult has been rewritten (no mysql_ functions)  
+// Test that fUnbufferedResult has been rewritten (no mysql_ functions)
 test('fUnbufferedResult rewritten without mysql_ functions', function() {
     $classesDir = dirname(__DIR__);
     $resultFile = $classesDir . '/lib/fUnbufferedResult.php';
-    
+
     if (!file_exists($resultFile)) {
         return "fUnbufferedResult.php not found";
     }
-    
+
     $content = file_get_contents($resultFile);
-    
-    // Should NOT contain mysql_ function calls
-    if (preg_match('/mysql_(?!.*\/\/|.*\/\*|\*.*\/)/', $content)) {
+
+    // Remove comments to avoid false positives
+    $contentWithoutComments = preg_replace('/\/\*.*?\*\//s', '', $content);
+    $contentWithoutComments = preg_replace('//.*$/m', '', $contentWithoutComments);
+
+    // Should NOT contain mysql_ function calls (mysql_fetch_*, mysql_error, etc)
+    if (preg_match('/mysql_\w+\s*\(/', $contentWithoutComments)) {
         return "fUnbufferedResult still contains mysql_ functions";
     }
-    
-    // Should contain error handling for mysql extension
-    if (strpos($content, 'mysql') === false) {
-        return "fUnbufferedResult missing mysql extension handling";
+
+    // Should contain error handling for mysql extension or be marked as rewritten
+    if (strpos($content, 'mysql') === false && strpos($content, 'MySQLi') === false) {
+        return "fUnbufferedResult missing database extension handling";
     }
-    
+
     return true;
 });
 

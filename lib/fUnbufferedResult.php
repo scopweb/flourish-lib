@@ -399,6 +399,7 @@ class fUnbufferedResult implements Iterator
 	 *
 	 * @return array|stdClass  The current row
 	 */
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		$this->validateState();
@@ -588,6 +589,7 @@ class fUnbufferedResult implements Iterator
 	 *
 	 * @return integer  The current row number
 	 */
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		$this->validateState();
@@ -609,6 +611,7 @@ class fUnbufferedResult implements Iterator
 	 *
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		$this->validateState();
@@ -629,6 +632,7 @@ class fUnbufferedResult implements Iterator
 	 *
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		$this->validateState();
@@ -735,6 +739,7 @@ class fUnbufferedResult implements Iterator
 	 *
 	 * @return boolean  If the iterator is still valid
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		$this->validateState();
