@@ -48,7 +48,7 @@ test('fStatement rewritten without mysql_ functions', function() {
 
     // Remove comments to avoid false positives
     $contentWithoutComments = preg_replace('/\/\*.*?\*\//s', '', $content);
-    $contentWithoutComments = preg_replace('//.*$/m', '', $contentWithoutComments);
+    $contentWithoutComments = preg_replace('/\/\/.*$/m', '', $contentWithoutComments);
 
     // Should NOT contain mysql_ function calls (mysql_connect, mysql_query, etc)
     if (preg_match('/mysql_\w+\s*\(/', $contentWithoutComments)) {
@@ -76,7 +76,7 @@ test('fUnbufferedResult rewritten without mysql_ functions', function() {
 
     // Remove comments to avoid false positives
     $contentWithoutComments = preg_replace('/\/\*.*?\*\//s', '', $content);
-    $contentWithoutComments = preg_replace('//.*$/m', '', $contentWithoutComments);
+    $contentWithoutComments = preg_replace('/\/\/.*$/m', '', $contentWithoutComments);
 
     // Should NOT contain mysql_ function calls (mysql_fetch_*, mysql_error, etc)
     if (preg_match('/mysql_\w+\s*\(/', $contentWithoutComments)) {

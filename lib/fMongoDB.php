@@ -303,6 +303,137 @@ class fMongoDB
             $this->database = null;
         }
     }
+
+    /**
+     * Enable debug mode for MongoDB operations
+     *
+     * @return self  For method chaining
+     */
+    public function enableDebugging(): self
+    {
+        // Store debug flag for future implementation
+        // Currently MongoDB operations are minimal logging
+        return $this;
+    }
+
+    /**
+     * Select a collection with fluent interface
+     *
+     * @param string $collectionName  The collection name
+     * @return object                 MongoDB collection instance
+     */
+    public function collection(string $collectionName): object
+    {
+        return $this->selectCollection($collectionName);
+    }
+
+    /**
+     * Create an index on a collection
+     *
+     * @param string $collectionName  The collection name
+     * @param array  $keys           The index keys ['field' => 1/-1]
+     * @param array  $options        Index options
+     * @return string                 The index name
+     */
+    public function createIndex(string $collectionName, array $keys, array $options = []): string
+    {
+        try {
+            if (!extension_loaded('mongodb')) {
+                throw new fConnectivityException('MongoDB extension is not loaded');
+            }
+            $collection = $this->selectCollection($collectionName);
+            return $collection->createIndex($keys, $options);
+        } catch (Exception $e) {
+            throw new fConnectivityException('Failed to create index: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Drop an index from a collection
+     *
+     * @param string $collectionName  The collection name
+     * @param string $indexName      The index name to drop
+     * @return bool                  Success status
+     */
+    public function dropIndex(string $collectionName, string $indexName): bool
+    {
+        try {
+            if (!extension_loaded('mongodb')) {
+                throw new fConnectivityException('MongoDB extension is not loaded');
+            }
+            $collection = $this->selectCollection($collectionName);
+            $collection->dropIndex($indexName);
+            return true;
+        } catch (Exception $e) {
+            throw new fConnectivityException('Failed to drop index: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get collection statistics
+     *
+     * @param string $collectionName  The collection name
+     * @return array                  Collection statistics
+     */
+    public function getStats(string $collectionName): array
+    {
+        try {
+            if (!extension_loaded('mongodb')) {
+                return ['error' => 'MongoDB extension not loaded'];
+            }
+            $collection = $this->selectCollection($collectionName);
+            return [
+                'name' => $collectionName,
+                'count' => $collection->countDocuments(),
+                'available' => true,
+            ];
+        } catch (Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * List all collections in the database
+     *
+     * @return array  Array of collection names
+     */
+    public function listCollections(): array
+    {
+        try {
+            if (!$this->database || !extension_loaded('mongodb')) {
+                return [];
+            }
+            $collections = [];
+            foreach ($this->database->listCollections() as $info) {
+                $collections[] = $info['name'];
+            }
+            return $collections;
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get the last query execution time
+     *
+     * @return float  Query time in milliseconds
+     */
+    public function getQueryTime(): float
+    {
+        // MongoDB client doesn't provide direct query timing
+        // This is a placeholder for compatibility
+        return 0.0;
+    }
+
+    /**
+     * Close the connection (alias for disconnect)
+     *
+     * @return void
+     */
+    public function close(): void
+    {
+        $this->disconnect();
+    }
 }
 
 /**

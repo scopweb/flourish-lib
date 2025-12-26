@@ -352,6 +352,71 @@ enum MongoDbType: string
             default => true, // Accept any value for other types
         };
     }
+
+    /**
+     * Get all numeric types
+     *
+     * @return array  Array of numeric MongoDbType cases
+     */
+    public static function getNumericTypes(): array
+    {
+        return [
+            self::Double,
+            self::Int32,
+            self::Int64,
+            self::Decimal128,
+        ];
+    }
+
+    /**
+     * Detect BSON type from a PHP value
+     *
+     * @param mixed $value  The value to detect type for
+     * @return MongoDbType|null  The detected type or null if unknown
+     */
+    public static function detectFromPhpValue(mixed $value): ?self
+    {
+        if ($value === null) {
+            return self::Null;
+        }
+
+        if (is_bool($value)) {
+            return self::Boolean;
+        }
+
+        if (is_int($value)) {
+            // Check if fits in 32-bit signed integer (-2147483648 to 2147483647)
+            if ($value >= -2147483648 && $value <= 2147483647) {
+                return self::Int32;
+            }
+            return self::Int64;
+        }
+
+        if (is_float($value)) {
+            return self::Double;
+        }
+
+        if (is_string($value)) {
+            return self::String;
+        }
+
+        if (is_array($value)) {
+            // Check if it's indexed (sequential) or associative array
+            if (array_keys($value) === range(0, count($value) - 1)) {
+                return self::Array;
+            }
+            return self::Object;
+        }
+
+        if (is_object($value)) {
+            if ($value instanceof DateTime) {
+                return self::Date;
+            }
+            return self::EmbeddedDocument;
+        }
+
+        return null; // Unknown type
+    }
 }
 
 /**
