@@ -55,6 +55,24 @@ enum MongoDbType: string
     case Undefined = 'undefined';
 
     /**
+     * Check if the type is a numeric type
+     *
+     * Numeric types: Double, Int32, Int64, Decimal128
+     *
+     * @return boolean  True if type is numeric
+     */
+    public function isNumeric(): bool
+    {
+        return match ($this) {
+            self::Double,
+            self::Int32,
+            self::Int64,
+            self::Decimal128 => true,
+            default => false,
+        };
+    }
+
+    /**
      * Check if the type is a scalar (single-value) type
      *
      * Scalar types: Double, Int32, Int64, Decimal128, String, Symbol,
@@ -126,6 +144,29 @@ enum MongoDbType: string
         return match ($this) {
             self::Code,
             self::CodeWithScope => true,
+            default => false,
+        };
+    }
+
+    /**
+     * Check if the type can be indexed (used for database queries)
+     *
+     * Indexable types: String, Number types, ObjectId, Date, etc.
+     *
+     * @return boolean  True if type is indexable
+     */
+    public function isIndexable(): bool
+    {
+        return match ($this) {
+            self::String,
+            self::Double,
+            self::Int32,
+            self::Int64,
+            self::Decimal128,
+            self::ObjectId,
+            self::Date,
+            self::Timestamp,
+            self::Boolean => true,
             default => false,
         };
     }
