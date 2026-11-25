@@ -2,14 +2,15 @@
 /**
  * Representation of a prepared statement for use with the fDatabase class
  *
- * ✅ **FULLY COMPATIBLE WITH PHP 8.4** ✅
- * 
+ * ✅ **FULLY COMPATIBLE WITH PHP 8.4 AND PHP 8.5** ✅
+ *
  * This class supports modern database extensions:
- * - MySQLi extension (mysqli_*) for MySQL databases  
+ * - MySQLi extension (mysqli_*) for MySQL databases
  * - PDO for cross-database compatibility
  * - PostgreSQL, SQLite, SQL Server support
- * 
+ *
  * **LEGACY MYSQL EXTENSION REMOVED** - Now uses MySQLi/PDO exclusively
+ * **LEGACY SQLITE2 EXTENSION REMOVED** - SQLite now uses pdo_sqlite exclusively
  *
  * @copyright  Copyright (c) 2010-2011 Will Bond, 2024 Claude Code Migration
  * @author     Will Bond [wb] <will@flourishlib.com>
@@ -19,7 +20,9 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fStatement
  *
- * @version    Updated 2025-09-11 - COMPLETELY REWRITTEN for PHP 8.4 Compatibility
+ * @version    Updated 2025-11-25 - PHP 8.5 Compatibility
+ *            - REMOVED the support for the obsolete sqlite2 extension
+ *            - Previously: Updated 2025-09-11 - COMPLETELY REWRITTEN for PHP 8.4 Compatibility
  *            - REMOVED all obsolete mysql_* function calls
  *            - Added modern MySQLi/PDO extension support
  *            - Added runtime extension validation and error handling
@@ -127,7 +130,6 @@ class fStatement
 			// These database extensions don't have prepared statements
 			case 'mssql':
 			case 'pdo_dblib':
-			case 'sqlite':
 				$query = vsprintf($query, $placeholders);
 				break;
 
@@ -167,7 +169,6 @@ class fStatement
 			// These database extensions don't have prepared statements
 			case 'mssql':
 			case 'pdo_dblib':
-			case 'sqlite':
 				$statement = $query;
 				break;
 
@@ -374,10 +375,6 @@ class fStatement
 				$result = pg_execute($connection, $this->identifier, $params);
 				break;
 
-			case 'sqlite':
-				$result = sqlite_exec($connection, $this->database->escape($statement, $params), $extra);
-				break;
-
 			case 'sqlsrv':
 				$result = sqlsrv_execute($this->statement);
 				break;
@@ -511,10 +508,6 @@ class fStatement
 
 			case 'pgsql':
 				$result->setResult(pg_execute($connection, $this->identifier, $params));
-				break;
-
-			case 'sqlite':
-				$result->setResult(sqlite_query($connection, $this->database->escape($statement, $params), SQLITE_ASSOC, $extra));
 				break;
 
 			case 'sqlsrv':
@@ -653,10 +646,6 @@ class fStatement
 				$result->setResult(pg_execute($connection, $this->identifier, $params));
 				break;
 
-			case 'sqlite':
-				$result->setResult(sqlite_unbuffered_query($connection, $this->database->escape($statement, $params), SQLITE_ASSOC, $extra));
-				break;
-
 			case 'sqlsrv':
 				$extra = sqlsrv_execute($statement);
 				if ($extra) {
@@ -743,7 +732,7 @@ class fStatement
 
 			// A few of the database extensions don't have prepared statement support
 			// so instead we don't bother preparing the params, we just do a normal escape
-			if (in_array($extension, array('mssql', 'mysql', 'pdo_dblib', 'sqlite'))) {
+			if (in_array($extension, array('mssql', 'pdo_dblib'))) {
 				$new_params[] = $params[$i];
 				continue;
 			}

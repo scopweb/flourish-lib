@@ -16,6 +16,10 @@
  * @version    1.0.0 - MongoDB Integration
  */
 
+require_once __DIR__ . '/fException.php';
+require_once __DIR__ . '/fUnexpectedException.php';
+require_once __DIR__ . '/fConnectivityException.php';
+
 class fMongoDB
 {
     /**
@@ -106,12 +110,12 @@ class fMongoDB
      *
      * @param string $name  Collection name
      * @return mixed        Collection object
-     * @throws fException   When database not selected
+     * @throws fUnexpectedException  When database not selected
      */
     public function selectCollection(string $name): mixed
     {
         if ($this->database === null) {
-            throw new fException('No database selected. Call selectDatabase() first.');
+            throw new fUnexpectedException('No database selected. Call selectDatabase() first.');
         }
         return $this->database->selectCollection($name);
     }
@@ -172,9 +176,13 @@ class fMongoDB
      * @param string $collection  Collection name
      * @param mixed $id           Document ID
      * @return mixed              Document or null
+     * @throws fConnectivityException  When the MongoDB extension is not loaded
      */
     public function findById(string $collection, mixed $id): mixed
     {
+        if (!class_exists('MongoDB\BSON\ObjectId')) {
+            throw new fConnectivityException('MongoDB extension is not loaded');
+        }
         $filter = ['_id' => $id instanceof MongoDB\BSON\ObjectId ? $id : new MongoDB\BSON\ObjectId($id)];
         return $this->findOne($collection, $filter);
     }

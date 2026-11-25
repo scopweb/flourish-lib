@@ -16,6 +16,10 @@
  * @version    1.0.0 - Redis Cache Integration
  */
 
+require_once __DIR__ . '/fException.php';
+require_once __DIR__ . '/fUnexpectedException.php';
+require_once __DIR__ . '/fConnectivityException.php';
+
 class fRedis
 {
     /**
@@ -84,6 +88,16 @@ class fRedis
     }
 
     /**
+     * Checks if the Redis extension is available
+     *
+     * @return boolean  TRUE if the Redis extension is loaded
+     */
+    static public function checkRedisAvailability(): bool
+    {
+        return extension_loaded('redis');
+    }
+
+    /**
      * Connect to Redis
      *
      * @return self  For method chaining
@@ -91,7 +105,7 @@ class fRedis
      */
     public function connect(): self
     {
-        if (extension_loaded('redis')) {
+        if (self::checkRedisAvailability()) {
             $this->redis = new Redis();
         } else {
             throw new fConnectivityException('Redis extension is not installed');

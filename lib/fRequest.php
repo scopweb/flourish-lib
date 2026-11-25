@@ -95,7 +95,7 @@ class fRequest
 	{
 		$level++;
 
-		$strict_array = substr($cast_to, -2) == '[]';
+		$strict_array = is_string($cast_to) && substr($cast_to, -2) == '[]';
 		$array_type   = $cast_to == 'array' || $strict_array;
 
 		if ($level == 1 && $array_type) {
@@ -127,7 +127,7 @@ class fRequest
 			$cast_to = 'string';
 		}
 
-		if (get_magic_quotes_gpc() && (self::isPost() || self::isGet())) {
+		if (self::isPost() || self::isGet()) {
 			$value = self::stripSlashes($value);
 		}
 
@@ -596,13 +596,31 @@ class fRequest
 
 
 	/**
+	 * Gets the HTTP method used to access the current page
+	 *
+	 * The request method is not available in every context, for instance when
+	 * running from the command line, so an empty string is returned instead of
+	 * raising an error.
+	 *
+	 * @return string  The lowercased HTTP method, or an empty string if it is not available
+	 */
+	static private function getRequestMethod()
+	{
+		if (!isset($_SERVER['REQUEST_METHOD'])) {
+			return '';
+		}
+		return strtolower($_SERVER['REQUEST_METHOD']);
+	}
+
+
+	/**
 	 * Indicates if the URL was accessed via the `DELETE` HTTP method
 	 *
 	 * @return boolean  If the URL was accessed via the `DELETE` HTTP method
 	 */
 	static public function isDelete()
 	{
-		return strtolower($_SERVER['REQUEST_METHOD']) == 'delete';
+		return self::getRequestMethod() == 'delete';
 	}
 
 
@@ -613,7 +631,7 @@ class fRequest
 	 */
 	static public function isGet()
 	{
-		return strtolower($_SERVER['REQUEST_METHOD']) == 'get';
+		return self::getRequestMethod() == 'get';
 	}
 
 
@@ -624,7 +642,7 @@ class fRequest
 	 */
 	static public function isHead()
 	{
-		return strtolower($_SERVER['REQUEST_METHOD']) == 'head';
+		return self::getRequestMethod() == 'head';
 	}
 
 
@@ -635,7 +653,7 @@ class fRequest
 	 */
 	static public function isPost()
 	{
-		return strtolower($_SERVER['REQUEST_METHOD']) == 'post';
+		return self::getRequestMethod() == 'post';
 	}
 
 
@@ -646,7 +664,7 @@ class fRequest
 	 */
 	static public function isPut()
 	{
-		return strtolower($_SERVER['REQUEST_METHOD']) == 'put';
+		return self::getRequestMethod() == 'put';
 	}
 
 
@@ -670,7 +688,7 @@ class fRequest
 		foreach ($globals as &$global) {
 			foreach ($global as $key => $value) {
 				if (substr($key, 0, 8) == 'action::') {
-					$found = (boolean) $global['action'] = substr($key, 8);
+					$found = (bool) $global['action'] = substr($key, 8);
 					unset($global[$key]);
 				}
 			}
@@ -965,7 +983,7 @@ class fRequest
 	  */
 	 public function getMethod()
 	 {
-		 return strtoupper($_SERVER['REQUEST_METHOD']);
+		 return strtoupper(self::getRequestMethod());
 	 }
 }
 

@@ -8,7 +8,7 @@
  */
 
 require_once __DIR__ . '/../container/Container.php';
-require_once __DIR__ . '/../Application.php';
+require_once __DIR__ . '/../enums/Application.php';
 require_once __DIR__ . '/../interfaces/ConfigInterface.php';
 require_once __DIR__ . '/../interfaces/CacheInterface.php';
 require_once __DIR__ . '/../interfaces/EmailServiceInterface.php';

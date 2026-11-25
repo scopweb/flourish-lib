@@ -1225,12 +1225,89 @@ abstract class fActiveRecord
 	 */
 	public function __wakeup()
 	{
+		$this->__unserialize(array());
+	}
+
+
+	/**
+	 * Prepares the record for serialization
+	 *
+	 * @internal
+	 *
+	 * @return array  The data to serialize
+	 */
+	public function __serialize(): array
+	{
+		$data = array();
+
+		// The (array) cast includes private properties, which are stored
+		// with a mangled name containing the class that declared them
+		foreach ((array) $this as $key => $value) {
+			$data[$key] = $value;
+		}
+
+		return $data;
+	}
+
+
+	/**
+	 * Restores the record and configures the class when unserialized
+	 *
+	 * @internal
+	 *
+	 * @param  array $data  The serialized data
+	 * @return void
+	 */
+	public function __unserialize(array $data): void
+	{
+		foreach ($data as $key => $value) {
+			$this->setSerializedProperty($key, $value);
+		}
+
 		$class = get_class($this);
 
 		if (!isset(self::$configured[$class])) {
 			$this->configure();
 			self::$configured[$class] = true;
 		}
+	}
+
+
+	/**
+	 * Restores a single serialized property
+	 *
+	 * @internal
+	 *
+	 * @param  string $key    The name of the property
+	 * @param  mixed  $value  The value of the property
+	 * @return void
+	 */
+	private function setSerializedProperty($key, $value)
+	{
+		if (strncmp($key, "\0", 1) === 0) {
+			// Protected properties are serialized with a mangled name of
+			// "\0*\0name" and private ones with "\0Class\0name"
+			$parts    = explode("\0", $key);
+			$scope    = $parts[1] === '*' ? get_class($this) : $parts[1];
+			$property = $parts[2];
+
+			if (!class_exists($scope)) {
+				return;
+			}
+
+			$setter = function() use ($property, $value) {
+				$this->$property = $value;
+			};
+			$setter = Closure::bind($setter, $this, $scope);
+
+			if ($setter instanceof Closure) {
+				$setter();
+			}
+
+			return;
+		}
+
+		$this->$key = $value;
 	}
 
 

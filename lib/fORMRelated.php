@@ -723,7 +723,7 @@ class fORMRelated
 			}
 		}
 
-		return (boolean) $related_records[$related_table][$route]['count'];
+		return (bool) $related_records[$related_table][$route]['count'];
 	}
 
 

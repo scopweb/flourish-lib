@@ -1185,7 +1185,7 @@ class fORMDatabase
 				if (self::$pcre_supports_unicode_character_properties === NULL) {
 					fCore::startErrorCapture();
 					preg_match('#\pC#u', 'test');
-					self::$pcre_supports_unicode_character_properties = !((boolean) fCore::stopErrorCapture());
+					self::$pcre_supports_unicode_character_properties = !((bool) fCore::stopErrorCapture());
 				}
 				if (self::$pcre_supports_unicode_character_properties) {
 					$match = preg_replace('#(^[\pC\pC\pM\pP\pS\pZ]+|[\pC\pC\pM\pP\pS\pZ]+$)#iDu', '', $match);

@@ -291,7 +291,7 @@ class fSMTP
 			$this->max_size = $match[0][1];
 		}
 
-		$this->pipelining = (boolean) $this->find($response, '#^250[ -]PIPELINING$#');
+		$this->pipelining = (bool) $this->find($response, '#^250[ -]PIPELINING$#');
 
 		$auth_methods = array();
 		if ($match = $this->find($response, '#^250[ -]AUTH[ =](.*)$#')) {
@@ -397,7 +397,7 @@ class fSMTP
 	 */
 	public function enableDebugging($flag)
 	{
-		$this->debug = (boolean) $flag;
+		$this->debug = (bool) $flag;
 	}
 
 

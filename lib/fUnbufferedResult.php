@@ -2,14 +2,15 @@
 /**
  * Representation of an unbuffered result from a query against the fDatabase class
  *
- * ✅ **FULLY COMPATIBLE WITH PHP 8.4** ✅
- * 
+ * ✅ **FULLY COMPATIBLE WITH PHP 8.4 AND PHP 8.5** ✅
+ *
  * This class supports modern database extensions:
- * - MySQLi extension (mysqli_*) for MySQL databases  
+ * - MySQLi extension (mysqli_*) for MySQL databases
  * - PDO for cross-database compatibility
  * - PostgreSQL, SQLite, SQL Server, Oracle, IBM DB2 support
- * 
+ *
  * **LEGACY MYSQL EXTENSION REMOVED** - Now uses MySQLi/PDO exclusively
+ * **LEGACY SQLITE2 EXTENSION REMOVED** - SQLite now uses pdo_sqlite exclusively
  *
  * @copyright  Copyright (c) 2007-2011 Will Bond, 2024 Claude Code Migration
  * @author     Will Bond [wb] <will@flourishlib.com>
@@ -19,7 +20,7 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fUnbufferedResult
  *
- * @version    PHP 8.4 Compatible - MySQL extension removed, MySQLi/PDO modernized
+ * @version    Updated 2025-11-25 - PHP 8.5 Compatible - MySQL and SQLite2 extensions removed
  */
 class fUnbufferedResult implements Iterator
 {
@@ -229,10 +230,6 @@ class fUnbufferedResult implements Iterator
 				pg_free_result($this->result);
 				break;
 
-			case 'sqlite':
-				unset($this->result);
-				break;
-
 			case 'sqlsrv':
 				sqlsrv_free_stmt($this->result);
 				break;
@@ -321,10 +318,6 @@ class fUnbufferedResult implements Iterator
 
 			case 'pgsql':
 				$row = pg_fetch_assoc($this->result);
-				break;
-
-			case 'sqlite':
-				$row = sqlite_fetch_array($this->result, SQLITE_ASSOC);
 				break;
 
 			case 'sqlsrv':

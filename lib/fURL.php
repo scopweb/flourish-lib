@@ -110,7 +110,7 @@ class fURL
 		$string = strtolower(trim($string));
 		$string = str_replace("'", '', $string);
 
-		if (!strlen($delimiter)) {
+		if ($delimiter === null || $delimiter === '') {
 			$delimiter = '_';
 		}
 

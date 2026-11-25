@@ -145,9 +145,9 @@ test('File System: Document Processing', function() {
         require_once $classesDir . '/lib/fImage.php';
         
         // Test 1: Create test directory and files
-        $test_dir = $classesDir . '/lib/temp_test';
-        if (!is_dir($test_dir)) {
-            mkdir($test_dir, 0755, true);
+        $test_dir = sys_get_temp_dir() . '/flourish_temp_test_' . getmypid();
+        if (!is_dir($test_dir . '/lib')) {
+            mkdir($test_dir . '/lib', 0755, true);
         }
         
         // Create sample files
@@ -162,7 +162,7 @@ test('File System: Document Processing', function() {
         }
         
         // Test 2: Work with fDirectory
-        $directory = new fDirectory($test_dir);
+        $directory = new fDirectory($test_dir . '/lib');
         
         // List all files
         $all_files = $directory->scan();
@@ -215,6 +215,7 @@ test('File System: Document Processing', function() {
         foreach (array_keys($files_content) as $filename) {
             unlink($test_dir . '/lib/' . $filename);
         }
+        rmdir($test_dir . '/lib');
         rmdir($test_dir);
         
         return true;
@@ -296,7 +297,7 @@ test('Data Processing: CSV and JSON Operations', function() {
             ['name' => 'David Brown', 'department' => 'Engineering', 'salary' => 90000]
         ];
         
-        $json_file_path = $classesDir . '/lib/temp_employees.json';
+        $json_file_path = sys_get_temp_dir() . '/flourish_temp_employees_' . getmypid() . '.json';
         file_put_contents($json_file_path, json_encode($sample_data, JSON_PRETTY_PRINT));
         
         // Test 2: Read and process data

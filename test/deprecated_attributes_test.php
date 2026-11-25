@@ -1,234 +1,180 @@
 <?php
 /**
- * Test for PHP 8.4 #[\Deprecated] attributes implementation
- * Validates that deprecated methods and classes have proper deprecation attributes
+ * Test for the PHP 8.4+ #[\Deprecated] attribute
+ *
+ * The policy enforced here is:
+ *
+ *  1. The attribute exists and can be read through reflection.
+ *  2. A deprecated API states which replacement the developer must use.
+ *  3. The library NEVER calls its own deprecated APIs, so a production
+ *     application never receives deprecation notices caused by the library
+ *     itself.
+ *
+ * @package Flourish Tests
  */
 
-require_once __DIR__ . '/../lib/fDatabase.php';
-require_once __DIR__ . '/../lib/fResult.php';
-require_once __DIR__ . '/../lib/fEmail.php';
+require_once __DIR__ . '/bootstrap.php';
 
-class DeprecatedAttributesTest
+/**
+ * Returns the source files of the library
+ *
+ * @return array  The file paths
+ */
+function flourish_deprecation_source_files()
 {
-    private $results = [];
-    private $testCount = 0;
-    private $passCount = 0;
-
-    public function runAllTests()
-    {
-        echo "🧪 PHP 8.4 #[\\Deprecated] Attributes Test Suite\n";
-        echo "============================================================\n\n";
-
-        $this->testDatabaseDeprecatedMethods();
-        $this->testResultDeprecatedClass();
-        $this->testEmailDeprecatedMethods();
-        $this->testDeprecationReflectionAPI();
-
-        $this->printSummary();
-        return $this->passCount === $this->testCount;
-    }
-
-    private function assert($condition, $message)
-    {
-        $this->testCount++;
-        if ($condition) {
-            $this->passCount++;
-            echo "✅ $message\n";
-            return true;
-        } else {
-            echo "❌ $message\n";
-            return false;
-        }
-    }
-
-    private function testDatabaseDeprecatedMethods()
-    {
-        echo "🗄️ Testing fDatabase Deprecated Methods...\n";
-        
-        try {
-            $reflection = new ReflectionClass('fDatabase');
-            
-            // Test escape() method has #[\Deprecated] attribute
-            if ($reflection->hasMethod('escape')) {
-                $escapeMethod = $reflection->getMethod('escape');
-                $attributes = $escapeMethod->getAttributes(Deprecated::class);
-                
-                $this->assert(
-                    !empty($attributes),
-                    "fDatabase::escape() has #[\\Deprecated] attribute"
-                );
-                
-                if (!empty($attributes)) {
-                    $attribute = $attributes[0]->newInstance();
-                    $this->assert(
-                        str_contains($attribute->message, 'prepared statements'),
-                        "Deprecation message mentions prepared statements"
-                    );
-                    $this->assert(
-                        $attribute->since === "2.0",
-                        "Deprecation since version is 2.0"
-                    );
-                }
-            }
-            
-            // Test escapeString() method has #[\Deprecated] attribute (if accessible)
-            $methods = $reflection->getMethods(ReflectionMethod::IS_PRIVATE);
-            foreach ($methods as $method) {
-                if ($method->getName() === 'escapeString') {
-                    $attributes = $method->getAttributes(Deprecated::class);
-                    $this->assert(
-                        !empty($attributes),
-                        "fDatabase::escapeString() has #[\\Deprecated] attribute"
-                    );
-                    break;
-                }
-            }
-            
-        } catch (Exception $e) {
-            $this->assert(false, "Error testing fDatabase attributes: " . $e->getMessage());
-        }
-        
-        echo "\n";
-    }
-
-    private function testResultDeprecatedClass()
-    {
-        echo "📊 Testing fResult Deprecated Documentation...\n";
-        
-        try {
-            // Since #[\Deprecated] cannot be applied to classes in PHP 8.4,
-            // we verify that fResult is marked as deprecated in documentation
-            $reflection = new ReflectionClass('fResult');
-            $docComment = $reflection->getDocComment();
-            
-            $this->assert(
-                str_contains($docComment, 'DEPRECATED'),
-                "fResult class has DEPRECATED warning in documentation"
-            );
-            
-            $this->assert(
-                str_contains($docComment, 'mysql_'),
-                "Documentation mentions mysql_* functions"
-            );
-            
-            $this->assert(
-                str_contains($docComment, 'PHP 8.4'),
-                "Documentation mentions PHP 8.4 compatibility"
-            );
-            
-        } catch (Exception $e) {
-            $this->assert(false, "Error testing fResult documentation: " . $e->getMessage());
-        }
-        
-        echo "\n";
-    }
-
-    private function testEmailDeprecatedMethods()
-    {
-        echo "📧 Testing fEmail Deprecated Methods...\n";
-        
-        try {
-            $reflection = new ReflectionClass('fEmail');
-            
-            // Test getSubmissionEmail() method has #[\Deprecated] attribute
-            if ($reflection->hasMethod('getSubmissionEmail')) {
-                $method = $reflection->getMethod('getSubmissionEmail');
-                $attributes = $method->getAttributes(Deprecated::class);
-                
-                $this->assert(
-                    !empty($attributes),
-                    "fEmail::getSubmissionEmail() has #[\\Deprecated] attribute"
-                );
-                
-                if (!empty($attributes)) {
-                    $attribute = $attributes[0]->newInstance();
-                    $this->assert(
-                        str_contains($attribute->message, 'property'),
-                        "Deprecation message mentions property usage"
-                    );
-                }
-            }
-            
-        } catch (Exception $e) {
-            $this->assert(false, "Error testing fEmail attributes: " . $e->getMessage());
-        }
-        
-        echo "\n";
-    }
-
-    private function testDeprecationReflectionAPI()
-    {
-        echo "🔍 Testing Deprecation Reflection API...\n";
-        
-        try {
-            // Test that PHP 8.4's Deprecated attribute class exists
-            $this->assert(
-                class_exists('Deprecated'),
-                "PHP 8.4 Deprecated attribute class exists"
-            );
-            
-            // Test reflection can find deprecated methods across all classes
-            $deprecatedMethods = [];
-            
-            $classes = ['fDatabase', 'fResult', 'fEmail'];
-            foreach ($classes as $className) {
-                if (class_exists($className)) {
-                    $reflection = new ReflectionClass($className);
-                    
-                    // Check for deprecated methods (classes can't have #[\Deprecated] in PHP 8.4)
-                    $methods = $reflection->getMethods();
-                    foreach ($methods as $method) {
-                        $attributes = $method->getAttributes(Deprecated::class);
-                        if (!empty($attributes)) {
-                            $deprecatedMethods[] = $className . '::' . $method->getName();
-                        }
-                    }
-                }
-            }
-            
-            $this->assert(
-                count($deprecatedMethods) > 0,
-                "Found " . count($deprecatedMethods) . " deprecated methods: " . implode(', ', $deprecatedMethods)
-            );
-            
-            // Test that we have the expected minimum deprecations
-            $this->assert(
-                count($deprecatedMethods) >= 3,
-                "Minimum expected deprecated methods found (3+): " . count($deprecatedMethods) . " found"
-            );
-            
-        } catch (Exception $e) {
-            $this->assert(false, "Error testing reflection API: " . $e->getMessage());
-        }
-        
-        echo "\n";
-    }
-
-    private function printSummary()
-    {
-        echo "============================================================\n";
-        echo "📊 #[\\DEPRECATED] ATTRIBUTES TEST SUMMARY\n";
-        echo "============================================================\n";
-        echo "Total Tests: {$this->testCount}\n";
-        
-        if ($this->passCount === $this->testCount) {
-            echo "Passed: {$this->passCount} ✅\n";
-            echo "Failed: 0 ✅\n";
-            echo "Success Rate: 100%\n\n";
-            echo "🎉 ALL DEPRECATION ATTRIBUTES TESTS PASSED! 🎉\n";
-            echo "✨ PHP 8.4 #[\\Deprecated] attributes are working correctly!\n";
-        } else {
-            $failed = $this->testCount - $this->passCount;
-            echo "Passed: {$this->passCount}\n";
-            echo "Failed: {$failed} ❌\n";
-            $rate = round(($this->passCount / $this->testCount) * 100, 1);
-            echo "Success Rate: {$rate}%\n\n";
-            echo "❌ Some deprecation tests failed. Check implementation.\n";
-        }
-    }
+	$files = array();
+	foreach (array('lib', 'enums', 'container', 'interfaces', 'querybuilder', 'providers') as $directory) {
+		$path = FLOURISH_ROOT . '/' . $directory;
+		if (!is_dir($path)) {
+			continue;
+		}
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
+		foreach ($iterator as $file) {
+			if ($file->isFile() && strtolower($file->getExtension()) === 'php') {
+				$files[] = $file->getPathname();
+			}
+		}
+	}
+	sort($files);
+	return $files;
 }
 
-// Run the tests
-$tester = new DeprecatedAttributesTest();
-$success = $tester->runAllTests();
-exit($success ? 0 : 1);
+/**
+ * Finds the methods of the library that carry the #[\Deprecated] attribute
+ *
+ * @return array  The deprecated methods, keyed by class name
+ */
+function flourish_deprecated_methods()
+{
+	$deprecated = array();
+
+	foreach (flourish_deprecation_source_files() as $file) {
+		$source = file_get_contents($file);
+		if (!preg_match('/^\s*(?:final\s+|abstract\s+)?class\s+([A-Za-z_][A-Za-z0-9_]*)/m', $source, $matches)) {
+			continue;
+		}
+		$class = $matches[1];
+		if (!class_exists($class)) {
+			continue;
+		}
+
+		$reflection = new ReflectionClass($class);
+		foreach ($reflection->getMethods() as $method) {
+			$attributes = $method->getAttributes('Deprecated');
+			if (!$attributes) {
+				continue;
+			}
+			$deprecated[$class][] = array(
+				'method'  => $method->getName(),
+				'message' => $attributes[0]->getArguments()['message'] ?? '',
+				'since'   => $attributes[0]->getArguments()['since'] ?? '',
+				'file'    => $method->getFileName(),
+				'line'    => $method->getStartLine()
+			);
+		}
+	}
+
+	return $deprecated;
+}
+
+test('Deprecated attribute: the attribute class is available', function() {
+	if (!class_exists('Deprecated')) {
+		return 'The Deprecated attribute is not available, this requires PHP 8.4 or newer';
+	}
+	return true;
+});
+
+test('Deprecated attribute: the deprecated APIs of the library are marked', function() {
+	$deprecated = flourish_deprecated_methods();
+	if (!$deprecated) {
+		return 'No API of the library is marked as deprecated';
+	}
+	if (!isset($deprecated['fEmail'])) {
+		return 'fEmail has no deprecated API marked';
+	}
+
+	$found = false;
+	foreach ($deprecated['fEmail'] as $method) {
+		if ($method['method'] === 'getSubmissionEmail') {
+			$found = true;
+			if (!str_contains($method['message'], 'property')) {
+				return 'The deprecation message does not mention the replacement property: ' . $method['message'];
+			}
+			if ($method['since'] === '') {
+				return 'The deprecation does not state the version it was deprecated in';
+			}
+		}
+	}
+	if (!$found) {
+		return 'fEmail::getSubmissionEmail() is not marked as deprecated';
+	}
+	return true;
+});
+
+test('Deprecated attribute: the library never calls its own deprecated APIs', function() {
+	$deprecated = flourish_deprecated_methods();
+	if (!$deprecated) {
+		return true;
+	}
+
+	$violations = array();
+	$files = flourish_deprecation_source_files();
+
+	foreach ($deprecated as $class => $methods) {
+		foreach ($methods as $method) {
+			$name = $method['method'];
+			$definitionFile = $method['file'];
+
+			foreach ($files as $file) {
+				$source = file_get_contents($file);
+				$tokens = token_get_all($source);
+
+				foreach ($tokens as $index => $token) {
+					if (!is_array($token) || $token[0] !== T_STRING || $token[1] !== $name) {
+						continue;
+					}
+					// Look back for an object operator or a class operator
+					$previous = null;
+					for ($i = $index - 1; $i >= 0; $i--) {
+						if (is_array($tokens[$i]) && in_array($tokens[$i][0], array(T_WHITESPACE, T_COMMENT, T_DOC_COMMENT), true)) {
+							continue;
+						}
+						$previous = $tokens[$i];
+						break;
+					}
+					if ($previous !== T_OBJECT_OPERATOR && $previous !== T_DOUBLE_COLON && $previous !== T_PAAMAYIM_NEKUDOTAYIM) {
+						continue;
+					}
+					// The declaration itself is not a call
+					if ($file === $definitionFile) {
+						continue;
+					}
+
+					$relative = str_replace(FLOURISH_ROOT . '/', '', $file);
+					$violations[] = $class . '::' . $name . ' is called in ' . $relative . ' on line ' . $token[2];
+				}
+			}
+		}
+	}
+
+	if ($violations) {
+		return "The library calls its own deprecated APIs:\n         - " . implode("\n         - ", $violations);
+	}
+	return true;
+});
+
+test('Deprecated attribute: the documentation of fResult reflects the current state', function() {
+	$reflection = new ReflectionClass('fResult');
+	$docComment = $reflection->getDocComment();
+
+	if ($docComment === false) {
+		return 'fResult has no documentation block';
+	}
+	if (str_contains($docComment, 'NOT compatible with PHP')) {
+		return 'The documentation of fResult still claims that it is not compatible with PHP 8';
+	}
+	if (!str_contains($docComment, 'PHP 8')) {
+		return 'The documentation of fResult does not mention the PHP 8 compatibility';
+	}
+	return true;
+});

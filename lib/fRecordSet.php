@@ -882,6 +882,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  boolean $ignore_limit  If set to `true`, this method will return the number of records that would be in the set if there was no `LIMIT` clause
 	 * @return integer  The number of records in the set
 	 */
+	#[\ReturnTypeWillChange]
 	public function count($ignore_limit=false)
 	{
 		if ($ignore_limit !== true || $this->non_limited_count === null) {
@@ -893,7 +894,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 				$db = fORMDatabase::retrieve($this->class, 'read');
 				// The integer cast here is to solve issues with the broken dblib
 				// SQL Server driver that is sometimes present on Windows machines
-				$this->non_limited_count = (integer) $db->translatedQuery($this->non_limited_count)->fetchScalar();
+				$this->non_limited_count = (int) $db->translatedQuery($this->non_limited_count)->fetchScalar();
 			} catch (fExpectedException $e) {
 				$this->non_limited_count = $this->count();
 			}
@@ -1076,6 +1077,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 *
 	 * @return ArrayIterator  An iterator for the record set
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new ArrayIterator($this->records);
@@ -1367,6 +1369,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  mixed $offset  The offset to check
 	 * @return boolean  If the offset exists
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists($offset)
 	{
 		return isset($this->records[$offset]);
@@ -1385,6 +1388,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  mixed $offset  The offset of the record to get
 	 * @return fActiveRecord  The requested record
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		if ((!is_integer($offset) && !is_numeric($offset)) || $offset < 0) {
@@ -1414,6 +1418,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  mixed $value   The value to set to the offset
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet($offset, $value)
 	{
 		throw new fProgrammerException(
@@ -1433,6 +1438,7 @@ class fRecordSet implements IteratorAggregate, ArrayAccess, Countable
 	 * @param  mixed $offset  The offset to unset
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($offset)
 	{
 		throw new fProgrammerException(

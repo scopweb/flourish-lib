@@ -306,7 +306,7 @@ class fGrammar
 
 			$string = preg_replace_callback(
 				'/(\b(api|css|gif|html|id|jpg|js|mp3|pdf|php|png|sql|swf|url|xhtml|xml)\b|\b\w)/',
-				array('self', 'camelizeCallback'),
+				self::class . '::camelizeCallback',
 				str_replace('_', ' ', $string)
 			);
 		}

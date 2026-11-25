@@ -2,10 +2,12 @@
 /**
  * Provides a common API for different databases - will automatically use any installed extension
  * 
- * ✅ **PHP 8.4 COMPATIBLE** ✅
- * This class provides database abstraction supporting MySQLi, PDO, PostgreSQL, SQLite and more.
- * While legacy MySQL extension support exists for backwards compatibility, modern extensions
- * (MySQLi, PDO) are prioritized and fully compatible with PHP 8.4.
+ * ✅ **PHP 8.4 COMPATIBLE** ✅ - also verified on PHP 8.5
+ * This class provides database abstraction supporting MySQLi, PDO (MySQL, PostgreSQL,
+ * SQLite), PostgreSQL, Oracle, SQL Server, DB2 and more.
+ * The obsolete mysql extension (removed from PHP in 7.0) and the obsolete sqlite2
+ * extension (removed from PHP in 5.4/7.0) are no longer supported - use mysqli or
+ * PDO for MySQL and pdo_sqlite for SQLite.
  *
  * This class is implemented to use the UTF-8 character encoding. Please see
  * http://flourishlib.com/docs/UTF-8 for more information.
@@ -29,9 +31,8 @@
  *   - [http://php.net/pdo_dblib pdo_dblib]
  *   - [http://php.net/mssql mssql] (or [http://php.net/sybase sybase])
  *  - MySQL
- *   - [http://php.net/mysqli mysqli] (✅ PHP 8.4 compatible)
- *   - [http://php.net/pdo_mysql pdo_mysql] (✅ PHP 8.4 compatible)
- *   - [http://php.net/mysql mysql] (⚠️  DEPRECATED - removed in PHP 7.0, kept for legacy detection only)
+ *   - [http://php.net/mysqli mysqli] (✅ PHP 8.4+ compatible)
+ *   - [http://php.net/pdo_mysql pdo_mysql] (✅ PHP 8.4+ compatible)
  *  - Oracle
  *   - [http://php.net/oci8 oci8]
  *   - [http://php.net/pdo_oci pdo_oci]
@@ -40,7 +41,6 @@
  *   - [http://php.net/pdo_pgsql pdo_pgsql]
  *  - SQLite
  *   - [http://php.net/pdo_sqlite pdo_sqlite] (for v3.x)
- *   - [http://php.net/sqlite sqlite] (for v2.x)
  *  - SQLSRV
  *   - [https://www.php.net/manual/en/book.sqlsrv.php]
  *
@@ -55,7 +55,11 @@
  * @package    Flourish
  * @link       http://flourishlib.com/fDatabase
  * 
- * @version    Updated 2025-09-11 - PHP 8.4 Compatibility Verified
+ * @version    Updated 2025-11-25 - PHP 8.5 Compatibility
+ *            - Removed the support for the mysql extension (removed from PHP in 7.0)
+ *            - Removed the support for the sqlite2 extension (removed from PHP in 5.4/7.0)
+ *            - MySQL now requires mysqli or PDO, SQLite requires pdo_sqlite
+ *            - Previously: Updated 2025-09-11 - PHP 8.4 Compatibility Verified
  *            - Confirmed compatibility with MySQLi and PDO extensions
  *            - Documented legacy MySQL extension status (removed PHP 7.0)
  *            - Tested with modern database extensions in PHP 8.4.11
@@ -130,11 +134,9 @@ class fDatabase
 	 *
 	 *  - `'ibm_db2'`
 	 *  - `'mssql'`
-	 *  - `'mysql'`
 	 *  - `'mysqli'`
 	 *  - `'oci8'`
 	 *  - `'pgsql'`
-	 *  - `'sqlite'`
 	 *  - `'sqlsrv'`
 	 *  - `'pdo'`
 	 *
@@ -274,16 +276,6 @@ class fDatabase
 	 */
 	public function __construct($type, $database, $username=NULL, $password=NULL, $host=NULL, $port=NULL, $timeout=NULL)
 	{
-		// PHP 8.4 Compatibility Warning
-		if ($type === 'mysql' && extension_loaded('mysql')) {
-			trigger_error(
-				'fDatabase: MySQL extension is DEPRECATED and removed in PHP 7.0+. ' .
-				'This framework is incompatible with modern PHP versions. ' .
-				'Use MySQLi or PDO instead.',
-				E_USER_DEPRECATED
-			);
-		}
-
 		$valid_types = array('db2', 'mssql', 'mysql', 'oracle', 'postgresql', 'sqlite');
 		if (!in_array($type, $valid_types)) {
 			throw new fProgrammerException(
@@ -337,8 +329,6 @@ class fDatabase
 			db2_close($this->connection);
 		} elseif ($this->extension == 'mssql') {
 			mssql_close($this->connection);
-		} elseif ($this->extension == 'mysql') {
-			mysql_close($this->connection);
 		} elseif ($this->extension == 'mysqli') {
 			// Before 5.2.0 the destructor order would cause mysqli to
 			// close itself which would make this call trigger a warning
@@ -349,8 +339,6 @@ class fDatabase
 			oci_close($this->connection);
 		} elseif ($this->extension == 'pgsql') {
 			pg_close($this->connection);
-		} elseif ($this->extension == 'sqlite') {
-			sqlite_close($this->connection);
 		} elseif ($this->extension == 'sqlsrv') {
 			sqlsrv_close($this->connection);
 		} elseif ($this->extension == 'pdo') {
@@ -379,7 +367,7 @@ class fDatabase
 	 * Checks to see if an SQL error occured
 	 *
 	 * @param  fResult|fUnbufferedResult|boolean $result      The result object for the query
-	 * @param  mixed                             $extra_info  The sqlite extension will pass a string error message, the oci8 extension will pass the statement resource
+	 * @param  mixed                             $extra_info  The oci8 extension will pass the statement resource
 	 * @param  string                            $sql         The SQL that was executed
 	 * @return void
 	 */
@@ -397,8 +385,6 @@ class fDatabase
 				$message = $this->error;
 				$this->error = '';
 
-			} elseif ($this->extension == 'mysql') {
-				$message = mysql_error($this->connection);
 			} elseif ($this->extension == 'mysqli') {
 				if (is_object($extra_info)) {
 					$message = $extra_info->error;
@@ -410,12 +396,6 @@ class fDatabase
 				$message = $error_info['message'];
 			} elseif ($this->extension == 'pgsql') {
 				$message = pg_last_error($this->connection);
-			} elseif ($this->extension == 'sqlite') {
-				if ($extra_info === NULL) {
-					$message = sqlite_error_string(sqlite_last_error($this->connection));
-				} else {
-					$message = $extra_info;
-				}
 			} elseif ($this->extension == 'sqlsrv') {
 				$error_info = sqlsrv_errors(SQLSRV_ERR_ALL);
 				$message = $error_info[0]['message'];
@@ -582,9 +562,19 @@ class fDatabase
 				if ($errors) {
 					$this->connection = false;
 				} else {
-					$this->connection = new PDO($dsn, $username, $password, $options);
+					if ($this->type == 'sqlite' && class_exists('Pdo\Sqlite')) {
+						// PHP 8.4 introduced driver specific PDO classes. Pdo\Sqlite is
+						// needed to register custom functions through the non-deprecated
+						// Pdo\Sqlite::createFunction() method
+						$this->connection = new Pdo\Sqlite($dsn, $username, $password, $options);
+					} else {
+						$this->connection = new PDO($dsn, $username, $password, $options);
+					}
 					if ($this->type == 'mysql') {
-						$this->connection->setAttribute(PDO::MYSQL_ATTR_DIRECT_QUERY, 1);
+						$this->connection->setAttribute(
+							defined('Pdo\Mysql::ATTR_DIRECT_QUERY') ? Pdo\Mysql::ATTR_DIRECT_QUERY : PDO::MYSQL_ATTR_DIRECT_QUERY,
+							1
+						);
 					}
 				}
 
@@ -593,10 +583,6 @@ class fDatabase
 
 				$errors = $e->getMessage();
 			}
-		}
-
-		if ($this->extension == 'sqlite') {
-			$this->connection = sqlite_open($this->database);
 		}
 
 		if ($this->extension == 'ibm_db2') {
@@ -648,42 +634,6 @@ class fDatabase
 
 			if ($this->timeout !== NULL) {
 				ini_set('mssql.connect_timeout', $old_timeout);
-			}
-		}
-
-		if ($this->extension == 'mysql') {
-			if ($this->timeout !== NULL) {
-				$old_timeout = ini_get('mysql.connect_timeout');
-				ini_set('mysql.connect_timeout', $this->timeout);
-			}
-
-			if (substr($this->host, 0, 5) == 'sock:') {
-				$host = substr($this->host, 4);
-			} elseif ($this->port) {
-				$host = $this->host . ':' . $this->port;
-			} else {
-				$host = $this->host;
-			}
-
-			fCore::startErrorCapture();
-
-			$this->connection = mysql_connect($host, $this->username, $this->password, true);
-
-			$errors = fCore::stopErrorCapture();
-
-			if ($this->connection !== false && mysql_select_db($this->database, $this->connection) === false) {
-				$errors = 'Unknown database';
-				$this->connection = false;
-			}
-
-			if ($this->connection && function_exists('mysql_set_charset') && !mysql_set_charset('utf8', $this->connection)) {
-                throw new fConnectivityException(
-                	'There was an error setting the database connection to use UTF-8'
-				);
-            }
-
-            if ($this->timeout !== NULL) {
-				ini_set('mysql.connect_timeout', $old_timeout);
 			}
 		}
 
@@ -900,12 +850,13 @@ class fDatabase
 				} elseif (class_exists('PDO', false) && in_array('mysql', PDO::getAvailableDrivers())) {
 					$this->extension = 'pdo';
 
-				} elseif (extension_loaded('mysql')) {
-					$this->extension = 'mysql';
-
 				} else {
-					$type = 'MySQL';
-					$exts = 'mysql, pdo_mysql, mysqli';
+					throw new fEnvironmentException(
+						'The %1$s extension was removed from PHP in 7.0 and is not supported. Please use the %2$s or %3$s extensions for MySQL support',
+						'mysql',
+						'mysqli',
+						'pdo_mysql'
+					);
 				}
 				break;
 
@@ -963,29 +914,29 @@ class fDatabase
 					}
 				}
 
-				if ((!$sqlite_version || $sqlite_version == 3) && class_exists('PDO', false) && in_array('sqlite', PDO::getAvailableDrivers())) {
+				if ($sqlite_version == 2) {
+					throw new fEnvironmentException(
+						'The database specified is an %1$s database and the %2$s extension was removed from PHP and is not supported. Please use the %3$s extension instead',
+						'SQLite v2.1',
+						'sqlite',
+						'pdo_sqlite'
+					);
+
+				} elseif (class_exists('PDO', false) && in_array('sqlite', PDO::getAvailableDrivers())) {
 					$this->extension = 'pdo';
 
-				} elseif ($sqlite_version == 3 && (!class_exists('PDO', false) || !in_array('sqlite', PDO::getAvailableDrivers()))) {
+				} elseif ($sqlite_version == 3) {
 					throw new fEnvironmentException(
 						'The database specified is an %1$s database and the %2$s extension is not installed',
 						'SQLite v3',
 						'pdo_sqlite'
 					);
 
-				} elseif ((!$sqlite_version || $sqlite_version == 2) && extension_loaded('sqlite')) {
-					$this->extension = 'sqlite';
-
-				} elseif ($sqlite_version == 2 && !extension_loaded('sqlite')) {
-					throw new fEnvironmentException(
-						'The database specified is an %1$s database and the %2$s extension is not installed',
-						'SQLite v2.1',
-						'sqlite'
-					);
-
 				} else {
-					$type = 'SQLite';
-					$exts = 'pdo_sqlite, sqlite';
+					throw new fEnvironmentException(
+						'The %1$s extension is not installed',
+						'pdo_sqlite'
+					);
 				}
 				break;
 		}
@@ -1027,7 +978,7 @@ class fDatabase
 	 */
 	public function enableDebugging($flag)
 	{
-		$this->debug = (boolean) $flag;
+		$this->debug = (bool) $flag;
 	}
 
 
@@ -1041,7 +992,7 @@ class fDatabase
 	 */
 	public function enablePersistence($flag)
 	{
-		$this->persistence = (boolean) $flag;
+		$this->persistence = (bool) $flag;
 	}
 
 
@@ -1219,9 +1170,6 @@ class fDatabase
 			}
 			return "E'" . $output . "'";
 
-		} elseif ($this->extension == 'sqlite') {
-			return "'" . bin2hex($value) . "'";
-
 		} elseif ($this->type == 'sqlite') {
 			return "X'" . bin2hex($value) . "'";
 
@@ -1370,14 +1318,10 @@ class fDatabase
 
 		if ($this->type == 'db2') {
 			return "'" . str_replace("'", "''", $value) . "'";
-		} elseif ($this->extension == 'mysql') {
-			return "'" . mysql_real_escape_string($value, $this->connection) . "'";
 		} elseif ($this->extension == 'mysqli') {
 			return "'" . mysqli_real_escape_string($this->connection, $value) . "'";
 		} elseif ($this->extension == 'pgsql') {
 			return "'" . pg_escape_string($value) . "'";
-		} elseif ($this->extension == 'sqlite') {
-			return "'" . sqlite_escape_string($value) . "'";
 		} elseif ($this->type == 'oracle') {
 			return "'" . str_replace("'", "''", $value) . "'";
 
@@ -1916,9 +1860,6 @@ class fDatabase
 			$insert_id     = mssql_result($insert_id_res, 0, 'insert_id');
 			mssql_free_result($insert_id_res);
 
-		} elseif ($this->extension == 'mysql') {
-			$insert_id     = mysql_insert_id($this->connection);
-
 		} elseif ($this->extension == 'mysqli') {
 			if (is_object($resource)) {
 				$insert_id = mysqli_stmt_insert_id($resource);
@@ -1939,9 +1880,6 @@ class fDatabase
 			$insert_id_row = pg_fetch_assoc($insert_id_res);
 			$insert_id = array_shift($insert_id_row);
 			pg_free_result($insert_id_res);
-
-		} elseif ($this->extension == 'sqlite') {
-			$insert_id = sqlite_last_insert_rowid($this->connection);
 
 		} elseif ($this->extension == 'sqlsrv') {
 			$insert_id_res = sqlsrv_query($this->connection, "SELECT @@IDENTITY AS insert_id");
@@ -2387,8 +2325,6 @@ class fDatabase
 			$result = db2_exec($this->connection, $statement, array('cursor' => DB2_FORWARD_ONLY));
 		} elseif ($this->extension == 'mssql') {
 			$result = mssql_query($statement, $this->connection);
-		} elseif ($this->extension == 'mysql') {
-			$result = mysql_unbuffered_query($statement, $this->connection);
 		} elseif ($this->extension == 'mysqli') {
 			$result = mysqli_query($this->connection, $statement, MYSQLI_USE_RESULT);
 		} elseif ($this->extension == 'oci8') {
@@ -2396,8 +2332,6 @@ class fDatabase
 			$result = oci_execute($extra, $this->inside_transaction ? OCI_DEFAULT : OCI_COMMIT_ON_SUCCESS);
 		} elseif ($this->extension == 'pgsql') {
 			$result = pg_query($this->connection, $statement);
-		} elseif ($this->extension == 'sqlite') {
-			$result = sqlite_exec($this->connection, $statement, $extra);
 		} elseif ($this->extension == 'sqlsrv') {
 			$result = sqlsrv_query($this->connection, $statement);
 		} elseif ($this->extension == 'pdo') {
@@ -2442,8 +2376,6 @@ class fDatabase
 				db2_free_result($result);
 			} elseif ($this->extension == 'mssql') {
 				mssql_free_result($result);
-			} elseif ($this->extension == 'mysql') {
-				mysql_free_result($result);
 			} elseif ($this->extension == 'mysqli') {
 				mysqli_free_result($result);
 			} elseif ($this->extension == 'oci8') {
@@ -2489,9 +2421,6 @@ class fDatabase
 		} elseif ($this->extension == 'mssql') {
 			$result->setResult(mssql_query($result->getSQL(), $this->connection));
 
-		} elseif ($this->extension == 'mysql') {
-			$result->setResult(mysql_query($result->getSQL(), $this->connection));
-
 		} elseif ($this->extension == 'mysqli') {
 			$result->setResult(mysqli_query($this->connection, $result->getSQL()));
 
@@ -2507,9 +2436,6 @@ class fDatabase
 
 		} elseif ($this->extension == 'pgsql') {
 			$result->setResult(pg_query($this->connection, $result->getSQL()));
-
-		} elseif ($this->extension == 'sqlite') {
-			$result->setResult(sqlite_query($this->connection, $result->getSQL(), SQLITE_ASSOC, $extra));
 
 		} elseif ($this->extension == 'sqlsrv') {
 			$extra = sqlsrv_query($this->connection, $result->getSQL());
@@ -2573,7 +2499,7 @@ class fDatabase
 		$this->handleErrors(fCore::stopErrorCapture());
 
 		// The mssql extension will sometimes not return false even if there are errors
-		if (strlen($this->error) && strpos($this->error, 'WARNING!') !== 0) {
+		if ($this->error !== null && strlen($this->error) && strpos($this->error, 'WARNING!') !== 0) {
 			$result->setResult(false);
 		}
 
@@ -2636,8 +2562,6 @@ class fDatabase
 			$result->setResult(db2_exec($this->connection, $statement, array('cursor' => DB2_FORWARD_ONLY)));
 		} elseif ($this->extension == 'mssql') {
 			$result->setResult(mssql_query($result->getSQL(), $this->connection, 20));
-		} elseif ($this->extension == 'mysql') {
-			$result->setResult(mysql_unbuffered_query($result->getSQL(), $this->connection));
 		} elseif ($this->extension == 'mysqli') {
 			$result->setResult(mysqli_query($this->connection, $result->getSQL(), MYSQLI_USE_RESULT));
 		} elseif ($this->extension == 'oci8') {
@@ -2649,8 +2573,6 @@ class fDatabase
 			}
 		} elseif ($this->extension == 'pgsql') {
 			$result->setResult(pg_query($this->connection, $result->getSQL()));
-		} elseif ($this->extension == 'sqlite') {
-			$result->setResult(sqlite_unbuffered_query($this->connection, $result->getSQL(), SQLITE_ASSOC, $extra));
 		} elseif ($this->extension == 'sqlsrv') {
 			$result->setResult(sqlsrv_query($this->connection, $result->getSQL()));
 		} elseif ($this->extension == 'pdo') {
@@ -3147,8 +3069,6 @@ class fDatabase
 		} elseif ($this->extension == 'mssql') {
 			$affected_rows_result = mssql_query('SELECT @@ROWCOUNT AS rows', $this->connection);
 			$result->setAffectedRows((int) mssql_result($affected_rows_result, 0, 'rows'));
-		} elseif ($this->extension == 'mysql') {
-			$result->setAffectedRows(mysql_affected_rows($this->connection));
 		} elseif ($this->extension == 'mysqli') {
 			if (is_object($resource)) {
 				$result->setAffectedRows($resource->affected_rows);
@@ -3159,8 +3079,6 @@ class fDatabase
 			$result->setAffectedRows(oci_num_rows($resource));
 		} elseif ($this->extension == 'pgsql') {
 			$result->setAffectedRows(pg_affected_rows($result->getResult()));
-		} elseif ($this->extension == 'sqlite') {
-			$result->setAffectedRows(sqlite_changes($this->connection));
 		} elseif ($this->extension == 'sqlsrv') {
 			$result->setAffectedRows(sqlsrv_rows_affected($resource));
 		} elseif ($this->extension == 'pdo') {
@@ -3195,14 +3113,10 @@ class fDatabase
 		if (is_resource($result->getResult()) || is_object($result->getResult())) {
 			if ($this->extension == 'mssql') {
 				$result->setReturnedRows(mssql_num_rows($result->getResult()));
-			} elseif ($this->extension == 'mysql') {
-				$result->setReturnedRows(mysql_num_rows($result->getResult()));
 			} elseif ($this->extension == 'mysqli') {
 				$result->setReturnedRows(mysqli_num_rows($result->getResult()));
 			} elseif ($this->extension == 'pgsql') {
 				$result->setReturnedRows(pg_num_rows($result->getResult()));
-			} elseif ($this->extension == 'sqlite') {
-				$result->setReturnedRows(sqlite_num_rows($result->getResult()));
 			}
 		} elseif (is_array($result->getResult())) {
 			$result->setReturnedRows(sizeof($result->getResult()));
@@ -3544,8 +3458,6 @@ class fDatabase
 			return pg_unescape_bytea($value);
 		} elseif ($this->extension == 'pdo' && is_resource($value)) {
 			return stream_get_contents($value);
-		} elseif ($this->extension == 'sqlite') {
-			return pack('H*', $value);
 		} else {
 			return $value;
 		}

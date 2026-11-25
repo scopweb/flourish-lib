@@ -564,7 +564,20 @@ class fFile implements Iterator, Countable
 	 */
 	public function __sleep()
 	{
-		return array('deleted', 'file');
+		return array_keys($this->__serialize());
+	}
+
+
+	/**
+	 * Prepares the file for serialization
+	 *
+	 * @internal
+	 *
+	 * @return array  The data to serialize
+	 */
+	public function __serialize(): array
+	{
+		return array('deleted' => $this->deleted, 'file' => $this->file);
 	}
 
 
@@ -592,8 +605,22 @@ class fFile implements Iterator, Countable
 	 */
 	public function __wakeup()
 	{
-		$file    = $this->file;
-		$deleted = $this->deleted;
+		$this->__unserialize(array('deleted' => $this->deleted, 'file' => $this->file));
+	}
+
+
+	/**
+	 * Re-inserts the file back into the filesystem map when unserialized
+	 *
+	 * @internal
+	 *
+	 * @param  array $data  The serialized data
+	 * @return void
+	 */
+	public function __unserialize(array $data): void
+	{
+		$file    = isset($data['file']) ? $data['file'] : null;
+		$deleted = isset($data['deleted']) ? $data['deleted'] : null;
 
 		$this->file    =& fFilesystem::hookFilenameMap($file);
 		$this->deleted =& fFilesystem::hookDeletedMap($file);

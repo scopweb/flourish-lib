@@ -457,7 +457,7 @@ class fSchema
 				} elseif (in_array($info['type'], array('char', 'varchar', 'text', 'timestamp', 'date', 'time')) ) {
 					$info['default'] = substr($row['default'], 1, -1);
 				} elseif ($info['type'] == 'boolean') {
-					$info['default'] = (boolean) substr($row['default'], 1, -1);
+					$info['default'] = (bool) substr($row['default'], 1, -1);
 				} else {
 					$info['default'] = $row['default'];
 				}
@@ -843,7 +843,7 @@ class fSchema
 				} elseif (in_array($info['type'], array('char', 'varchar', 'text', 'timestamp')) ) {
 					$info['default'] = substr($row['default'], 2, -2);
 				} elseif ($info['type'] == 'boolean') {
-					$info['default'] = (boolean) substr($row['default'], 2, -2);
+					$info['default'] = (bool) substr($row['default'], 2, -2);
 				} elseif (in_array($info['type'], array('integer', 'float')) ) {
 					$info['default'] = str_replace(array('(', ')'), '', $row['default']);
 				} else {
@@ -1101,8 +1101,8 @@ class fSchema
 				$info['valid_values'] = preg_replace("/^'|'\$/D", '', explode(",", $match[3]));
 				$match[3] = 0;
 				foreach ($info['valid_values'] as $valid_value) {
-					if (strlen(utf8_decode($valid_value)) > $match[3]) {
-						$match[3] = strlen(utf8_decode($valid_value));
+					if (mb_strlen($valid_value, 'UTF-8') > $match[3]) {
+						$match[3] = mb_strlen($valid_value, 'UTF-8');
 					}
 				}
 			}
@@ -1140,7 +1140,7 @@ class fSchema
 			}
 
 			if ($info['type'] == 'boolean' && isset($info['default'])) {
-				$info['default'] = (boolean) $info['default'];
+				$info['default'] = (bool) $info['default'];
 			}
 
 			// Auto increment fields
@@ -1421,7 +1421,7 @@ class fSchema
 						$info['default'] = str_replace("''", "'", substr(trim($row['data_default']), 1, -1));
 
 					} elseif ($info['type'] == 'boolean') {
-						$info['default'] = (boolean) trim($row['data_default']);
+						$info['default'] = (bool) trim($row['data_default']);
 
 					} elseif (in_array($info['type'], array('integer', 'float'))) {
 						$info['default'] = trim($row['data_default']);

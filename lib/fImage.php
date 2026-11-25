@@ -1037,7 +1037,6 @@ class fImage extends fFile
 					// and returns false, causing no image to be saved
 					if (imagecolorstotal($gd_res)) {
 						imagecopy($new_gd_res, $gd_res, 0, 0, 0, 0, $mod['width'], $mod['height']);
-						imagedestroy($gd_res);
 						$gd_res = $new_gd_res;
 						unset($new_gd_res);
 					}
@@ -1075,7 +1074,6 @@ class fImage extends fFile
 				                imagecopy($new_gd_res, $new_gd_res, 0, $mod['height'] - $y - 1, 0, $y, $mod['width'], 1);
 				                imagecopy($new_gd_res, $row, 0, $y, 0, 0, $mod['width'], 1);
 				            }
-				            imagedestroy($row);
 				            break;
 
 				        case 270:
@@ -1088,8 +1086,6 @@ class fImage extends fFile
 					}
 				}
 			}
-
-			imagedestroy($gd_res);
 
 			$gd_res = $new_gd_res;
 		}
@@ -1107,8 +1103,6 @@ class fImage extends fFile
 				imagepng($gd_res, $output_file);
 				break;
 		}
-
-		imagedestroy($gd_res);
 	}
 
 

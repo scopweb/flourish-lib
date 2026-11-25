@@ -580,6 +580,32 @@ class fUTF8
 
 
 	/**
+	 * Counts the characters of a UTF-8 string without using the mbstring extension
+	 *
+	 * This is the fallback used when the mbstring extension is not available.
+	 * The utf8_decode() function cannot be used for this because it has been
+	 * deprecated in PHP 8.2.
+	 *
+	 * @param  string  $string  The string to measure
+	 * @return integer  The number of characters in the string
+	 */
+	static private function lengthWithoutMbString($string)
+	{
+		$length = 0;
+		$bytes  = strlen($string);
+
+		for ($i = 0; $i < $bytes; $i++) {
+			// Every byte that is not a continuation byte starts a new character
+			if ((ord($string[$i]) & 0xC0) !== 0x80) {
+				$length++;
+			}
+		}
+
+		return $length;
+	}
+
+
+	/**
 	 * Converts a unicode value into a UTF-8 character
 	 *
 	 * @param  mixed $unicode_code_point  The character to create, either the `U+hex` or decimal code point
@@ -752,7 +778,7 @@ class fUTF8
 	 */
 	static private function detect($string)
 	{
-		return (boolean) preg_match('#[^\x00-\x7F]#', $string);
+		return (bool) preg_match('#[^\x00-\x7F]#', $string);
 	}
 
 
@@ -982,7 +1008,7 @@ class fUTF8
 			return mb_strlen($string, 'UTF-8');
 		}
 
-		return strlen(utf8_decode($string));
+		return self::lengthWithoutMbString($string);
 	}
 
 
@@ -1230,7 +1256,7 @@ class fUTF8
 			return false;
 		}
 
-		return strlen(utf8_decode(substr($haystack, 0, $position)));
+		return self::lengthWithoutMbString(substr($haystack, 0, $position));
 	}
 
 
@@ -1339,7 +1365,7 @@ class fUTF8
 			return false;
 		}
 
-		return strlen(utf8_decode(substr($haystack, 0, $position)));
+		return self::lengthWithoutMbString(substr($haystack, 0, $position));
 	}
 
 
@@ -1440,7 +1466,7 @@ class fUTF8
 
 
 		// This is the slowest version
-		$str_len = strlen(utf8_decode($string));
+		$str_len = self::lengthWithoutMbString($string);
 
 		if (abs($start) > $str_len) {
 			return false;

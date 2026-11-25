@@ -793,7 +793,7 @@ class fSQLSchemaTranslation
 		foreach ($column_info as $row) {
 			$output['columns'][]     = $row['column_name'];
 			$output['name']          = $row['constraint_name'];
-			$output['autoincrement'] = (boolean) $row['auto_increment'];
+			$output['autoincrement'] = (bool) $row['auto_increment'];
 		}
 
 		return $output;
@@ -2107,7 +2107,7 @@ class fSQLSchemaTranslation
 				$data['table_without_schema']
 			);
 			if (count($primary_key_columns) == 1) {
-				$is_identity = (boolean) $this->database->query(
+				$is_identity = (bool) $this->database->query(
 					"SELECT
 						CASE WHEN C.IDENTITY = 'Y' AND (C.GENERATED = 'D' OR C.GENERATED = 'A') THEN '1' ELSE '0' END AS AUTO_INCREMENT
 					FROM

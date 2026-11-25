@@ -1,11 +1,11 @@
 <?php
 /**
  * Representation of a result from a query against the fDatabase class
- * 
- * ⚠️  **DEPRECATED - PHP 8.4 COMPATIBILITY WARNING** ⚠️
- * This class uses the obsolete MySQL extension (mysql_*) which was REMOVED in PHP 7.0.
- * This framework is NOT compatible with PHP 7.0+ and definitely not with PHP 8.4.
- * The mysql_* functions must be migrated to MySQLi or PDO for modern PHP compatibility.
+ *
+ * This class works with the drivers supported by fDatabase: MySQLi, PDO
+ * (MySQL, PostgreSQL, SQLite, ...) and the other native extensions. The
+ * obsolete `mysql_*` extension was removed from PHP in 7.0 and is not used
+ * anymore, this class is fully compatible with PHP 8.4 and PHP 8.5.
  *
  * @copyright  Copyright (c) 2007-2011 Will Bond
  * @author     Will Bond [wb] <will@flourishlib.com>
@@ -208,10 +208,6 @@ class fResult implements Iterator
 				mssql_free_result($this->result);
 				break;
 
-			case 'mysql':
-				mysql_free_result($this->result);
-				break;
-
 			case 'mysqli':
 				if (is_resource($this->result)) {
 					mysqli_free_result($this->result);
@@ -258,10 +254,6 @@ class fResult implements Iterator
 				}
 				break;
 
-			case 'mysql':
-				$row = mysql_fetch_assoc($this->result);
-				break;
-
 			case 'mysqli':
 				if (is_object($this->result)) {
 					$row = mysqli_fetch_assoc($this->result);
@@ -272,10 +264,6 @@ class fResult implements Iterator
 
 			case 'pgsql':
 				$row = pg_fetch_assoc($this->result);
-				break;
-
-			case 'sqlite':
-				$row = sqlite_fetch_array($this->result, SQLITE_ASSOC);
 				break;
 
 			case 'pdo':
@@ -677,10 +665,6 @@ class fResult implements Iterator
 				$success = mssql_data_seek($this->result, $row);
 				break;
 
-			case 'mysql':
-				$success = mysql_data_seek($this->result, $row);
-				break;
-
 			case 'mysqli':
 				if (is_object($this->result)) {
 					$success = mysqli_data_seek($this->result, $row);
@@ -691,10 +675,6 @@ class fResult implements Iterator
 
 			case 'pgsql':
 				$success = pg_result_seek($this->result, $row);
-				break;
-
-			case 'sqlite':
-				$success = sqlite_seek($this->result, $row);
 				break;
 
 			case 'ibm_db2':

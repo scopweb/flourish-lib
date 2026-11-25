@@ -16,6 +16,8 @@
  * @version    1.0.0 - Dependency Injection Container
  */
 
+require_once __DIR__ . '/fUnexpectedException.php';
+
 class fContainer
 {
     /**
@@ -77,7 +79,7 @@ class fContainer
     public function get(string $id): mixed
     {
         if (!$this->has($id)) {
-            throw new fException('Service not found in container: ' . $id);
+            throw new fUnexpectedException('Service not found in container: ' . $id);
         }
 
         // Return cached instance if available
@@ -157,7 +159,7 @@ class fContainer
     public function create(string $class, array $args = []): object
     {
         if (!class_exists($class)) {
-            throw new fException('Class not found: ' . $class);
+            throw new fUnexpectedException('Class not found: ' . $class);
         }
 
         try {
@@ -183,14 +185,14 @@ class fContainer
                     } elseif ($param->isDefaultValueAvailable()) {
                         $resolvedArgs[] = $param->getDefaultValue();
                     } else {
-                        throw new fException(
+                        throw new fUnexpectedException(
                             "Cannot resolve parameter: {$param->getName()} in class {$class}"
                         );
                     }
                 } elseif ($param->isDefaultValueAvailable()) {
                     $resolvedArgs[] = $param->getDefaultValue();
                 } else {
-                    throw new fException(
+                    throw new fUnexpectedException(
                         "Cannot resolve parameter: {$param->getName()} in class {$class}"
                     );
                 }
@@ -198,7 +200,7 @@ class fContainer
 
             return $reflection->newInstanceArgs($resolvedArgs);
         } catch (ReflectionException $e) {
-            throw new fException('Cannot create instance of ' . $class . ': ' . $e->getMessage());
+            throw new fUnexpectedException('Cannot create instance of ' . $class . ': ' . $e->getMessage());
         }
     }
 

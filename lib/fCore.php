@@ -266,7 +266,7 @@ class fCore
 							$bt_string .= 'Object(' . get_class($arg) . ')';
 						} elseif (is_string($arg)) {
 							// Shorten the UTF-8 string if it is too long
-							if (strlen(utf8_decode($arg)) > 18) {
+							if (mb_strlen($arg, 'UTF-8') > 18) {
 								// If we can't match as unicode, try single byte
 								if (!preg_match('#^(.{0,15})#us', $arg, $short_arg)) {
 									preg_match('#^(.{0,15})#s', $arg, $short_arg);
@@ -457,6 +457,60 @@ class fCore
 
 
 	/**
+	 * Finds the first loaded extension from a list of extensions
+	 *
+	 * @param  array  $extensions  The extensions to look for
+	 * @return mixed  The name of the first loaded extension, or NULL if none are loaded
+	 */
+	static public function findLoadedExtension(array $extensions)
+	{
+		foreach ($extensions as $extension) {
+			if (extension_loaded($extension)) {
+				return $extension;
+			}
+		}
+
+		return null;
+	}
+
+
+	/**
+	 * Checks if all the extensions passed are loaded
+	 *
+	 * @param  array   $extensions  The extensions to check
+	 * @return boolean  If all the extensions are loaded
+	 */
+	static public function allExtensionsLoaded(array $extensions)
+	{
+		foreach ($extensions as $extension) {
+			if (!extension_loaded($extension)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * Checks if any of the extensions passed are loaded
+	 *
+	 * @param  array   $extensions  The extensions to check
+	 * @return boolean  If at least one of the extensions is loaded
+	 */
+	static public function anyExtensionLoaded(array $extensions)
+	{
+		foreach ($extensions as $extension) {
+			if (extension_loaded($extension)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
 	 * Checks to see if the running version of PHP is greater or equal to the version passed
 	 *
 	 * @return boolean  If the running version of PHP is greater or equal to the version passed
@@ -641,7 +695,7 @@ class fCore
 	 */
 	static public function enableDebugging($flag)
 	{
-		self::$debug = (boolean) $flag;
+		self::$debug = (bool) $flag;
 	}
 
 
@@ -902,7 +956,6 @@ class fCore
 			case E_USER_ERROR:        $type = self::compose('User Error');        break;
 			case E_USER_WARNING:      $type = self::compose('User Warning');      break;
 			case E_USER_NOTICE:       $type = self::compose('User Notice');       break;
-			case E_STRICT:            $type = self::compose('Strict');            break;
 			case E_RECOVERABLE_ERROR: $type = self::compose('Recoverable Error'); break;
 			case E_DEPRECATED:        $type = self::compose('Deprecated');        break;
 			case E_USER_DEPRECATED:   $type = self::compose('User Deprecated');   break;

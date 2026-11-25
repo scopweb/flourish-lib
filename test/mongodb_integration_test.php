@@ -18,7 +18,7 @@ if (!extension_loaded('mongodb')) {
 
 require_once __DIR__ . '/../lib/fDatabase.php';
 require_once __DIR__ . '/../lib/fMongoDB.php';
-require_once __DIR__ . '/../MongoDbType.php';
+require_once __DIR__ . '/../enums/MongoDbType.php';
 
 class MongoDBIntegrationTest
 {
@@ -114,38 +114,45 @@ class MongoDBIntegrationTest
     private function testDatabaseTypeSupport()
     {
         echo "🗄️ Testing Database Type Support...\n";
-        
-        // Test that MongoDB is included in valid database types
+
+        // MongoDB is not a driver of fDatabase, it has its own class
         try {
-            $db = new fDatabase('mongodb', 'test_db');
-            if ($this->mockMode) {
-                $this->assert(false, "Should throw exception without MongoDB extension in mock mode");
-            } else {
-                $this->assert(true, "MongoDB database object created successfully");
+            $db = new fMongoDB('mongodb://localhost:27017', 'test_db');
+            $this->assert(true, "MongoDB database object created successfully");
+
+            // Without the extension the connection has to fail with a clear error
+            try {
+                $db->connect();
+                if (!extension_loaded('mongodb')) {
+                    $this->assert(false, "Should throw exception without MongoDB extension in mock mode");
+                }
+                else {
+                    $this->assert(true, "MongoDB connection attempt handled correctly");
+                }
+            } catch (fConnectivityException $e) {
+                $this->assert(
+                    str_contains($e->getMessage(), 'MongoDB PHP driver is not installed') ||
+                    str_contains($e->getMessage(), 'Failed to connect to MongoDB'),
+                    "Correctly identifies the missing MongoDB extension: " . $e->getMessage()
+                );
             }
         } catch (Exception $e) {
-            if ($this->mockMode) {
-                $this->assert(
-                    str_contains($e->getMessage(), 'mongodb (pecl install mongodb)') || 
-                    str_contains($e->getMessage(), 'MongoDB extension is not loaded'),
-                    "Correctly identifies missing MongoDB extension: " . $e->getMessage()
-                );
-            } else {
-                $this->assert(true, "MongoDB connection attempt handled correctly: " . $e->getMessage());
-            }
+            $this->assert(false, "MongoDB object could not be created: " . $e->getMessage());
         }
-        
+
         // Test database type validation
         try {
             $db = new fDatabase('invalid_type', 'test_db');
             $this->assert(false, "Should throw exception for invalid database type");
         } catch (fProgrammerException $e) {
             $this->assert(
-                str_contains($e->getMessage(), 'mongodb'),
-                "Error message includes mongodb as valid type"
+                str_contains($e->getMessage(), 'mysql') &&
+                str_contains($e->getMessage(), 'postgresql') &&
+                str_contains($e->getMessage(), 'sqlite'),
+                "Error message includes the valid database types: " . $e->getMessage()
             );
         }
-        
+
         echo "\n";
     }
 
@@ -179,7 +186,7 @@ class MongoDBIntegrationTest
         $params = $constructor->getParameters();
         $this->assert(count($params) >= 2, "Constructor has expected parameters");
         $this->assert($params[0]->getName() === 'uri', "First parameter is uri");
-        $this->assert($params[1]->getName() === 'database', "Second parameter is database");
+        $this->assert($params[1]->getName() === 'databaseName', "Second parameter is databaseName");
         
         echo "\n";
     }
@@ -329,7 +336,18 @@ class MongoDBIntegrationTest
         if ($this->mockMode) {
             try {
                 $mongodb = new fMongoDB();
-                $this->assert(false, "Should throw exception without MongoDB extension");
+                $this->assert(true, "The object can be created without the extension");
+
+                // The connection is the one that has to fail with a clear error
+                try {
+                    $mongodb->connect();
+                    $this->assert(false, "Should throw exception without MongoDB extension");
+                } catch (fConnectivityException $e) {
+                    $this->assert(
+                        str_contains($e->getMessage(), 'MongoDB PHP driver is not installed'),
+                        "Correctly throws exception for missing extension"
+                    );
+                }
             } catch (fEnvironmentException $e) {
                 $this->assert(
                     str_contains($e->getMessage(), 'MongoDB extension is not loaded'),

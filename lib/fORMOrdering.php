@@ -220,7 +220,7 @@ class fORMOrdering
 				$params     = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
 			}
 
-			$current_max_value = (integer) $db->translatedQuery(...$params)->fetchScalar();
+			$current_max_value = (int) $db->translatedQuery(...$params)->fetchScalar();
 
 			$shift_down = $current_max_value + 10;
 			$shift_up   = $current_max_value + 9;
@@ -328,7 +328,7 @@ class fORMOrdering
 			$params[0] .= " WHERE ";
 			$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
 		}
-		$max_value = (integer) $db->translatedQuery(...$params)->fetchScalar();
+		$max_value = (int) $db->translatedQuery(...$params)->fetchScalar();
 
 		// If this is a new record, or in a new set, we need one more space in the ordering index
 		if (self::isInNewSet($column, $other_columns, $values, $old_values)) {
@@ -462,7 +462,7 @@ class fORMOrdering
 				$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
 			}
 
-			$current_max_value = (integer) $db->translatedQuery(...$params)->fetchScalar();
+			$current_max_value = (int) $db->translatedQuery(...$params)->fetchScalar();
 			$new_max_value     = $current_max_value;
 
 			if ($new_set = self::isInNewSet($column, $other_columns, $values, $old_values)) {
@@ -515,7 +515,7 @@ class fORMOrdering
 			if ($object->exists()) {
 				$params = array("SELECT %r FROM %r WHERE ", $column, $table);
 				$params = fORMDatabase::addPrimaryKeyWhereParams($schema, $params, $table, $table, $values, $old_values);
-				$db_value = (integer) $db->translatedQuery(...$params)->fetchScalar();
+				$db_value = (int) $db->translatedQuery(...$params)->fetchScalar();
 			}
 
 
@@ -608,7 +608,7 @@ class fORMOrdering
 				$params = array("SELECT MAX(%r) FROM %r WHERE ", $column, $table);
 				$params = self::addOldOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values, $old_values);
 
-				$old_set_max = (integer) $db->translatedQuery(...$params)->fetchScalar();
+				$old_set_max = (int) $db->translatedQuery(...$params)->fetchScalar();
 
 				// We only need to close the gap if the record was not at the end
 				if ($db_value < $old_set_max) {
@@ -706,7 +706,7 @@ class fORMOrdering
 				$params = self::addOtherFieldsWhereParams($schema, $params, $table, $other_columns, $values);
 			}
 
-			$current_max_value = (integer) $db->translatedQuery(...$params)->fetchScalar();
+			$current_max_value = (int) $db->translatedQuery(...$params)->fetchScalar();
 			$new_max_value     = $current_max_value;
 
 			if ($new_set = self::isInNewSet($column, $other_columns, $values, $old_values)) {

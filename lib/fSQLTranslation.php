@@ -316,25 +316,50 @@ class fSQLTranslation
 		$functions[] = array('trim',     'trim',                                         1);
 
 		if ($this->database->getExtension() == 'sqlite') {
-			$functions[] = array('current_date',      array('fSQLTranslation', 'sqliteDate'), 0);
-			$functions[] = array('current_time',      array('fSQLTranslation', 'sqliteTime'), 0);
-			$functions[] = array('current_timestamp', array('fSQLTranslation', 'sqliteTimestamp'), 0);
+			// The SQLite v2.1 extension was removed from PHP, the only supported
+			// SQLite driver is the pdo_sqlite one
+			throw new fProgrammerException(
+				'The SQLite v2.1 extension is no longer supported, please use the pdo_sqlite extension instead'
+			);
+		}
+
+		if ($this->database->getExtension() == 'pdo') {
 			// If SQLite was compiled with ISO-8859-* string handling, we override as best we can
 			// with custom functions that return the correct values. We can't fix LIKE and GLOB
 			// but they don't matter as much since the encoding only affects case transformations.
-			if (strtolower(sqlite_libencoding()) != 'utf-8') {
+			if (strtolower($this->getSQLiteEncoding()) != 'utf-8') {
 				$functions[] = array('length', array('fSQLTranslation', 'sqliteLength'), 1);
 				$functions[] = array('substr', array('fSQLTranslation', 'sqliteSubstr'), 3);
 			}
 		}
 
 		foreach ($functions as $function) {
-			if ($this->database->getExtension() == 'pdo') {
-				$this->database->getConnection()->sqliteCreateFunction($function[0], $function[1], $function[2]);
+			$connection = $this->database->getConnection();
+			if ($connection instanceof Pdo\Sqlite) {
+				// PHP 8.4 and later, PDO::sqliteCreateFunction() is deprecated as of PHP 8.5
+				$connection->createFunction($function[0], $function[1], $function[2]);
 			} else {
-				sqlite_create_function($this->database->getConnection(), $function[0], $function[1], $function[2]);
+				$connection->sqliteCreateFunction($function[0], $function[1], $function[2]);
 			}
 		}
+	}
+
+
+	/**
+	 * Returns the character encoding used by the SQLite database
+	 *
+	 * @return string  The encoding of the database, e.g. UTF-8
+	 */
+	private function getSQLiteEncoding()
+	{
+		$statement = $this->database->getConnection()->query('PRAGMA encoding');
+		$encoding  = $statement->fetchColumn();
+
+		if ($encoding === false || $encoding === NULL) {
+			return 'utf-8';
+		}
+
+		return $encoding;
 	}
 
 
@@ -364,7 +389,7 @@ class fSQLTranslation
 	 */
 	public function enableDebugging($flag)
 	{
-		$this->debug = (boolean) $flag;
+		$this->debug = (bool) $flag;
 	}
 
 

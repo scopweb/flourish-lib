@@ -758,7 +758,7 @@ class fEmail
 			if ($first) { $first = false; } else { $header .= ', '; }
 
 			// Try to stay within the recommended 78 character line limit
-			$last_crlf_pos = (integer) strrpos($header, "\r\n");
+			$last_crlf_pos = (int) strrpos($header, "\r\n");
 			if (strlen($header . $email) - $last_crlf_pos > 78) {
 				$header .= "\r\n ";
 				$line++;
@@ -1155,8 +1155,11 @@ class fEmail
 	/**
 	 * Get the actual submission e-mail taking into account sender
 	 *
+	 * @deprecated  Use the `$email->from_email` property instead.
+	 *
 	 * @return string The submission e-mail, NULL if no submitter has been set
 	 */
+	#[\Deprecated(message: 'Use the $email->from_email property instead of this method.', since: '2.0')]
 	public function getSubmissionEmail()
 	{
 		if (preg_match(self::NAME_EMAIL_REGEX, $this->sender_email, $match)) {

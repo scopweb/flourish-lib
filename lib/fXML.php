@@ -221,8 +221,10 @@ class fXML implements ArrayAccess
 			'__construct'     => true,
 			'__get'           => true,
 			'__isset'         => true,
+			'__serialize'     => true,
 			'__sleep'         => true,
 			'__toString'      => true,
+			'__unserialize'   => true,
 			'__wakeup'        => true,
 			'addCustomPrefix' => true,
 			'getName'         => true,
@@ -269,7 +271,7 @@ class fXML implements ArrayAccess
 		if ($this->__dom->namespaceURI && $this->__dom->prefix == '' && strpos($name, ':') === false) {
 			$name = '__:' . $name;
 		}
-		return (boolean) $this->query($name . '[1]')->length;
+		return (bool) $this->query($name . '[1]')->length;
 	}
 
 
@@ -297,8 +299,21 @@ class fXML implements ArrayAccess
 	 */
 	public function __sleep()
 	{
+		return array_keys($this->__serialize());
+	}
+
+
+	/**
+	 * The XML needs to be made into a string before being serialized
+	 *
+	 * @internal
+	 *
+	 * @return array  The data to serialize
+	 */
+	public function __serialize(): array
+	{
 		$this->__xml = $this->toXML();
-		return array('__custom_prefixes', '__xml');
+		return array('__custom_prefixes' => $this->__custom_prefixes, '__xml' => $this->__xml);
 	}
 
 
@@ -336,6 +351,28 @@ class fXML implements ArrayAccess
 	 */
 	public function __wakeup()
 	{
+		$this->__unserialize(array('__custom_prefixes' => $this->__custom_prefixes, '__xml' => $this->__xml));
+	}
+
+
+	/**
+	 * The XML needs to be made into a DOMElement when unserialized
+	 *
+	 * @internal
+	 *
+	 * @param  array $data  The serialized data
+	 * @return void
+	 */
+	public function __unserialize(array $data): void
+	{
+		if (isset($data['__custom_prefixes'])) {
+			$this->__custom_prefixes = $data['__custom_prefixes'];
+		}
+
+		if (isset($data['__xml'])) {
+			$this->__xml = $data['__xml'];
+		}
+
 		$this->__dom = dom_import_simplexml(new SimpleXMLElement($this->__xml));
 		$this->__xml = null;
 	}
@@ -480,9 +517,10 @@ class fXML implements ArrayAccess
 	 * @param  string $offset  The offset to check
 	 * @return boolean  If the offset exists
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists($offset)
 	{
-		return (boolean) $this->query('@' . $offset . '[1]')->length;
+		return (bool) $this->query('@' . $offset . '[1]')->length;
 	}
 
 
@@ -499,6 +537,7 @@ class fXML implements ArrayAccess
 	 * @param  string $offset  The attribute to retrieve the value for
 	 * @return string  The value of the offset
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		$attribute = $this->query('@' . $offset . '[1]');
@@ -517,6 +556,7 @@ class fXML implements ArrayAccess
 	 * @param  integer|string $offset  The offset to set
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet($offset, $value)
 	{
 		throw new fProgrammerException('The %s class does not support modifying XML', __CLASS__);
@@ -531,6 +571,7 @@ class fXML implements ArrayAccess
 	 * @param  integer|string $offset  The offset to unset
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($offset)
 	{
 		throw new fProgrammerException('The %s class does not support modifying XML', __CLASS__);

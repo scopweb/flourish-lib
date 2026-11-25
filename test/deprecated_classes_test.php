@@ -113,30 +113,29 @@ test('Rewritten classes safe instantiation', function() {
     }
 });
 
-// Test that fResult (if it exists) handles MySQL deprecation correctly
-test('fResult handles MySQL deprecation', function() {
+// Test that fResult does not use the extensions that were removed from PHP
+test('fResult does not use the removed mysql extension', function() {
     $classesDir = dirname(__DIR__);
     $resultFile = $classesDir . '/lib/fResult.php';
-    
+
     if (!file_exists($resultFile)) {
         return "fResult.php not found - may have been removed or renamed";
     }
-    
+
     $content = file_get_contents($resultFile);
-    
-    // Should either be marked deprecated or rewritten
-    $hasDeprecationInfo = (
-        strpos($content, 'DEPRECATED') !== false || 
-        strpos($content, 'deprecated') !== false ||
-        strpos($content, 'MySQL extension') !== false
-    );
-    
-    $hasNoMysqlFunctions = !preg_match('/mysql_(?!.*\/\/|.*\/\*|\*.*\/)/', $content);
-    
-    if (!$hasDeprecationInfo && !$hasNoMysqlFunctions) {
-        return "fResult neither marked deprecated nor mysql_ functions removed";
+
+    // The mysql_* functions were removed in PHP 7.0, calling them is a fatal error
+    if (preg_match('/(?<![a-z_])mysql_[a-z_]+\s*\(/', $content)) {
+        $matches = array();
+        preg_match_all('/(?<![a-z_])mysql_[a-z_]+\s*\(/', $content, $matches);
+        return "fResult still calls the removed mysql extension: " . implode(', ', array_unique($matches[0]));
     }
-    
+
+    // The sqlite2 extension was removed as well
+    if (preg_match('/(?<![a-z_])sqlite_(open|close|query|exec|escape_string|fetch_array|unbuffered_query|last_insert_rowid|changes|num_rows|seek|error_string|last_error|libencoding|create_function)\s*\(/', $content)) {
+        return "fResult still calls the removed sqlite2 extension";
+    }
+
     return true;
 });
 
