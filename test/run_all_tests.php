@@ -1,138 +1,194 @@
 <?php
 /**
- * Flourish Framework - PHP 8.4 Compatibility Test Suite
- * 
- * Execute all tests with: php tests/run_all_tests.php
- * 
- * This script can be run unlimited times to verify compatibility
+ * Flourish Framework - Compatibility Test Suite
+ *
+ * Runs every test file in this directory, each one in its own isolated PHP
+ * process so that a fatal error in one file cannot hide the results of the
+ * others.
+ *
+ * Execute with:  php test/run_all_tests.php
+ *
+ * The run fails if any test fails or if PHP raises a single deprecation,
+ * warning or notice while the tests are running.
+ *
+ * @package Flourish Tests
  */
 
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', '1');
 
-class FlourishTestRunner 
+/**
+ * Runs the whole test suite
+ */
+class FlourishTestRunner
 {
-    private $results = [];
-    private $startTime;
-    private $testCount = 0;
-    private $passedCount = 0;
-    private $failedCount = 0;
-    
-    public function __construct() 
-    {
-        $this->startTime = microtime(true);
-        echo "🧪 Flourish PHP 8.4 Compatibility Test Suite\n";
-        echo "=" . str_repeat("=", 50) . "\n";
-        echo "PHP Version: " . PHP_VERSION . "\n";
-        echo "Start Time: " . date('Y-m-d H:i:s') . "\n\n";
-    }
-    
-    public function runAllTests() 
-    {
-        $testFiles = [
-            'php84_compatibility_test.php',
-            'modernization_test.php',
-            'deprecated_classes_test.php',
-            'working_examples_test.php',
-            'fdatabase_compatibility_test.php',
-            'fdatabase_real_test.php',
-            'fquerybuilder_test.php',
-            'mongodb_integration_test.php',
-            'fschema_backticks_test.php'
-        ];
-        
-        foreach ($testFiles as $testFile) {
-            if (file_exists(__DIR__ . '/' . $testFile)) {
-                echo "🔍 Running " . basename($testFile, '.php') . "...\n";
-                include __DIR__ . '/' . $testFile;
-                echo "\n";
-            } else {
-                echo "⚠️  Test file missing: $testFile\n\n";
-            }
-        }
-        
-        $this->generateReport();
-    }
-    
-    public function test($description, $callable) 
-    {
-        $this->testCount++;
-        echo "  → $description... ";
-        
-        try {
-            $result = $callable();
-            if ($result === true) {
-                echo "✅ PASS\n";
-                $this->passedCount++;
-                $this->results[] = ['test' => $description, 'result' => 'PASS', 'message' => ''];
-            } else {
-                echo "❌ FAIL: $result\n";
-                $this->failedCount++;
-                $this->results[] = ['test' => $description, 'result' => 'FAIL', 'message' => $result];
-            }
-        } catch (Exception $e) {
-            echo "💥 ERROR: " . $e->getMessage() . "\n";
-            $this->failedCount++;
-            $this->results[] = ['test' => $description, 'result' => 'ERROR', 'message' => $e->getMessage()];
-        } catch (Throwable $e) {
-            echo "💥 FATAL: " . $e->getMessage() . "\n";
-            $this->failedCount++;
-            $this->results[] = ['test' => $description, 'result' => 'FATAL', 'message' => $e->getMessage()];
-        }
-    }
-    
-    private function generateReport() 
-    {
-        $endTime = microtime(true);
-        $duration = round($endTime - $this->startTime, 2);
-        
-        echo "\n" . str_repeat("=", 60) . "\n";
-        echo "📊 TEST SUMMARY\n";
-        echo str_repeat("=", 60) . "\n";
-        echo "Total Tests: $this->testCount\n";
-        echo "Passed: $this->passedCount ✅\n";
-        echo "Failed: $this->failedCount " . ($this->failedCount > 0 ? "❌" : "✅") . "\n";
-        echo "Duration: {$duration}s\n";
-        echo "Success Rate: " . round(($this->passedCount / $this->testCount) * 100, 1) . "%\n";
-        
-        if ($this->failedCount == 0) {
-            echo "\n🎉 ALL TESTS PASSED! Flourish is PHP 8.4 compatible! 🎉\n";
-        } else {
-            echo "\n⚠️  Some tests failed. Review the output above for details.\n";
-        }
-        
-        // Save results to JSON for programmatic access
-        $this->saveJsonReport();
-    }
-    
-    private function saveJsonReport() 
-    {
-        if (!is_dir(__DIR__ . '/lib/reports')) {
-            mkdir(__DIR__ . '/lib/reports', 0755, true);
-        }
-        
-        $report = [
-            'timestamp' => date('c'),
-            'php_version' => PHP_VERSION,
-            'total_tests' => $this->testCount,
-            'passed' => $this->passedCount,
-            'failed' => $this->failedCount,
-            'success_rate' => round(($this->passedCount / $this->testCount) * 100, 1),
-            'results' => $this->results
-        ];
-        
-        file_put_contents(__DIR__ . '/lib/reports/test_results.json', json_encode($report, JSON_PRETTY_PRINT));
-    }
+	/** @var array  The results of every test file */
+	private $files = array();
+
+	/** @var float  The time the run started */
+	private $startTime;
+
+	/**
+	 * Starts the runner
+	 */
+	public function __construct()
+	{
+		$this->startTime = microtime(true);
+	}
+
+	/**
+	 * Discovers the test files to run
+	 *
+	 * @return array  The paths of the test files
+	 */
+	private function discoverTestFiles()
+	{
+		$files = array();
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__));
+		foreach ($iterator as $file) {
+			if (!$file->isFile()) {
+				continue;
+			}
+			$name = $file->getFilename();
+			if (substr($name, -9) !== '_test.php') {
+				continue;
+			}
+			if (in_array($name, array('run_all_tests.php', 'run_single.php'), true)) {
+				continue;
+			}
+			$files[] = $file->getPathname();
+		}
+
+		sort($files);
+		return $files;
+	}
+
+	/**
+	 * Runs a single test file in a separate process
+	 *
+	 * @param  string $file The path of the test file
+	 * @return array  The result of the test file
+	 */
+	private function runTestFile($file)
+	{
+		$command = escapeshellarg(PHP_BINARY) . ' -d error_reporting=-1 -d display_errors=1 ' .
+			escapeshellarg(__DIR__ . '/run_single.php') . ' ' . escapeshellarg($file);
+
+		$descriptors = array(
+			0 => array('pipe', 'r'),
+			1 => array('pipe', 'w'),
+			2 => array('pipe', 'w')
+		);
+
+		$pipes = array();
+		$process = proc_open($command, $descriptors, $pipes);
+		if (!is_resource($process)) {
+			return array('file' => basename($file), 'exit_code' => -1, 'output' => 'Could not start the test process');
+		}
+
+		fclose($pipes[0]);
+		$stdout = stream_get_contents($pipes[1]);
+		$stderr = stream_get_contents($pipes[2]);
+		fclose($pipes[1]);
+		fclose($pipes[2]);
+		$exitCode = proc_close($process);
+
+		return array(
+			'file'      => basename($file),
+			'exit_code' => $exitCode,
+			'output'    => $stdout . $stderr
+		);
+	}
+
+	/**
+	 * Runs every test file
+	 */
+	public function runAllTests()
+	{
+		echo "Flourish compatibility test suite\n";
+		echo str_repeat('=', 60) . "\n";
+		echo 'PHP Version: ' . PHP_VERSION . "\n";
+		echo 'PHP Binary:  ' . PHP_BINARY . "\n";
+		echo 'Start Time:  ' . date('Y-m-d H:i:s') . "\n\n";
+
+		$testFiles = $this->discoverTestFiles();
+		if (!$testFiles) {
+			echo "No test files found.\n";
+			return 1;
+		}
+
+		$failedFiles = 0;
+		foreach ($testFiles as $testFile) {
+			echo "Running " . basename($testFile) . "\n";
+			$result = $this->runTestFile($testFile);
+			$this->files[] = $result;
+			echo $result['output'];
+			if ($result['exit_code'] !== 0) {
+				$failedFiles++;
+				echo ">>> " . basename($testFile) . " FAILED (exit code " . $result['exit_code'] . ")\n";
+			}
+			else {
+				echo ">>> " . basename($testFile) . " OK\n";
+			}
+			echo "\n";
+		}
+
+		return $this->generateReport($failedFiles);
+	}
+
+	/**
+	 * Prints the final report and returns the exit code
+	 *
+	 * @param  int $failedFiles The number of failed test files
+	 * @return int  The exit code
+	 */
+	private function generateReport($failedFiles)
+	{
+		$duration = round(microtime(true) - $this->startTime, 2);
+
+		echo str_repeat('=', 60) . "\n";
+		echo "TEST SUMMARY\n";
+		echo str_repeat('=', 60) . "\n";
+		echo 'Test files: ' . count($this->files) . "\n";
+		echo 'Failed files: ' . $failedFiles . "\n";
+		echo "Duration: {$duration}s\n";
+
+		if ($failedFiles === 0) {
+			echo "\nALL TEST FILES PASSED on PHP " . PHP_VERSION . "\n";
+		}
+		else {
+			echo "\nSOME TEST FILES FAILED on PHP " . PHP_VERSION . "\n";
+		}
+
+		$this->saveJsonReport();
+
+		return $failedFiles === 0 ? 0 : 1;
+	}
+
+	/**
+	 * Saves the report as JSON
+	 */
+	private function saveJsonReport()
+	{
+		$reportDirectory = __DIR__ . '/reports';
+		if (!is_dir($reportDirectory)) {
+			mkdir($reportDirectory, 0755, true);
+		}
+
+		$report = array(
+			'timestamp'    => date('c'),
+			'php_version'  => PHP_VERSION,
+			'php_binary'   => PHP_BINARY,
+			'test_files'   => count($this->files),
+			'failed_files' => count(array_filter($this->files, function($file) {
+				return $file['exit_code'] !== 0;
+			})),
+			'files'        => $this->files
+		);
+
+		file_put_contents($reportDirectory . '/test_results.json', json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+	}
 }
 
-// Global test runner instance
-$testRunner = new FlourishTestRunner();
-
-// Helper function for tests
-function test($description, $callable) {
-    global $testRunner;
-    return $testRunner->test($description, $callable);
-}
-
-// Run all tests
-$testRunner->runAllTests();
+$runner = new FlourishTestRunner();
+exit($runner->runAllTests());

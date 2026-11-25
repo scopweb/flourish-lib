@@ -8,12 +8,12 @@
  * @since PHP 8.4
  */
 
-require_once __DIR__ . '/container/Container.php';
-require_once __DIR__ . '/providers/ConfigServiceProvider.php';
-require_once __DIR__ . '/providers/DatabaseServiceProvider.php';
-require_once __DIR__ . '/providers/CacheServiceProvider.php';
-require_once __DIR__ . '/providers/EmailServiceProvider.php';
-require_once __DIR__ . '/providers/FilesystemServiceProvider.php';
+require_once __DIR__ . '/../container/Container.php';
+require_once __DIR__ . '/../providers/ConfigServiceProvider.php';
+require_once __DIR__ . '/../providers/DatabaseServiceProvider.php';
+require_once __DIR__ . '/../providers/CacheServiceProvider.php';
+require_once __DIR__ . '/../providers/EmailServiceProvider.php';
+require_once __DIR__ . '/../providers/FilesystemServiceProvider.php';
 
 class Application extends Container
 {
@@ -22,7 +22,7 @@ class Application extends Container
     private bool $booted = false;
     private string $basePath;
     
-    public function __construct(string $basePath = null)
+    public function __construct(?string $basePath = null)
     {
         $this->basePath = $basePath ?? dirname(__DIR__);
         $this->registerBaseBindings();
@@ -32,7 +32,7 @@ class Application extends Container
     /**
      * Get the application instance (Singleton pattern)
      */
-    public static function getInstance(string $basePath = null): self
+    public static function getInstance(?string $basePath = null): self
     {
         if (self::$instance === null) {
             self::$instance = new self($basePath);
@@ -44,7 +44,7 @@ class Application extends Container
     /**
      * Create a new application instance
      */
-    public static function create(string $basePath = null): self
+    public static function create(?string $basePath = null): self
     {
         return new self($basePath);
     }

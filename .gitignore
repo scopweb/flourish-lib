@@ -44,6 +44,10 @@ config/local.php
 tests/*_config.php
 tests/database_credentials.php
 
+# Generated test reports
+test/reports/
+test/lib/reports/
+
 # Backup files
 *.bak
 *.backup

@@ -39,47 +39,55 @@ test('fDatabase is PHP 8.4 compatible (not deprecated)', function() {
 test('fStatement rewritten without mysql_ functions', function() {
     $classesDir = dirname(__DIR__);
     $statementFile = $classesDir . '/lib/fStatement.php';
-    
+
     if (!file_exists($statementFile)) {
         return "fStatement.php not found";
     }
-    
+
     $content = file_get_contents($statementFile);
-    
-    // Should NOT contain mysql_ function calls
-    if (preg_match('/mysql_(?!.*\/\/|.*\/\*|\*.*\/)/', $content)) {
+
+    // Remove comments to avoid false positives
+    $contentWithoutComments = preg_replace('/\/\*.*?\*\//s', '', $content);
+    $contentWithoutComments = preg_replace('/\/\/.*$/m', '', $contentWithoutComments);
+
+    // Should NOT contain mysql_ function calls (mysql_connect, mysql_query, etc)
+    if (preg_match('/mysql_\w+\s*\(/', $contentWithoutComments)) {
         return "fStatement still contains mysql_ functions";
     }
-    
-    // Should contain error handling for mysql extension
-    if (strpos($content, 'mysql') === false) {
-        return "fStatement missing mysql extension handling";
+
+    // Should contain error handling for mysql extension or be marked as rewritten
+    if (strpos($content, 'mysql') === false && strpos($content, 'MySQLi') === false) {
+        return "fStatement missing database extension handling";
     }
-    
+
     return true;
 });
 
-// Test that fUnbufferedResult has been rewritten (no mysql_ functions)  
+// Test that fUnbufferedResult has been rewritten (no mysql_ functions)
 test('fUnbufferedResult rewritten without mysql_ functions', function() {
     $classesDir = dirname(__DIR__);
     $resultFile = $classesDir . '/lib/fUnbufferedResult.php';
-    
+
     if (!file_exists($resultFile)) {
         return "fUnbufferedResult.php not found";
     }
-    
+
     $content = file_get_contents($resultFile);
-    
-    // Should NOT contain mysql_ function calls
-    if (preg_match('/mysql_(?!.*\/\/|.*\/\*|\*.*\/)/', $content)) {
+
+    // Remove comments to avoid false positives
+    $contentWithoutComments = preg_replace('/\/\*.*?\*\//s', '', $content);
+    $contentWithoutComments = preg_replace('/\/\/.*$/m', '', $contentWithoutComments);
+
+    // Should NOT contain mysql_ function calls (mysql_fetch_*, mysql_error, etc)
+    if (preg_match('/mysql_\w+\s*\(/', $contentWithoutComments)) {
         return "fUnbufferedResult still contains mysql_ functions";
     }
-    
-    // Should contain error handling for mysql extension
-    if (strpos($content, 'mysql') === false) {
-        return "fUnbufferedResult missing mysql extension handling";
+
+    // Should contain error handling for mysql extension or be marked as rewritten
+    if (strpos($content, 'mysql') === false && strpos($content, 'MySQLi') === false) {
+        return "fUnbufferedResult missing database extension handling";
     }
-    
+
     return true;
 });
 
@@ -105,30 +113,29 @@ test('Rewritten classes safe instantiation', function() {
     }
 });
 
-// Test that fResult (if it exists) handles MySQL deprecation correctly
-test('fResult handles MySQL deprecation', function() {
+// Test that fResult does not use the extensions that were removed from PHP
+test('fResult does not use the removed mysql extension', function() {
     $classesDir = dirname(__DIR__);
     $resultFile = $classesDir . '/lib/fResult.php';
-    
+
     if (!file_exists($resultFile)) {
         return "fResult.php not found - may have been removed or renamed";
     }
-    
+
     $content = file_get_contents($resultFile);
-    
-    // Should either be marked deprecated or rewritten
-    $hasDeprecationInfo = (
-        strpos($content, 'DEPRECATED') !== false || 
-        strpos($content, 'deprecated') !== false ||
-        strpos($content, 'MySQL extension') !== false
-    );
-    
-    $hasNoMysqlFunctions = !preg_match('/mysql_(?!.*\/\/|.*\/\*|\*.*\/)/', $content);
-    
-    if (!$hasDeprecationInfo && !$hasNoMysqlFunctions) {
-        return "fResult neither marked deprecated nor mysql_ functions removed";
+
+    // The mysql_* functions were removed in PHP 7.0, calling them is a fatal error
+    if (preg_match('/(?<![a-z_])mysql_[a-z_]+\s*\(/', $content)) {
+        $matches = array();
+        preg_match_all('/(?<![a-z_])mysql_[a-z_]+\s*\(/', $content, $matches);
+        return "fResult still calls the removed mysql extension: " . implode(', ', array_unique($matches[0]));
     }
-    
+
+    // The sqlite2 extension was removed as well
+    if (preg_match('/(?<![a-z_])sqlite_(open|close|query|exec|escape_string|fetch_array|unbuffered_query|last_insert_rowid|changes|num_rows|seek|error_string|last_error|libencoding|create_function)\s*\(/', $content)) {
+        return "fResult still calls the removed sqlite2 extension";
+    }
+
     return true;
 });
 

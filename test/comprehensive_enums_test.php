@@ -5,10 +5,10 @@
  */
 
 require_once __DIR__ . '/../lib/fJSON.php';
-require_once __DIR__ . '/../DatabaseType.php';
-require_once __DIR__ . '/../MimeType.php';
-require_once __DIR__ . '/../ImageFormat.php';
-require_once __DIR__ . '/../EmailEncoding.php';
+require_once __DIR__ . '/../enums/DatabaseType.php';
+require_once __DIR__ . '/../enums/MimeType.php';
+require_once __DIR__ . '/../enums/ImageFormat.php';
+require_once __DIR__ . '/../enums/EmailEncoding.php';
 
 class ComprehensiveEnumsTest
 {

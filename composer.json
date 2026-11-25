@@ -1,6 +1,6 @@
 {
     "name": "scopweb/flourish-lib",
-    "description": "A collection of classes for general web development, with a particular focus on compatibility, portability and security. PHP 8.4 modernized version.",
+    "description": "A collection of classes for general web development, with a particular focus on compatibility, portability and security. Modernized for PHP 8.5.",
     "homepage": "https://github.com/scopweb/flourish-lib",
     "type": "library",
     "license": "MIT",
@@ -12,19 +12,41 @@
         {
             "name": "scopweb",
             "role": "Maintainer",
-            "homepage": "https://github.com/scopweb"
+            "homepage": "https://scopweb.com"
         }
     ],
     "autoload": {
-        "classmap": ["lib/"]
+        "classmap": [
+            "lib/",
+            "enums/",
+            "container/",
+            "interfaces/",
+            "querybuilder/",
+            "providers/"
+        ]
     },
     "require": {
-        "php": ">=8.1.0"
-	},
-	"version": "1.0.0-beta",
-	"extra": {
-		"branch-alias": {
-			"dev-master": "1.0.x-dev"
-		}
-	}
+        "php": ">=8.5.13"
+    },
+    "config": {
+        "platform": {
+            "php": "8.5.13"
+        }
+    },
+    "suggest": {
+        "ext-mbstring": "Required by fUTF8 for the fastest multibyte string handling",
+        "ext-curl": "Required by fHttpClient",
+        "ext-pdo_sqlite": "Required to use fDatabase with SQLite",
+        "ext-pdo_mysql": "Required to use fDatabase with MySQL through PDO",
+        "ext-mysqli": "Required to use fDatabase with MySQL through MySQLi",
+        "ext-gd": "Required by fImage",
+        "ext-mongodb": "Required by fMongoDB",
+        "ext-redis": "Required by fRedis"
+    },
+    "version": "1.0.0-beta",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
 }

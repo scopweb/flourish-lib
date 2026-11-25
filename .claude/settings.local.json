@@ -26,7 +26,11 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:flourishlib.com)",
       "Bash(del \"C:\\MCPs\\php\\flourish-classes\\documentacion\\AdvancedDownload.html\")",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(git log:*)",
+      "Bash(ls:*)",
+      "Bash(timeout 60 php:*)"
     ],
     "deny": [],
     "ask": []

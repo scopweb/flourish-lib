@@ -1,139 +1,154 @@
-# Flourish PHP Framework - BETA
+# Flourish PHP Framework
 
-**Flourish** is a PHP "unframework" — a collection of 64 independent classes that can be used individually or together to rapidly develop web applications and APIs.
+**Flourish** is a PHP "unframework" — a collection of independent classes that can be used individually or together to rapidly develop web applications and APIs.
 
-## PHP 8.4 Compatible
+This is the modernized version maintained by `scopweb`, targeting **PHP 8.5.13**, the version running on the production server.
 
-This repository contains the fully migrated version of Flourish optimized for PHP 8.4:
+| | |
+|---|---|
+| Production server | **PHP 8.5.13** |
+| Also verified on | PHP 8.4 |
+| Minimum required | PHP 8.5.13 (`composer.json`, `.php-version`, `config.platform.php`) |
 
-### Key Improvements
-- Modernized syntax using variadic parameters instead of func_get_args()
-- Updated boolean constants to modern lowercase format
-- Database classes rewritten to eliminate deprecated mysql_* functions
-- Full MySQLi/PDO support with automatic extension detection
-- Complete backward compatibility maintained
+The version is pinned in three places so that it cannot drift unnoticed:
 
-### Migration Results
-- 64 classes updated for PHP 8.4 compatibility
-- 32 comprehensive tests passing
-- Production ready for modern PHP environments
+- `composer.json` → `"require": {"php": ">=8.5.13"}`
+- `composer.json` → `"config": {"platform": {"php": "8.5.13"}}`
+- `.php-version` → `8.5.13` (read by asdf, Herd and similar tools)
 
-## Quick Start
+The CI workflow (`.github/workflows/tests.yml`) runs the whole test suite against
+PHP 8.5.13 and PHP 8.4 on every push.
 
-### Installation
+## PHP 8.5 Ready
+
+- Zero deprecations: the test suite fails if PHP raises a single deprecation, warning or notice.
+- No dependency on the extensions that PHP removed (`mysql`, `sqlite` v2).
+- Modern syntax throughout: variadic parameters, `null`/`true`/`false`, typed properties, enums, readonly and first class callables.
+- `#[\Deprecated]` marks the legacy APIs, and the library never calls them itself.
+
+### What the PHP 8.5 migration changed
+
+| Area | Change |
+|---|---|
+| Casts | `(boolean)`/`(integer)` → `(bool)`/`(int)` — the non-canonical casts are deprecated in 8.5 |
+| Multibyte | `utf8_decode()` → `mb_strlen()` / `lengthWithoutMbString()` — deprecated since 8.2 |
+| Serialization | `__sleep()`/`__wakeup()` → `__serialize()`/`__unserialize()`, old ones kept for compatibility |
+| cURL / GD | `curl_close()` and `imagedestroy()` removed — deprecated in 8.5 |
+| PDO | `PDO::MYSQL_ATTR_DIRECT_QUERY` → `Pdo\Mysql::ATTR_DIRECT_QUERY` |
+| Database | The `mysql` and `sqlite` v2 extensions are gone; the drivers are MySQLi and PDO |
+| Return types | `#[\ReturnTypeWillChange]` on the `ArrayAccess`/`Iterator`/`Countable` methods |
+
+## Installation
+
 ```bash
 git clone https://github.com/scopweb/flourish-lib.git
 cd flourish-lib
+composer install
 ```
 
-### Basic Usage
+The library has **no runtime dependencies**. Composer is only needed for the autoloader.
+
+## Quick Start
+
 ```php
 <?php
-require_once 'lib/fCore.php';
-require_once 'lib/fDatabase.php';
+require_once 'vendor/autoload.php';
 
-// Database connection (auto-detects MySQLi/PDO)
+// Database connection (auto-detects MySQLi or PDO)
 $db = new fDatabase('mysql', 'database_name', 'username', 'password', 'host');
 
 // Query with parameter binding
-$result = $db->query("SELECT * FROM users WHERE status = %s", 'active');
+$result = $db->query('SELECT * FROM users WHERE status = %s AND age > %i', 'active', 18);
 
 foreach ($result as $row) {
     echo $row['name'] . "\n";
 }
-?>
 ```
 
-### PHP 8.4 Modernization Example
+### Query builder
 
-Old approach:
 ```php
-public static function compose($message) {
-    $args = array_slice(func_get_args(), 1);
-    return call_user_func_array('sprintf', array($message) + $args);
-}
-```
+fDB::setDatabase($db);
 
-Modern approach:
-```php
-public static function compose($message, ...$args) {
-    return sprintf($message, ...$args);
-}
+$users = fDB::table('users')
+    ->join('profiles', 'users.id', '=', 'profiles.user_id')
+    ->where('users.active', '=', 1)
+    ->orderBy('users.name')
+    ->get()
+    ->fetchAllRows();
 ```
 
 ## Testing
 
-Run the test suite to verify PHP 8.4 compatibility:
-
 ```bash
-php tests/run_all_tests.php
+php test/run_all_tests.php
 ```
+
+Every test file runs in its own process, so a fatal error in one test cannot hide
+the results of the others. The run fails if any test fails **or** if PHP raises a
+deprecation, warning or notice while the tests run.
+
+The suite includes a live SQLite database test (`test/php85_compatibility_test.php`)
+that exercises `fDatabase`, the SQL translation layer and the query builder
+against a real database — no external server needed.
+
+## Architecture
+
+### Core
+- **fCore**: debugging, error handling, core utilities
+- **fException**: exception hierarchy (`fUnexpectedException`, `fConnectivityException`, …)
+
+### Database
+- **fDatabase**: database abstraction layer with MySQLi/PDO support
+- **fResult** / **fStatement** / **fUnbufferedResult**: results, prepared statements, unbuffered results
+- **fSchema**: schema introspection (MySQL, PostgreSQL, SQLite, Oracle, SQL Server)
+- **fSQLTranslation** / **fSQLSchemaTranslation**: SQL dialect translation
+
+### ORM
+- **fActiveRecord**, **fORM**, **fRecordSet**, **fORMColumn**, **fORMRelated**, …
+
+### Utilities
+- **fEmail** / **fSMTP** / **fMailbox**, **fDate** / **fTime** / **fTimestamp**,
+  **fValidation**, **fText** / **fGrammar** / **fUTF8**, **fFile** / **fDirectory** /
+  **fFilesystem** / **fUpload** / **fImage**, **fCryptography**, **fCache**, **fJSON**,
+  **fXML**, **fURL**, **fHTML**, **fLoader**, **fPagination**
+
+### Modern additions
+- **querybuilder/**: `fQueryBuilder`, `fDB`, `fRawExpression`
+- **enums/**: `DatabaseType`, `MimeType`, `ImageFormat`, `EmailEncoding`, `MongoDbType`, `JsonToken`
+- **container/** + **providers/** + **interfaces/**: dependency injection
+
+## Database drivers
+
+| Type | Drivers |
+|---|---|
+| `mysql` | `mysqli`, `pdo_mysql` |
+| `postgresql` | `pgsql`, `pdo_pgsql` |
+| `sqlite` | `pdo_sqlite` |
+| `oracle` | `oci8`, `pdo_oci` |
+| `mssql` | `sqlsrv` |
+
+Placeholders: `%s` string, `%i` integer, `%f` float, `%b` boolean, `%d` date,
+`%t` time, `%p` timestamp, `%l` blob, `%r` identifier.
+
+## Security
+
+- SQL injection protection through automatic parameter escaping
+- XSS prevention with built-in output escaping utilities
+- CSRF protection with form token generation
+- Secure password hashing with bcrypt
+- Comprehensive input validation library
 
 ## Documentation
 
-- Complete API reference available in the documentacion/ folder
-- Original documentation at http://flourishlib.com
-- Development notes in CLAUDE.md
-
-## Framework Architecture
-
-Flourish consists of 64 independent classes organized into logical groups:
-
-### Core Classes
-- **fCore**: Debugging, error handling, and core utilities
-- **fException**: Enhanced exception handling hierarchy
-
-### Database Classes
-- **fDatabase**: Database abstraction layer with MySQLi/PDO support
-- **fResult**: Buffered query results
-- **fStatement**: Prepared statements (rewritten for modern extensions)
-- **fUnbufferedResult**: Unbuffered query results (rewritten for modern extensions)
-
-### ORM Classes  
-- **fActiveRecord**: Base class for database records
-- **fORM**: Object-relational mapping utilities
-- **fRecordSet**: Collections of database records
-
-### Utility Classes
-- **fEmail**: Email composition and sending
-- **fDate/fTime/fTimestamp**: Date and time manipulation  
-- **fValidation**: Form and data validation
-- **fText**: String manipulation utilities
-- **fCryptography**: Security and encryption utilities
-
-## Security Features
-
-- SQL injection protection through automatic parameter escaping
-- XSS prevention with built-in output escaping utilities  
-- CSRF protection with form token generation
-- Secure password hashing using modern bcrypt
-- Comprehensive input validation library
-
-## Use Cases
-
-Flourish is ideal for:
-- Rapid prototyping of web applications
-- Legacy PHP application modernization
-- Microservices with lightweight functionality
-- Educational projects and learning modern PHP
-- API development
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes with tests
-4. Submit a pull request
+- Complete API reference in the `documentacion/` folder
+- Original documentation at <http://flourishlib.com>
+- Development notes and the migration contract in `CLAUDE.md` and `MIGRATION_PHP85.md`
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see the [LICENSE](LICENSE) file.
 
 ## Credits
 
-Original Flourish Framework by Will Bond  
-PHP 8.4+ modernization by scopweb
-
-## Support
-
-For issues and questions, please use [GitHub Issues](https://github.com/scopweb/flourish-lib/issues)
+Original Flourish Framework by Will Bond, modernization by scopweb.
