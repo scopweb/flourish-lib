@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # The production server runs PHP 8.5.13, it is the reference version
+        php: ['8.5.13', '8.4']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, curl, openssl, gd, mysqli, pdo_mysql, pdo_sqlite, sqlite3, intl, zip, fileinfo
+          coverage: none
+          ini-values: error_reporting=E_ALL
+
+      - name: Check the syntax of every file
+        run: |
+          find . -name '*.php' -not -path './vendor/*' -not -path './documentacion/*' -print0 \
+            | xargs -0 -n1 -P4 php -l
+
+      - name: Run the test suite
+        run: php test/run_all_tests.php

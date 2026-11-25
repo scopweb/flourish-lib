@@ -1,8 +1,15 @@
-# Flourish Framework — PHP 8.5
+# Flourish Framework — PHP 8.5.13
 
 Guía de trabajo del repositorio `scopweb/flourish-lib`.
 
-**Estado actual: PHP 8.5 (verificado con PHP 8.5.13 y 8.4.11).**
+**Versión del servidor de producción: PHP 8.5.13.** Está fijada en:
+
+- `composer.json` → `"require": {"php": ">=8.5.13"}` y
+  `"config": {"platform": {"php": "8.5.13"}}`
+- `.php-version` → `8.5.13`
+- `.github/workflows/tests.yml` → matriz de CI con 8.5.13 (referencia) y 8.4
+
+La suite se verifica en **PHP 8.5.13** (referencia) y en **PHP 8.4.11**.
 
 ## Origen del proyecto
 

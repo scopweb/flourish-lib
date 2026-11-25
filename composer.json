@@ -26,7 +26,12 @@
         ]
     },
     "require": {
-        "php": ">=8.4.0"
+        "php": ">=8.5.13"
+    },
+    "config": {
+        "platform": {
+            "php": "8.5.13"
+        }
     },
     "suggest": {
         "ext-mbstring": "Required by fUTF8 for the fastest multibyte string handling",

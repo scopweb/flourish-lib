@@ -2,7 +2,22 @@
 
 **Flourish** is a PHP "unframework" — a collection of independent classes that can be used individually or together to rapidly develop web applications and APIs.
 
-This is the modernized version maintained by `scopweb`, targeting **PHP 8.5** (and verified on PHP 8.4).
+This is the modernized version maintained by `scopweb`, targeting **PHP 8.5.13**, the version running on the production server.
+
+| | |
+|---|---|
+| Production server | **PHP 8.5.13** |
+| Also verified on | PHP 8.4 |
+| Minimum required | PHP 8.5.13 (`composer.json`, `.php-version`, `config.platform.php`) |
+
+The version is pinned in three places so that it cannot drift unnoticed:
+
+- `composer.json` → `"require": {"php": ">=8.5.13"}`
+- `composer.json` → `"config": {"platform": {"php": "8.5.13"}}`
+- `.php-version` → `8.5.13` (read by asdf, Herd and similar tools)
+
+The CI workflow (`.github/workflows/tests.yml`) runs the whole test suite against
+PHP 8.5.13 and PHP 8.4 on every push.
 
 ## PHP 8.5 Ready
 
