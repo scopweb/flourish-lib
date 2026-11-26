@@ -86,11 +86,10 @@ class fCookie
 	static public function get($name, $default_value=null)
 	{
 		if (isset($_COOKIE[$name])) {
-			$value = fUTF8::clean($_COOKIE[$name]);
-			if (get_magic_quotes_gpc()) {
-				$value = stripslashes($value);
-			}
-			return $value;
+			// PHP 8 elimino get_magic_quotes_gpc(): las superglobales nunca
+			// llevan barras invertidas anadidas, asi que no hay que aplicar
+			// stripslashes() sobre el valor.
+			return fUTF8::clean($_COOKIE[$name]);
 		}
 		return $default_value;
 	}

@@ -25,6 +25,24 @@ class fCryptography
 	const symmetricKeyDecrypt = 'fCryptography::symmetricKeyDecrypt';
 	const symmetricKeyEncrypt = 'fCryptography::symmetricKeyEncrypt';
 
+	/**
+	 * The OpenSSL cipher used for the symmetric key encryption
+	 *
+	 * The mcrypt extension was removed in PHP 7.2, so the cipher is provided
+	 * by OpenSSL. Cipher feedback mode is used because it is a stream cipher:
+	 * no padding is added, so the plaintext keeps its exact length.
+	 *
+	 * @internal
+	 */
+	const SYMMETRIC_CIPHER = 'aes-256-cfb';
+
+	/**
+	 * The length, in bytes, of the initialization vector of the symmetric cipher
+	 *
+	 * @internal
+	 */
+	const SYMMETRIC_IV_LENGTH = 16;
+
 
 	/**
 	 * Checks a password against a hash created with ::hashPassword()
@@ -463,6 +481,7 @@ class fCryptography
 	 * encryption and decryption.
 	 *
 	 * @throws fValidationException  When the ciphertext appears to be corrupted
+	 * @throws fEnvironmentException  When the OpenSSL extension is not available
 	 *
 	 * @param  string $ciphertext  The content to be decrypted
 	 * @param  string $secret_key  The secret key to use for decryption
@@ -495,21 +514,29 @@ class fCryptography
 			);
 		}
 
-		// This code uses the Rijndael cipher with a 192 bit block size and a 256 bit key in cipher feedback mode
-		$module   = mcrypt_module_open('rijndael-192', '', 'cfb', '');
-		$key      = substr(sha1($secret_key), 0, mcrypt_enc_get_key_size($module));
-		mcrypt_generic_init($module, $key, $iv);
+		// The mcrypt extension was removed in PHP 7.2, so the symmetric cipher
+		// is implemented with OpenSSL. AES-256 in cipher feedback mode is used
+		// because it is a stream cipher: no padding is added, which keeps the
+		// exact same plaintext out of the decrypt method. The key derivation
+		// is unchanged: the first 32 bytes of the sha1() of the secret key.
+		$key = substr(sha1($secret_key), 0, 32);
 
-		fCore::startErrorCapture(E_WARNING);
-		$plaintext = mdecrypt_generic($module, $ciphertext);
-		fCore::stopErrorCapture();
+		$plaintext = openssl_decrypt(
+			$ciphertext,
+			self::SYMMETRIC_CIPHER,
+			$key,
+			OPENSSL_RAW_DATA,
+			$iv
+		);
 
-		mcrypt_generic_deinit($module);
-		mcrypt_module_close($module);
+		if ($plaintext === false) {
+			throw new fValidationException(
+				'The ciphertext provided appears to have been tampered with or corrupted'
+			);
+		}
 
 		return $plaintext;
 	}
-
 
 	/**
 	 * Encrypts the passed data using symmetric-key encryption
@@ -518,6 +545,7 @@ class fCryptography
 	 * encryption and decryption.
 	 *
 	 * @throws fValidationException  When the $secret_key is less than 8 characters long
+	 * @throws fEnvironmentException  When the OpenSSL extension is not available
 	 *
 	 * @param  string $plaintext   The content to be encrypted
 	 * @param  string $secret_key  The secret key to use for encryption - must be at least 8 characters
@@ -534,25 +562,28 @@ class fCryptography
 
 		self::verifySymmetricKeyEnvironment();
 
-		// This code uses the Rijndael cipher with a 192 bit block size and a
-		// 256 bit key in cipher feedback mode. Cipher feedback mode is chosen
-		// because no extra padding is added, ensuring we always get the exact
-		// same plaintext out of the decrypt method
-		$module   = mcrypt_module_open('rijndael-192', '', 'cfb', '');
-		$key      = substr(sha1($secret_key), 0, mcrypt_enc_get_key_size($module));
-		srand();
-		$iv       = mcrypt_create_iv(mcrypt_enc_get_iv_size($module), MCRYPT_RAND);
+		// The mcrypt extension was removed in PHP 7.2, so the symmetric cipher
+		// is implemented with OpenSSL. AES-256 in cipher feedback mode is used
+		// because it is a stream cipher: no padding is added, which keeps the
+		// exact same plaintext out of the decrypt method. The key derivation
+		// is unchanged: the first 32 bytes of the sha1() of the secret key.
+		$key = substr(sha1($secret_key), 0, 32);
+		$iv  = random_bytes(self::SYMMETRIC_IV_LENGTH);
 
-		// Finish the main encryption
-		mcrypt_generic_init($module, $key, $iv);
+		$ciphertext = openssl_encrypt(
+			$plaintext,
+			self::SYMMETRIC_CIPHER,
+			$key,
+			OPENSSL_RAW_DATA,
+			$iv
+		);
 
-		fCore::startErrorCapture(E_WARNING);
-		$ciphertext = mcrypt_generic($module, $plaintext);
-		fCore::stopErrorCapture();
-
-		// Clean up the main encryption
-		mcrypt_generic_deinit($module);
-		mcrypt_module_close($module);
+		if ($ciphertext === false) {
+			throw new fEnvironmentException(
+				'The symmetric encryption of the data failed, the OpenSSL extension did not accept the %s cipher',
+				self::SYMMETRIC_CIPHER
+			);
+		}
 
 		// Here we are generating the HMAC for the encrypted data to ensure data integrity
 		$hmac = self::hashHMAC('sha1', $iv . '#' . $ciphertext, $secret_key);
@@ -589,24 +620,16 @@ class fCryptography
 	 */
 	static private function verifySymmetricKeyEnvironment()
 	{
-		if (!extension_loaded('mcrypt')) {
+		if (!extension_loaded('openssl')) {
 			throw new fEnvironmentException(
 				'The PHP %s extension is required, however is does not appear to be loaded',
-				'mcrypt'
+				'openssl'
 			);
 		}
-		if (!function_exists('mcrypt_module_open')) {
+		if (!in_array(self::SYMMETRIC_CIPHER, openssl_get_cipher_methods(), true)) {
 			throw new fEnvironmentException(
-				'The cipher used, %1$s (also known as %2$s), requires libmcrypt version 2.4.x or newer. The version installed does not appear to meet this requirement.',
-				'AES-192',
-				'rijndael-192'
-			);
-		}
-		if (!in_array('rijndael-192', mcrypt_list_algorithms())) {
-			throw new fEnvironmentException(
-				'The cipher used, %1$s (also known as %2$s), does not appear to be supported by the installed version of libmcrypt',
-				'AES-192',
-				'rijndael-192'
+				'The cipher used, %s, does not appear to be supported by the installed version of OpenSSL',
+				self::SYMMETRIC_CIPHER
 			);
 		}
 	}

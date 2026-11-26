@@ -28,6 +28,21 @@ class fURL
 
 
 	/**
+	 * Returns the URI requested by the user
+	 *
+	 * The URI is not available when the code runs from the command line, such
+	 * as in a cron job, so an empty string is returned instead of raising a
+	 * warning about an undefined array key.
+	 *
+	 * @return string  The requested URI
+	 */
+	static private function getRequestedURI()
+	{
+		return isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+	}
+
+
+	/**
 	 * Returns the requested URL, does no include the domain name or query string
 	 *
 	 * This will return the original URL requested by the user - ignores all
@@ -37,7 +52,7 @@ class fURL
 	 */
 	static public function get()
 	{
-		return preg_replace('#\?.*$#D', '', $_SERVER['REQUEST_URI']);
+		return preg_replace('#\?.*$#D', '', self::getRequestedURI());
 	}
 
 
@@ -49,10 +64,11 @@ class fURL
 	static public function getDomain()
 	{
 		$port = (isset($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : null;
+		$name = (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '';
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
-			return 'https://' . $_SERVER['SERVER_NAME'] . ($port && $port != 443 ? ':' . $port : '');
+			return 'https://' . $name . ($port && $port != 443 ? ':' . $port : '');
 		} else {
-			return 'http://' . $_SERVER['SERVER_NAME'] . ($port && $port != 80 ? ':' . $port : '');
+			return 'http://' . $name . ($port && $port != 80 ? ':' . $port : '');
 		}
 	}
 
@@ -73,7 +89,7 @@ class fURL
 	 */
 	static public function getQueryString()
 	{
-		return preg_replace('#^[^?]*\??#', '', $_SERVER['REQUEST_URI']);
+		return preg_replace('#^[^?]*\??#', '', self::getRequestedURI());
 	}
 
 
@@ -84,7 +100,7 @@ class fURL
 	 */
 	static public function getWithQueryString()
 	{
-		return $_SERVER['REQUEST_URI'];
+		return self::getRequestedURI();
 	}
 
 
@@ -202,9 +218,9 @@ class fURL
 	{
 
 		parse_str(self::getQueryString(), $qs_array);
-		if (get_magic_quotes_gpc()) {
-			$qs_array = array_map('stripslashes', $qs_array);
-		}
+		// PHP 8 elimino get_magic_quotes_gpc(): el query string nunca llega
+		// con barras invertidas anadidas, asi que no hay que aplicar
+		// stripslashes() sobre los valores.
 
 		foreach ($parameters as $parameter) {
 			unset($qs_array[$parameter]);
@@ -227,9 +243,9 @@ class fURL
 	static public function replaceInQueryString($parameter, $value)
 	{
 		parse_str(self::getQueryString(), $qs_array);
-		if (get_magic_quotes_gpc()) {
-			$qs_array = array_map('stripslashes', $qs_array);
-		}
+		// PHP 8 elimino get_magic_quotes_gpc(): el query string nunca llega
+		// con barras invertidas anadidas, asi que no hay que aplicar
+		// stripslashes() sobre los valores.
 
 		settype($parameter, 'array');
 		settype($value, 'array');

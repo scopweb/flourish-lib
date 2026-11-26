@@ -56,6 +56,39 @@ Usar la subclase concreta que corresponda (`fUnexpectedException`,
 - Formato de los mensajes de excepción existentes.
 - La lógica de negocio.
 
+### R10. APIs eliminadas de PHP (error fatal, no deprecación)
+`get_magic_quotes_gpc()`, `get_magic_quotes_runtime()`, `set_magic_quotes_runtime()`,
+`mcrypt_*`, `mysql_*` (extensión `mysql`), `sqlite_*` (extensión `sqlite2`),
+`create_function()`, `each()`, `money_format()`, `ezmlm_hash()`, `restore_include_path()`
+y `utf8_encode()` / `utf8_decode()` **no existen** en PHP 8.
+
+Llamarlas es un **error fatal**, no un aviso: el runner de tests no lo detecta
+porque solo ve lo que PHP emite mientras se ejecuta el código. Por eso el
+fichero `test/removed_php_functions_test.php` hace dos cosas:
+
+1. **Auditoría estática** con `token_get_all()` de todo el código fuente,
+   buscando llamadas a funciones eliminadas. Se descartan comentarios, cadenas
+   y llamadas a métodos (`$obj->foo()`, `Foo::foo()`).
+2. **Ejecución** de los métodos que el resto de la suite nunca alcanza
+   (`fCookie::get()`, `fURL::removeFromQueryString()`,
+   `fURL::replaceInQueryString()`, `fCryptography::symmetricKey*()`).
+
+Regla: **ninguna ruta de código puede depender de una función eliminada**, ni
+siquiera en una rama que hoy no se ejecuta.
+
+### R11. Superglobales que no existen en CLI
+`$_SERVER['REQUEST_URI']` y `$_SERVER['SERVER_NAME']` no existen cuando el
+código se ejecuta desde la línea de órdenes (cron, CLI). Leerlas sin guarda
+produce un warning y una deprecación que se cuelan en la salida y rompen las
+respuestas JSON. Toda lectura debe usar `isset()`.
+
+### R12. `fCryptography` sin `mcrypt`
+La extensión `mcrypt` se eliminó en PHP 7.2, así que la clase no podía
+usarse: lanzaba `fEnvironmentException` siempre. El cifrado simétrico se
+reimplementa con **OpenSSL** (`aes-256-cfb`), manteniendo la API pública y el
+formato del sobre `fCryptography::symmetric#iv#ciphertext#hmac`. La
+derivación de la clave no cambia (los 32 primeros bytes del `sha1()`).
+
 ## Verificación obligatoria
 
 Después de cada cambio:
