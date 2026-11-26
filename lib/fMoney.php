@@ -237,7 +237,7 @@ class fMoney
 		if ($currency !== null && !isset(self::$currencies[$currency])) {
 			throw new fProgrammerException(
 				'The currency specified, %1$s, is not a valid currency. Must be one of: %2$s.',
-				$abbreviation,
+				$currency,
 				join(', ', array_keys(self::$currencies))
 			);
 		}

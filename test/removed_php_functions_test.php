@@ -330,5 +330,19 @@ test('Execution: fCryptography::hashPassword() and ::checkPasswordHash() work to
 	return fCryptography::checkPasswordHash('another-password', $hash) ? 'A wrong password matched the hash' : true;
 });
 
+test('Execution: fMoney reports the invalid currency in the exception message', function() {
+	// The message must name the currency that was actually passed, not an
+	// undefined variable.
+	try {
+		new fMoney(10, 'XXXX');
+	}
+	catch (fProgrammerException $e) {
+		return strpos($e->getMessage(), 'XXXX') !== false
+			? true
+			: 'The exception message does not contain the invalid currency: ' . $e->getMessage();
+	}
+	return 'A fProgrammerException was expected for an invalid currency';
+});
+
 
 exit(flourish_test_summary(basename(__FILE__)));
